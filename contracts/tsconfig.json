@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "sourceMap": true,
+        "declaration": true,
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "target": "esnext",
+        "jsx": "react",
+        "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "lib": ["es2018", "ES2020", "dom"],
+        "preserveSymlinks": true,
+        "rootDir": "./",
+        "outDir": "./dist/js"
+    },
+    "include": ["./src/**/*", "./typechain/**/*", "./artifacts/**/*.json"],
+    "files": ["./hardhat.config.ts"]
+}

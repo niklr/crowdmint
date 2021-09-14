@@ -1,0 +1,24 @@
+{
+  "name": "client",
+  "description": "",
+  "license": "MIT",
+  "author": "",
+  "homepage": "",
+  "version": "0.0.1",
+  "scripts": {
+  },
+  "types": "dist/js/src/index.d.ts",
+  "dependencies": {
+      "@polyjuice-provider/ethers": "0.0.1-rc11",
+      "ethers": "^5.1.3",
+      "node-fetch": "2.6.2"
+  },
+  "devDependencies": {
+      "ts-node": "10.2.1",
+      "typechain": "5.1.2",
+      "typescript": "4.4.3"
+  },
+  "engines": {
+      "node": ">= 14"
+  }
+}
