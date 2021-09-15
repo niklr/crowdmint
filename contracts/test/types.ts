@@ -1,5 +1,14 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
+import { utils } from 'ethers';
 import { SimpleStorage } from "../typechain";
+
+export interface Accounts {
+  admin: utils.HDNode;
+  owner: utils.HDNode;
+  alice: utils.HDNode;
+  bob: utils.HDNode;
+  charlie: utils.HDNode;
+}
 
 export interface Signers {
   admin: SignerWithAddress;
