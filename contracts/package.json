@@ -18,8 +18,7 @@
         "test": "hardhat test",
         "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain"
     },
-    "dependencies": {
-    },
+    "dependencies": {},
     "devDependencies": {
         "@nomiclabs/hardhat-ethers": "^2.0.2",
         "@nomiclabs/hardhat-waffle": "^2.0.1",
@@ -33,6 +32,7 @@
         "@typescript-eslint/parser": "^4.29.2",
         "chai": "4.2.0",
         "cross-env": "7.0.0",
+        "dotenv": "^10.0.0",
         "eslint": "^7.32.0",
         "eslint-config-prettier": "^8.3.0",
         "ethereum-waffle": "^3.4.0",
