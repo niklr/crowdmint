@@ -1,9 +1,11 @@
 import { PolyjuiceWallet, PolyjuiceJsonRpcProvider } from "@polyjuice-provider/ethers";
 import { Godwoker, PolyjuiceConfig } from "@polyjuice-provider/base";
+import { PolyjuiceHttpProvider } from '@polyjuice-provider/web3';
 import { config as dotenvConfig } from "dotenv";
 import { resolve } from "path";
 import { getAccounts } from "../utils";
 import { Accounts } from "../types";
+import Web3 from "web3";
 
 dotenvConfig({ path: resolve(__dirname, "../../.env") });
 
@@ -12,7 +14,9 @@ export abstract class BaseTest {
   protected privateKey: string;
   protected mnemonic: string;
   protected nervosProviderConfig: PolyjuiceConfig;
-  protected rpc!: PolyjuiceJsonRpcProvider;
+  protected rpcProvider!: PolyjuiceJsonRpcProvider;
+  protected httpProvider!: PolyjuiceHttpProvider;
+  protected web3!: Web3;
   protected deployer!: PolyjuiceWallet;
   protected accounts!: Accounts;
   protected godwoker!: Godwoker;
@@ -42,8 +46,10 @@ export abstract class BaseTest {
   }
 
   public async initAsync(): Promise<void> {
-    this.rpc = new PolyjuiceJsonRpcProvider(this.nervosProviderConfig, this.nervosProviderConfig.web3Url);
-    this.deployer = new PolyjuiceWallet(this.privateKey, this.nervosProviderConfig, this.rpc);
+    this.rpcProvider = new PolyjuiceJsonRpcProvider(this.nervosProviderConfig, this.nervosProviderConfig.web3Url);
+    this.httpProvider = new PolyjuiceHttpProvider(this.nervosProviderUrl, this.nervosProviderConfig);
+    this.web3 = new Web3(this.httpProvider);
+    this.deployer = new PolyjuiceWallet(this.privateKey, this.nervosProviderConfig, this.rpcProvider);
     this.accounts = getAccounts(this.mnemonic);
     this.godwoker = new Godwoker(this.nervosProviderUrl);
     await this.godwoker.initSync();

@@ -46,3 +46,7 @@ export function getAccounts(mnemonic: string): Accounts {
     charlie: hdNode.derivePath(`m/44'/60'/0'/0/5`)
   }
 }
+
+export async function timeout(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

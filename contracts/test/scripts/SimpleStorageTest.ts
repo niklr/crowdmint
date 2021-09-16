@@ -28,7 +28,7 @@ class SimpleStorageTest extends BaseTest {
   }
 
   public async getSimpleStorageContract(address: string, pk: string) {
-    const account = new PolyjuiceWallet(pk, this.nervosProviderConfig, this.rpc);
+    const account = new PolyjuiceWallet(pk, this.nervosProviderConfig, this.rpcProvider);
     return SimpleStorage__factory.connect(address, account);
   }
 
@@ -47,9 +47,9 @@ class SimpleStorageTest extends BaseTest {
   }
 
   public async run() {
-    const adminWallet = new PolyjuiceWallet(this.accounts.admin.privateKey, this.nervosProviderConfig, this.rpc);
-    console.log("deployer balance:", await this.rpc.getBalance(this.deployer.address));
-    console.log("admin balance:", await this.rpc.getBalance(adminWallet.address));
+    const adminWallet = new PolyjuiceWallet(this.accounts.admin.privateKey, this.nervosProviderConfig, this.rpcProvider);
+    console.log("deployer balance:", await this.rpcProvider.getBalance(this.deployer.address));
+    console.log("admin balance:", await this.rpcProvider.getBalance(adminWallet.address));
     console.log(adminWallet.address, this.accounts.admin.address);
     const adminPolyjuiceAddress = await this.godwoker.getShortAddressByAllTypeEthAddress(adminWallet.address);
     console.log("admin polyjuice address", adminPolyjuiceAddress);

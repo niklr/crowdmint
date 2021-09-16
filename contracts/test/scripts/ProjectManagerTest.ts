@@ -1,9 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { PolyjuiceWallet } from "@polyjuice-provider/ethers";
 import { ProjectManager__factory } from "../../typechain";
+import { ProjectManagerInterface } from "../../typechain/ProjectManager";
 import { EmptyAddress, ProjectCategory } from "../constants";
 import { CreateProject } from "../types";
-import { assertCondition, assertExceptionAsync, getOverrideOptions } from "../utils";
+import { assertCondition, assertExceptionAsync, getOverrideOptions, timeout } from "../utils";
 import { BaseTest } from "./BaseTest";
 
 class ProjectManagerTest extends BaseTest {
@@ -30,7 +31,7 @@ class ProjectManagerTest extends BaseTest {
   }
 
   public async getContract(address: string, pk: string) {
-    const account = new PolyjuiceWallet(pk, this.nervosProviderConfig, this.rpc);
+    const account = new PolyjuiceWallet(pk, this.nervosProviderConfig, this.rpcProvider);
     return ProjectManager__factory.connect(address, account);
   }
 
@@ -42,16 +43,58 @@ class ProjectManagerTest extends BaseTest {
     assertCondition(actualOwner.toLowerCase() === deployerAddress.value.toLowerCase(), "owner");
     assertCondition(0 === (await contract.totalProjects()).toNumber(), "Total projects mismatch");
 
+    //contract.interface.events["ProjectCreated(uint256,string,string,address,address)"];
+
+    contract.on("ProjectCreated", (listener: any) => {
+      console.log("0", listener);
+    });
+
+    contract.on("ProjectCreated", (index: number, category: string, title: string, addr: string, sender: string) => {
+      console.log("1", index, category, title, addr, sender);
+    });
+
+    contract.on("ProjectCreated(uint256,string,string,address,address)", (listener: any) => {
+      console.log("2", listener);
+    });
+
+    const abi = ProjectManager__factory.abi;
+    const web3Contract = new this.web3.eth.Contract(abi as any, contract.address);
+    web3Contract.events.ProjectCreated({}, (error: any, event: any) => {
+      console.log(error, event);
+    });
+
+    this.web3.eth.subscribe("logs", {}, (error, result) => {
+      console.log(error, result);
+    });
+
+    setTimeout(() => {
+      console.log("asdf");
+    }, 1000);
+
     // Test project creation
     const expectedProject = this.createProject();
-    await contract.create(expectedProject.category, expectedProject.title, expectedProject.url, expectedProject.goal, expectedProject.deadline);
+    await contract.create(
+      expectedProject.category,
+      expectedProject.title,
+      expectedProject.url,
+      expectedProject.goal,
+      expectedProject.deadline,
+    );
     assertCondition(1 === (await contract.totalProjects()).toNumber(), "Total projects mismatch");
 
     // Test invalid deadline
     expectedProject.deadline = BigNumber.from(0);
     await assertExceptionAsync(async () => {
-      await contract.create(expectedProject.category, expectedProject.title, expectedProject.url, expectedProject.goal, expectedProject.deadline);
+      await contract.create(
+        expectedProject.category,
+        expectedProject.title,
+        expectedProject.url,
+        expectedProject.goal,
+        expectedProject.deadline,
+      );
     }, "Invalid deadline");
+
+    await timeout(3000);
   }
 
   public createProject(

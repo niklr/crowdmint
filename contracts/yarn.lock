@@ -656,6 +656,18 @@
     immutable "^4.0.0-rc.12"
     keccak256 "^1.0.2"
 
+"@polyjuice-provider/web3@0.0.1-rc11":
+  version "0.0.1-rc11"
+  resolved "https://registry.yarnpkg.com/@polyjuice-provider/web3/-/web3-0.0.1-rc11.tgz#4c1507558b64cbe47eb6ee01499c14af40fac497"
+  integrity sha512-uSZ8Yl0Zq5zAP67ELYdZcIom8M7H2dbIJ42loEeMsTD0I8HdSqZErRm+XiJ+4QZZZT3NzO4JFhFF+Loff5JbWg==
+  dependencies:
+    "@polyjuice-provider/base" "0.0.1-rc11"
+    buffer "^6.0.3"
+    encoding "^0.1.13"
+    web3 "^1.4.0"
+    web3-providers-ws "^1.5.2"
+    xhr2-cookies "^1.1.0"
+
 "@resolver-engine/core@^0.3.3":
   version "0.3.3"
   resolved "https://registry.yarnpkg.com/@resolver-engine/core/-/core-0.3.3.tgz#590f77d85d45bc7ecc4e06c654f41345db6ca967"
@@ -8932,7 +8944,7 @@ web3-providers-ws@1.2.11:
     web3-core-helpers "1.2.11"
     websocket "^1.0.31"
 
-web3-providers-ws@1.5.2:
+web3-providers-ws@1.5.2, web3-providers-ws@^1.5.2:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/web3-providers-ws/-/web3-providers-ws-1.5.2.tgz#d336a93ed608b40cdcadfadd1f1bc8d32ea046e0"
   integrity sha512-xy9RGlyO8MbJDuKv2vAMDkg+en+OvXG0CGTCM2BTl6l1vIdHpCa+6A/9KV2rK8aU9OBZ7/Pf+Y19517kHVl9RA==
@@ -9001,7 +9013,7 @@ web3@1.2.11:
     web3-shh "1.2.11"
     web3-utils "1.2.11"
 
-web3@^1.3.4:
+web3@^1.3.4, web3@^1.4.0, web3@^1.5.2:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/web3/-/web3-1.5.2.tgz#736ca2f39048c63964203dd811f519400973e78d"
   integrity sha512-aapKLdO8t7Cos6tZLeeQUtCJvTiPMlLcHsHHDLSBZ/VaJEucSTxzun32M8sp3BmF4waDEmhY+iyUM1BKvtAcVQ==
