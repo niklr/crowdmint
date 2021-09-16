@@ -16,7 +16,7 @@ export function getOverrideOptions(nervosProviderUrl: string | undefined = undef
   }
 }
 
-export function assertCondition(condition: boolean, message: string) {
+export function assertCondition(condition: boolean, message: string): void {
   if (!condition) {
     if (typeof message === 'object' && message !== null) {
       throw new Error(JSON.stringify(message, undefined, 2))
