@@ -17,6 +17,7 @@
         "prettier:check": "prettier --check --config ./.prettierrc.yaml \"**/*.{js,json,md,sol,ts}\"",
         "test": "hardhat test",
         "test:simple": "ts-node test/scripts/SimpleStorageTest.ts",
+        "test:manager": "ts-node test/scripts/ProjectManagerTest.ts",
         "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain"
     },
     "dependencies": {},
