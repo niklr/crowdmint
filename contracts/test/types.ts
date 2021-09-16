@@ -1,5 +1,5 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
-import { utils } from 'ethers';
+import { BigNumber, utils } from "ethers";
 import { SimpleStorage } from "../typechain";
 
 export interface Accounts {
@@ -26,4 +26,12 @@ declare module "mocha" {
     simpleStorage: SimpleStorage;
     signers: Signers;
   }
+}
+
+export interface CreateProject {
+  category: string;
+  title: string;
+  url: string;
+  goal: BigNumber;
+  deadline: BigNumber;
 }

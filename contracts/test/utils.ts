@@ -26,6 +26,16 @@ export function assertCondition(condition: boolean, message: string): void {
   }
 }
 
+export async function assertExceptionAsync(callback: () => Promise<any>, message: string): Promise<void> {
+  let exceptionThrown = false;
+  try {
+    await callback();
+  } catch (error) {
+    exceptionThrown = true;
+  }
+  assertCondition(exceptionThrown, message);
+}
+
 export function getAccounts(mnemonic: string): Accounts {
   const hdNode = utils.HDNode.fromMnemonic(mnemonic);
   return {

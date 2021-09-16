@@ -16,6 +16,11 @@ contract Project {
         address creator;
     }
 
+    // Keep-It-All (KIA)
+    string constant CATEGORY_1 = "KIA";
+    // All-Or-Nothing (AON)
+    string constant CATEGORY_2 = "AON";
+
     address public manager;
     uint256 public totalContributions;
     uint256 public totalContributors;
@@ -36,6 +41,7 @@ contract Project {
         uint256 _deadline,
         address _creator
     ) {
+        require(_category == CATEGORY_1 || _category == CATEGORY_2, "Category must be KIA or AON.");
         require(_goal > 0, "Funding goal must be greater than 0.");
         require(_deadline > block.timestamp, "Deadline must be greater than current timestamp.");
         require(_creator != address(0), "Creator address must be valid.");
