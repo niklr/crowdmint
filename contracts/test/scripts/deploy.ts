@@ -1,4 +1,5 @@
 import { PolyjuiceWallet, PolyjuiceJsonRpcProvider } from '@polyjuice-provider/ethers';
+import { Godwoker } from "@polyjuice-provider/base";
 import { config as dotenvConfig } from 'dotenv';
 import { BigNumber } from 'ethers';
 import { resolve } from 'path';
@@ -70,15 +71,19 @@ async function test() {
   const adminWallet = new PolyjuiceWallet(accounts.admin.privateKey, nervosProviderConfig, rpc);
   console.log('deployer balance:', await rpc.getBalance(deployer.address));
   console.log(adminWallet.address, accounts.admin.address);
+  const godwoker = new Godwoker('http://localhost:8024');
+  await godwoker.initSync();
+  console.log('Admin Polyjuice address', await godwoker.getShortAddressByAllTypeEthAddress('0xd46aC0Bc23dB5e8AfDAAB9Ad35E9A3bA05E092E8'))
   console.log('admin balance:', await rpc.getBalance(adminWallet.address));
   await deployer.sendTransaction({
     value: BigNumber.from(1000),
-    to: '0x56eaccaa2ce59c6c0400b1e0b2e70dfd2dddd166',
+    to: adminWallet.address,
+    //to: '0x56eaccaa2ce59c6c0400b1e0b2e70dfd2dddd166',
     ...getOverrideOptions(nervosProviderUrl)
   });
 }
 
 (async () => {
-  await deploy();
+  await test();
   process.exit(0);
 })();

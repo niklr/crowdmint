@@ -7,6 +7,8 @@ export function getOverrideOptions(nervosProviderUrl: string | undefined = undef
     return {
       gasPrice: 0,
       gasLimit: 1_000_000
+      // gasPrice: 0x0,
+      // gasLimit: 0x54d30
     };
   } else {
     return {
