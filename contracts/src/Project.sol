@@ -17,6 +17,11 @@ contract Project {
         address creator;
     }
 
+    struct Contribution {
+        address contributor;
+        uint amount;
+    }
+
     // Keep-It-All (KIA)
     string constant CATEGORY_1 = "KIA";
     // All-Or-Nothing (AON)
@@ -27,7 +32,12 @@ contract Project {
     uint256 public totalContributors;
     uint256 public totalFunding;
 
+    mapping (address => uint) public contributors;
+    mapping (uint => Contribution) public contributions;
+
     ProjectInfo public info;
+
+    event ContributionReceived(address project, address contributor, uint amount);
 
     modifier onlyManager() {
         require(manager == msg.sender, "Only manager.");
@@ -91,6 +101,32 @@ contract Project {
             totalFunding,
             manager
         );
+    }
+
+    function contribute(address _contributor) public payable {
+        require(msg.value > 0, "Contribution must be greater than 0.");
+        // TODO: enable restriction once other contracts can send funds
+        //require(manager == msg.sender, "Contribution must be made by the project manager contract.");
+        require(info.deadline >= block.timestamp, "Project has expired.");
+
+        // Add contribution to map
+        Contribution memory c = contributions[totalContributions];
+        c.contributor = _contributor;
+        c.amount = msg.value;
+
+        // Update balance of contributor
+        uint256 prevContributorBalance = contributors[_contributor];
+        contributors[_contributor] += msg.value;
+
+        // Increase total contributors if not seen before
+        if (prevContributorBalance == 0) {
+            totalContributors++;
+        }
+
+        totalFunding += msg.value;
+        totalContributions++;
+
+        emit ContributionReceived(address(this), _contributor, msg.value);
     }
 
     /**

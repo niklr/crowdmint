@@ -1,10 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { PolyjuiceWallet } from "@polyjuice-provider/ethers";
 import { v4 as uuidv4 } from "uuid";
-import { ProjectManager, ProjectManager__factory, Utils__factory } from "../../typechain";
+import { Project, ProjectManager, ProjectManager__factory, Project__factory, Utils__factory } from "../../typechain";
 import { EmptyAddress, ProjectCategory } from "../constants";
 import { CreateProject } from "../types";
-import { assertCondition, assertExceptionAsync, getOverrideOptions, timeout } from "../utils";
+import { assertCondition, assertEquals, assertExceptionAsync, getOverrideOptions, timeout } from "../utils";
 import { BaseTest } from "./BaseTest";
 
 class ProjectManagerTest extends BaseTest {
@@ -49,9 +49,14 @@ class ProjectManagerTest extends BaseTest {
     return contract;
   }
 
-  public async getContract(address: string, pk: string) {
+  public async getProjectManagerContract(address: string, pk: string) {
     const account = new PolyjuiceWallet(pk, this.nervosProviderConfig, this.rpcProvider);
     return ProjectManager__factory.connect(address, account);
+  }
+
+  public async getProjectContract(address: string, pk: string) {
+    const account = new PolyjuiceWallet(pk, this.nervosProviderConfig, this.rpcProvider);
+    return Project__factory.connect(address, account);
   }
 
   public async deploy() {
@@ -59,9 +64,9 @@ class ProjectManagerTest extends BaseTest {
     const actualOwner = await contract.owner();
     //const contractPolyjuiceAddress = await this.godwoker.getShortAddressByAllTypeEthAddress(contract.address);
     const deployerPolyjuiceAddress = await this.godwoker.getShortAddressByAllTypeEthAddress(this.deployer.address);
-    console.log("deployer address", deployerPolyjuiceAddress.value);
-    assertCondition(actualOwner.toLowerCase() === deployerPolyjuiceAddress.value.toLowerCase(), "owner");
-    assertCondition(0 === (await contract.totalProjects()).toNumber(), "Total projects mismatch");
+    console.log("Deployer address", deployerPolyjuiceAddress.value);
+    assertEquals(actualOwner.toLowerCase(), deployerPolyjuiceAddress.value.toLowerCase(), "owner");
+    assertEquals(0, (await contract.totalProjects()).toNumber(), "Total projects mismatch");
 
     //contract.interface.events["ProjectCreated(uint256,string,string,address,address)"];
 
@@ -71,19 +76,19 @@ class ProjectManagerTest extends BaseTest {
 
     const expectedProjectIndex = BigNumber.from(1);
     const expectedProjectBeforeCreation = await contract.projects(expectedProjectIndex);
-    assertCondition(expectedProjectBeforeCreation === EmptyAddress, "Expected project before creation");
-    assertCondition(0 === (await contract.totalProjects()).toNumber(), "Total projects mismatch");
+    assertEquals(expectedProjectBeforeCreation, EmptyAddress, "Expected project before creation");
+    assertEquals(0, (await contract.totalProjects()).toNumber(), "Total projects mismatch");
 
     // Test project creation
     let expectedProject = this.createProject();
     await this.submitProject(contract, expectedProject);
-    assertCondition(1 === (await contract.totalProjects()).toNumber(), "Total projects mismatch");
+    assertEquals(1, (await contract.totalProjects()).toNumber(), "Total projects mismatch");
 
     const actualProjectIndex = await contract.indexes(expectedProject.id);
     assertCondition(expectedProjectIndex.eq(actualProjectIndex), "Project index mismatch");
 
-    const expectedProjectAfterCreation = await contract.projects(actualProjectIndex);
-    assertCondition(expectedProjectAfterCreation !== EmptyAddress, "Expected project after creation");
+    const projectAddress = await contract.projects(actualProjectIndex);
+    assertCondition(projectAddress !== EmptyAddress, "Expected project after creation");
 
     // Test duplicate identifier
     await assertExceptionAsync(async () => {
@@ -104,12 +109,41 @@ class ProjectManagerTest extends BaseTest {
       await this.submitProject(contract, expectedProject);
     }, "Invalid deadline");
 
+    const projectContract = await this.getProjectContract(projectAddress, this.deployer.privateKey);
+    assertEquals(0, (await projectContract.totalContributions()).toNumber(), "Total contributions mismatch");
+    assertEquals(0, (await projectContract.totalContributors()).toNumber(), "Total contributors mismatch");
+    assertEquals(0, (await projectContract.totalFunding()).toNumber(), "Total funding mismatch");
+
+    await projectContract.contribute(this.accounts.admin.address, {
+      value: BigNumber.from(100),
+    });
+
+    // TODO: use project manager to contribute once other contracts can send funds
+    // await contract.contribute(projectAddress, {
+    //   value: BigNumber.from(100),
+    // });
+
+    assertEquals(1, (await projectContract.totalContributions()).toNumber(), "Total contributions mismatch");
+    assertEquals(1, (await projectContract.totalContributors()).toNumber(), "Total contributors mismatch");
+    assertEquals(100, (await projectContract.totalFunding()).toNumber(), "Total funding mismatch");
+
+    await this.contribute(projectContract);
+
     // Test events
     // while (true) {
     //   const timestamp = await contract.getTimestamp();
     //   console.log(Math.floor(Date.now() / 1000), timestamp.toNumber());
     //   await timeout(3000);
     // }
+  }
+
+  public async contribute(projectContract: Project) {
+    const adminBalance = await this.rpcProvider.getBalance(this.accounts.admin.address);
+    if (adminBalance.lte(0)) {
+      return;
+    }
+
+    console.log('Contributing as:', this.accounts.admin.address);
   }
 
   public createProject(

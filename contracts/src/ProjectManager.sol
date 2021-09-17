@@ -25,6 +25,9 @@ contract ProjectManager {
         return block.timestamp;
     }
 
+    /**
+     * Creates a new project.
+     */
     function create(
         string memory _id,
         string memory _category,
@@ -49,6 +52,18 @@ contract ProjectManager {
         totalProjects++;
 
         return addr;
+    }
+
+    /**
+     * Contributes the provided amount to the specified project.
+     */
+    function contribute(address payable _projectAddress) public payable {
+        require(msg.value > 0, "Contribution must be greater than 0.");
+
+        Project project = Project(_projectAddress);
+        require(project.manager() == address(this), "Invalid project.");
+
+        project.contribute{value: msg.value}(msg.sender);
     }
 
     /**
