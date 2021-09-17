@@ -1,5 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { PolyjuiceWallet } from "@polyjuice-provider/ethers";
+import { v4 as uuidv4 } from "uuid";
 import { ProjectManager, ProjectManager__factory, Utils__factory } from "../../typechain";
 import { EmptyAddress, ProjectCategory } from "../constants";
 import { CreateProject } from "../types";
@@ -68,22 +69,26 @@ class ProjectManagerTest extends BaseTest {
       console.log("ProjectCreated", index, category, title, addr, sender);
     });
 
-    const expectedProjectBeforeCreation = await contract.projects(BigNumber.from(0));
+    const expectedProjectIndex = BigNumber.from(1);
+    const expectedProjectBeforeCreation = await contract.projects(expectedProjectIndex);
     assertCondition(expectedProjectBeforeCreation === EmptyAddress, "Expected project before creation");
+    assertCondition(0 === (await contract.totalProjects()).toNumber(), "Total projects mismatch");
 
     // Test project creation
     let expectedProject = this.createProject();
-    await contract.create(
-      expectedProject.category,
-      expectedProject.title,
-      expectedProject.url,
-      expectedProject.goal,
-      expectedProject.deadline,
-    );
+    await this.submitProject(contract, expectedProject);
     assertCondition(1 === (await contract.totalProjects()).toNumber(), "Total projects mismatch");
 
-    const expectedProjectAfterCreation = await contract.projects(BigNumber.from(0));
+    const actualProjectIndex = await contract.indexes(expectedProject.id);
+    assertCondition(expectedProjectIndex.eq(actualProjectIndex), "Project index mismatch");
+
+    const expectedProjectAfterCreation = await contract.projects(actualProjectIndex);
     assertCondition(expectedProjectAfterCreation !== EmptyAddress, "Expected project after creation");
+
+    // Test duplicate identifier
+    await assertExceptionAsync(async () => {
+      await this.submitProject(contract, expectedProject);
+    }, "Duplicate identifier");
 
     // Test invalid category
     expectedProject = this.createProject();
@@ -108,6 +113,7 @@ class ProjectManagerTest extends BaseTest {
   }
 
   public createProject(
+    id: string = uuidv4(),
     category: string = ProjectCategory.KIA,
     title: string = "title 1234",
     url: string = "http://localhost/1234",
@@ -115,6 +121,7 @@ class ProjectManagerTest extends BaseTest {
     deadline: BigNumber = BigNumber.from(Math.floor(Date.now() / 1000) + 3600),
   ): CreateProject {
     return {
+      id,
       category,
       title,
       url,
@@ -124,7 +131,7 @@ class ProjectManagerTest extends BaseTest {
   }
 
   public async submitProject(contract: ProjectManager, project: CreateProject) {
-    await contract.create(project.category, project.title, project.url, project.goal, project.deadline);
+    await contract.create(project.id, project.category, project.title, project.url, project.goal, project.deadline);
   }
 }
 

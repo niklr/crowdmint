@@ -29,6 +29,7 @@ declare module "mocha" {
 }
 
 export interface CreateProject {
+  id: string;
   category: string;
   title: string;
   url: string;
