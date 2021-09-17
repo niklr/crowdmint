@@ -1,4 +1,5 @@
 import { TransactionRequest } from "@ethersproject/providers";
+import { PolyjuiceJsonRpcProvider } from "@polyjuice-provider/ethers";
 import { utils } from 'ethers';
 import { Accounts } from "./types";
 
@@ -50,6 +51,17 @@ export function getAccounts(mnemonic: string): Accounts {
     alice: hdNode.derivePath(`m/44'/60'/0'/0/3`),
     bob: hdNode.derivePath(`m/44'/60'/0'/0/4`),
     charlie: hdNode.derivePath(`m/44'/60'/0'/0/5`)
+  }
+}
+
+export async function waitForBlocks(provider: PolyjuiceJsonRpcProvider, amount: number): Promise<void> {
+  provider.blockNumber
+  let blockNumber = provider.blockNumber
+  const prevBlockNumber = blockNumber;
+  while (prevBlockNumber + amount > blockNumber) {
+    blockNumber = provider.blockNumber
+    console.log("Waiting for next block...", prevBlockNumber, blockNumber);
+    await timeout(2000);
   }
 }
 

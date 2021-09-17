@@ -1,7 +1,7 @@
 import { PolyjuiceWallet } from "@polyjuice-provider/ethers";
 import { BigNumber } from "ethers";
 import { SimpleStorage__factory } from "../../typechain";
-import { assertCondition, getOverrideOptions, timeout } from "../utils";
+import { assertCondition, getOverrideOptions, timeout, waitForBlocks } from "../utils";
 import { BaseTest } from "./BaseTest";
 
 class SimpleStorageTest extends BaseTest {
@@ -68,15 +68,8 @@ class SimpleStorageTest extends BaseTest {
     const totalAmountAfterFund = await storage2.totalAmount();
     assertCondition(totalAmountAfterFund.eq(fundValue), totalAmountAfterFund.toString());
 
-    this.rpcProvider.blockNumber
-    let blockNumber = this.rpcProvider.blockNumber
-    const prevBlockNumber = blockNumber;
-    while (prevBlockNumber + 2 > blockNumber) {
-      blockNumber = this.rpcProvider.blockNumber
-      console.log("Waiting for next block...", prevBlockNumber, blockNumber);
-      await timeout(2000);
-    }
-
+    await waitForBlocks(this.rpcProvider, 2);
+    
     const balanceAfterFund = await this.rpcProvider.getBalance(accountAddress);
     console.log(`before: ${balanceBeforeFund.toString()} after: ${balanceAfterFund.toString()}`);
     assertCondition(balanceBeforeFund.eq(balanceAfterFund.add(fundValue)));
@@ -86,6 +79,12 @@ class SimpleStorageTest extends BaseTest {
     });
     const totalAmountAfterRefund = await storage2.totalAmount();
     assertCondition(totalAmountAfterRefund.eq(0), totalAmountAfterRefund.toString());
+
+    await waitForBlocks(this.rpcProvider, 2);
+
+    const balanceAfterRefund = await this.rpcProvider.getBalance(accountAddress);
+    console.log(`before: ${balanceBeforeFund.toString()} after: ${balanceAfterRefund.toString()}`);
+    assertCondition(balanceBeforeFund.eq(balanceAfterRefund));
   }
 
   public async run() {
