@@ -1,7 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { PolyjuiceWallet } from "@polyjuice-provider/ethers";
 import { ProjectManager__factory } from "../../typechain";
-import { ProjectManagerInterface } from "../../typechain/ProjectManager";
 import { EmptyAddress, ProjectCategory } from "../constants";
 import { CreateProject } from "../types";
 import { assertCondition, assertExceptionAsync, getOverrideOptions, timeout } from "../utils";
@@ -38,7 +37,7 @@ class ProjectManagerTest extends BaseTest {
   public async deploy() {
     const contract = await this.deployContract();
     const actualOwner = await contract.owner();
-    const contractPolyjuiceAddress = await this.godwoker.getShortAddressByAllTypeEthAddress(contract.address);
+    //const contractPolyjuiceAddress = await this.godwoker.getShortAddressByAllTypeEthAddress(contract.address);
     const deployerPolyjuiceAddress = await this.godwoker.getShortAddressByAllTypeEthAddress(this.deployer.address);
     console.log("deployer address", deployerPolyjuiceAddress.value);
     assertCondition(actualOwner.toLowerCase() === deployerPolyjuiceAddress.value.toLowerCase(), "owner");
@@ -46,35 +45,12 @@ class ProjectManagerTest extends BaseTest {
 
     //contract.interface.events["ProjectCreated(uint256,string,string,address,address)"];
 
-    contract.on("TimestampAccessed", (listener: any) => {
-      console.log("-1", listener);
-    });
-
-    contract.on("ProjectCreated", (listener: any) => {
-      console.log("0", listener);
-    });
-
     contract.on("ProjectCreated", (index: number, category: string, title: string, addr: string, sender: string) => {
-      console.log("1", index, category, title, addr, sender);
+      console.log("ProjectCreated", index, category, title, addr, sender);
     });
 
-    contract.on("ProjectCreated(uint256,string,string,address,address)", (listener: any) => {
-      console.log("2", listener);
-    });
-
-    const abi = ProjectManager__factory.abi;
-    const web3Contract = new this.web3.eth.Contract(abi as any, contract.address);
-    web3Contract.events.ProjectCreated({}, (error: any, event: any) => {
-      console.log(error, event);
-    });
-
-    this.web3.eth.subscribe("logs", { address: contractPolyjuiceAddress.value }, (error, result) => {
-      console.log(error, result);
-    });
-
-    this.web3.eth.subscribe("logs", { address: contract.address }, (error, result) => {
-      console.log(error, result);
-    });
+    const expectedProjectBeforeCreation = await contract.projects(BigNumber.from(0));
+    assertCondition(expectedProjectBeforeCreation === EmptyAddress, "Expected project before creation");
 
     // Test project creation
     const expectedProject = this.createProject();
@@ -86,6 +62,9 @@ class ProjectManagerTest extends BaseTest {
       expectedProject.deadline,
     );
     assertCondition(1 === (await contract.totalProjects()).toNumber(), "Total projects mismatch");
+
+    const expectedProjectAfterCreation = await contract.projects(BigNumber.from(0));
+    assertCondition(expectedProjectAfterCreation !== EmptyAddress, "Expected project after creation");
 
     // Test invalid deadline
     expectedProject.deadline = BigNumber.from(0);
@@ -99,11 +78,12 @@ class ProjectManagerTest extends BaseTest {
       );
     }, "Invalid deadline");
 
-    while (true) {
-      await contract.getTimestamp()
-      console.log(Date.now() / 1000)
-      await timeout(3000);
-    }
+    // Test events
+    // while (true) {
+    //   const timestamp = await contract.getTimestamp();
+    //   console.log(Math.floor(Date.now() / 1000), timestamp.toNumber());
+    //   await timeout(3000);
+    // }
   }
 
   public createProject(

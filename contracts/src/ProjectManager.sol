@@ -13,7 +13,6 @@ contract ProjectManager {
 
     mapping(uint256 => address) public projects;
 
-    event TimestampAccessed(address indexed addr);
     event ProjectCreated(uint indexed id, string category, string title, address addr, address creator);
 
     constructor() {
@@ -21,8 +20,7 @@ contract ProjectManager {
         totalProjects = 0;
     }
 
-    function getTimestamp() public returns (uint256) {
-        emit TimestampAccessed(msg.sender);
+    function getTimestamp() public view returns (uint256) {
         return block.timestamp;
     }
 
