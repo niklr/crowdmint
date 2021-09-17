@@ -1,6 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { PolyjuiceWallet } from "@polyjuice-provider/ethers";
-import { ProjectManager__factory } from "../../typechain";
+import { ProjectManager, ProjectManager__factory, Utils__factory } from "../../typechain";
 import { EmptyAddress, ProjectCategory } from "../constants";
 import { CreateProject } from "../types";
 import { assertCondition, assertExceptionAsync, getOverrideOptions, timeout } from "../utils";
@@ -11,10 +11,29 @@ class ProjectManagerTest extends BaseTest {
     super();
   }
 
+  public async deployUtils() {
+    const factory = new Utils__factory(this.deployer);
+    const tx = factory.getDeployTransaction();
+    const receipt = await (
+      await this.deployer.sendTransaction({
+        ...tx,
+        ...getOverrideOptions(this.nervosProviderUrl),
+      })
+    ).wait();
+    const contract = ProjectManager__factory.connect(receipt.contractAddress, this.deployer);
+    return contract;
+  }
+
   public async deployContract() {
     console.log("Deploying ProjectManager...");
 
-    const factory = new ProjectManager__factory(this.deployer);
+    const utils = await this.deployUtils();
+    const factory = new ProjectManager__factory(
+      {
+        "src/Utils.sol:Utils": utils.address,
+      },
+      this.deployer,
+    );
     const tx = factory.getDeployTransaction();
     const receipt = await (
       await this.deployer.sendTransaction({
@@ -53,7 +72,7 @@ class ProjectManagerTest extends BaseTest {
     assertCondition(expectedProjectBeforeCreation === EmptyAddress, "Expected project before creation");
 
     // Test project creation
-    const expectedProject = this.createProject();
+    let expectedProject = this.createProject();
     await contract.create(
       expectedProject.category,
       expectedProject.title,
@@ -66,16 +85,18 @@ class ProjectManagerTest extends BaseTest {
     const expectedProjectAfterCreation = await contract.projects(BigNumber.from(0));
     assertCondition(expectedProjectAfterCreation !== EmptyAddress, "Expected project after creation");
 
+    // Test invalid category
+    expectedProject = this.createProject();
+    expectedProject.category = "Invalid";
+    await assertExceptionAsync(async () => {
+      await this.submitProject(contract, expectedProject);
+    }, "Invalid category");
+
     // Test invalid deadline
+    expectedProject = this.createProject();
     expectedProject.deadline = BigNumber.from(0);
     await assertExceptionAsync(async () => {
-      await contract.create(
-        expectedProject.category,
-        expectedProject.title,
-        expectedProject.url,
-        expectedProject.goal,
-        expectedProject.deadline,
-      );
+      await this.submitProject(contract, expectedProject);
     }, "Invalid deadline");
 
     // Test events
@@ -100,6 +121,10 @@ class ProjectManagerTest extends BaseTest {
       goal,
       deadline,
     };
+  }
+
+  public async submitProject(contract: ProjectManager, project: CreateProject) {
+    await contract.create(project.category, project.title, project.url, project.goal, project.deadline);
   }
 }
 
