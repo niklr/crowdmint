@@ -36,7 +36,9 @@ class SimpleStorageTest extends BaseTest {
     const storage = await this.deploySimpleStorageContract();
     const actualValue1 = await storage.get();
     assertCondition(BigNumber.from("123").eq(actualValue1), actualValue1.toString());
-    await storage.set(321);
+    await storage.set(321, {
+      ...getOverrideOptions(this.nervosProviderUrl)
+    });
     const actualValue2 = await storage.get();
     assertCondition(BigNumber.from("321").eq(actualValue2), actualValue2.toString());
     await storage.set(123);
@@ -66,6 +68,7 @@ class SimpleStorageTest extends BaseTest {
 (async () => {
   const test = new SimpleStorageTest();
   await test.initAsync();
+  await test.deploy();
   await test.run();
   process.exit(0);
 })();
