@@ -3,6 +3,7 @@
 pragma solidity ^0.7.0;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
+// import { Utils } from './Utils.sol';
 
 contract Project {
     using SafeMath for uint256;
@@ -41,7 +42,7 @@ contract Project {
         uint256 _deadline,
         address _creator
     ) {
-        require(_category == CATEGORY_1 || _category == CATEGORY_2, "Category must be KIA or AON.");
+        //require(Utils.compareStrings(_category, CATEGORY_1) || Utils.compareStrings(_category, CATEGORY_2) , "Category must be KIA or AON.");
         require(_goal > 0, "Funding goal must be greater than 0.");
         require(_deadline > block.timestamp, "Deadline must be greater than current timestamp.");
         require(_creator != address(0), "Creator address must be valid.");

@@ -38,12 +38,17 @@ class ProjectManagerTest extends BaseTest {
   public async deploy() {
     const contract = await this.deployContract();
     const actualOwner = await contract.owner();
-    const deployerAddress = await this.godwoker.getShortAddressByAllTypeEthAddress(this.deployer.address);
-    console.log("deployer address", deployerAddress.value);
-    assertCondition(actualOwner.toLowerCase() === deployerAddress.value.toLowerCase(), "owner");
+    const contractPolyjuiceAddress = await this.godwoker.getShortAddressByAllTypeEthAddress(contract.address);
+    const deployerPolyjuiceAddress = await this.godwoker.getShortAddressByAllTypeEthAddress(this.deployer.address);
+    console.log("deployer address", deployerPolyjuiceAddress.value);
+    assertCondition(actualOwner.toLowerCase() === deployerPolyjuiceAddress.value.toLowerCase(), "owner");
     assertCondition(0 === (await contract.totalProjects()).toNumber(), "Total projects mismatch");
 
     //contract.interface.events["ProjectCreated(uint256,string,string,address,address)"];
+
+    contract.on("TimestampAccessed", (listener: any) => {
+      console.log("-1", listener);
+    });
 
     contract.on("ProjectCreated", (listener: any) => {
       console.log("0", listener);
@@ -63,13 +68,13 @@ class ProjectManagerTest extends BaseTest {
       console.log(error, event);
     });
 
-    this.web3.eth.subscribe("logs", {}, (error, result) => {
+    this.web3.eth.subscribe("logs", { address: contractPolyjuiceAddress.value }, (error, result) => {
       console.log(error, result);
     });
 
-    setTimeout(() => {
-      console.log("asdf");
-    }, 1000);
+    this.web3.eth.subscribe("logs", { address: contract.address }, (error, result) => {
+      console.log(error, result);
+    });
 
     // Test project creation
     const expectedProject = this.createProject();
@@ -94,7 +99,11 @@ class ProjectManagerTest extends BaseTest {
       );
     }, "Invalid deadline");
 
-    await timeout(3000);
+    while (true) {
+      await contract.getTimestamp()
+      console.log(Date.now() / 1000)
+      await timeout(3000);
+    }
   }
 
   public createProject(
