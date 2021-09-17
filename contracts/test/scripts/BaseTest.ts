@@ -55,10 +55,10 @@ export abstract class BaseTest {
 
   public async initAsync(): Promise<void> {
     this.rpcProvider = new PolyjuiceJsonRpcProvider(this.nervosProviderConfig, this.nervosProviderConfig.web3Url);
-    this.httpProvider = new PolyjuiceHttpProvider(this.nervosProviderUrl, this.nervosProviderConfig);
-    this.wsProvider = new PolyjuiceWebsocketProvider(this.nervosWsProviderUrl, this.nervosProviderConfig)
+    //this.httpProvider = new PolyjuiceHttpProvider(this.nervosProviderUrl, this.nervosProviderConfig);
+    //this.wsProvider = new PolyjuiceWebsocketProvider(this.nervosWsProviderUrl, this.nervosProviderConfig)
     //this.web3 = new Web3(this.wsProvider as any);
-    this.web3 = new Web3(this.httpProvider);
+    //this.web3 = new Web3(this.httpProvider);
     this.deployer = new PolyjuiceWallet(this.privateKey, this.nervosProviderConfig, this.rpcProvider);
     this.accounts = getAccounts(this.mnemonic);
     this.godwoker = new Godwoker(this.nervosProviderUrl);

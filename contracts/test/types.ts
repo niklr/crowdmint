@@ -36,3 +36,16 @@ export interface CreateProject {
   goal: BigNumber;
   deadline: BigNumber;
 }
+
+export interface ProjectInfo {
+  category: string;
+  title: string;
+  url: string;
+  goal: BigNumber;
+  deadline: BigNumber;
+  creator: string;
+  totalContributions: BigNumber;
+  totalContributors: BigNumber;
+  totalFunding: BigNumber;
+  manager: string;
+}

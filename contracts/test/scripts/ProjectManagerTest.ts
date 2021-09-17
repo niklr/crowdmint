@@ -4,7 +4,7 @@ import { PolyjuiceWallet } from "@polyjuice-provider/ethers";
 import { v4 as uuidv4 } from "uuid";
 import { Project, ProjectManager, ProjectManager__factory, Project__factory, Utils__factory } from "../../typechain";
 import { EmptyAddress, ProjectCategory } from "../constants";
-import { CreateProject } from "../types";
+import { CreateProject, ProjectInfo } from "../types";
 import { assertCondition, assertEquals, getOverrideOptions, timeout } from "../utils";
 import { BaseTest } from "./BaseTest";
 
@@ -110,9 +110,10 @@ class ProjectManagerTest extends BaseTest {
     assertEquals(1, (await contract.totalProjects()).toNumber(), "Invalid deadline");
 
     const projectContract = await this.getProjectContract(projectAddress, this.deployer.privateKey);
-    assertEquals(0, (await projectContract.totalContributions()).toNumber(), "Total contributions mismatch");
-    assertEquals(0, (await projectContract.totalContributors()).toNumber(), "Total contributors mismatch");
-    assertEquals(0, (await projectContract.totalFunding()).toNumber(), "Total funding mismatch");
+    let projectInfo = this.toProjectInfo(await projectContract.getInfo());
+    assertEquals(0, projectInfo.totalContributions.toNumber());
+    assertEquals(0, projectInfo.totalContributors.toNumber());
+    assertEquals(0, projectInfo.totalFunding.toNumber());
 
     await projectContract.contribute(this.deployer.address, {
       value: BigNumber.from(100),
@@ -123,25 +124,31 @@ class ProjectManagerTest extends BaseTest {
     //   value: BigNumber.from(100),
     // });
 
-    assertEquals(1, (await projectContract.totalContributions()).toNumber(), "Total contributions mismatch");
-    assertEquals(1, (await projectContract.totalContributors()).toNumber(), "Total contributors mismatch");
-    assertEquals(100, (await projectContract.totalFunding()).toNumber(), "Total funding mismatch");
+    projectInfo = this.toProjectInfo(await projectContract.getInfo());
+    assertEquals(1, projectInfo.totalContributions.toNumber());
+    assertEquals(1, projectInfo.totalContributors.toNumber());
+    assertEquals(100, projectInfo.totalFunding.toNumber());
 
     await projectContract.contribute(this.deployer.address, {
       value: BigNumber.from(100),
     });
 
-    assertEquals(2, (await projectContract.totalContributions()).toNumber(), "Total contributions mismatch");
-    assertEquals(1, (await projectContract.totalContributors()).toNumber(), "Total contributors mismatch");
-    assertEquals(200, (await projectContract.totalFunding()).toNumber(), "Total funding mismatch");
+    projectInfo = this.toProjectInfo(await projectContract.getInfo());
+    assertEquals(2, projectInfo.totalContributions.toNumber());
+    assertEquals(1, projectInfo.totalContributors.toNumber());
+    assertEquals(200, projectInfo.totalFunding.toNumber());
 
     timestamp = await contract.getTimestamp();
     console.log(expectedProject.deadline.toNumber(), timestamp.toNumber());
 
+    // Payout is not possible if project has not expired
     await projectContract.payout({
       ...getOverrideOptions(this.nervosProviderUrl)
     });
-    assertEquals(200, (await projectContract.totalFunding()).toNumber(), "Payout before deadline");
+
+    projectInfo = this.toProjectInfo(await projectContract.getInfo());
+    assertEquals(deployerPolyjuiceAddress.value.toLowerCase(), projectInfo.creator.toLowerCase());
+    assertEquals(200, projectInfo.totalFunding.toNumber());
 
     await this.contribute(projectContract, this.accounts.admin);
 
@@ -151,11 +158,20 @@ class ProjectManagerTest extends BaseTest {
       await timeout(2000);
     }
 
+    timestamp = await contract.getTimestamp();
+    console.log("Project expired", expectedProject.deadline.toNumber(), timestamp.toNumber());
+    await timeout(2000);
+
+    projectInfo = this.toProjectInfo(await projectContract.getInfo());
+    assertEquals(deployerPolyjuiceAddress.value.toLowerCase(), projectInfo.creator.toLowerCase());
+    assertEquals(200, projectInfo.totalFunding.toNumber());
+
     await projectContract.payout({
       ...getOverrideOptions(this.nervosProviderUrl)
     });
 
-    assertEquals(0, (await projectContract.totalFunding()).toNumber(), "Payout after deadline");
+    projectInfo = this.toProjectInfo(await projectContract.getInfo());
+    assertEquals(0, projectInfo.totalFunding.toNumber());
 
     // Test events
     // while (true) {
@@ -174,7 +190,7 @@ class ProjectManagerTest extends BaseTest {
     console.log("Contributing as:", account.address);
   }
 
-  public createProject(
+  private createProject(
     id: string = uuidv4(),
     category: string = ProjectCategory.KIA,
     title: string = "title 1234",
@@ -192,7 +208,22 @@ class ProjectManagerTest extends BaseTest {
     };
   }
 
-  public async submitProject(contract: ProjectManager, project: CreateProject) {
+  private toProjectInfo(projectInfo: [string, string, string, BigNumber, BigNumber, string, BigNumber, BigNumber, BigNumber, string]): ProjectInfo {
+    return {
+      category: projectInfo[0],
+      title: projectInfo[1],
+      url: projectInfo[2],
+      goal: projectInfo[3],
+      deadline: projectInfo[4],
+      creator: projectInfo[5],
+      totalContributions: projectInfo[6],
+      totalContributors: projectInfo[7],
+      totalFunding: projectInfo[8],
+      manager: projectInfo[9],
+    }
+  }
+
+  private async submitProject(contract: ProjectManager, project: CreateProject) {
     await contract.create(project.id, project.category, project.title, project.url, project.goal, project.deadline, {
       ...getOverrideOptions(this.nervosProviderUrl)
     });

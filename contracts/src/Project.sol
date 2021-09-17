@@ -9,16 +9,16 @@ contract Project {
     using SafeMath for uint256;
 
     struct ProjectInfo {
-        string title;
         string category;
+        string title;
         string url;
         uint256 goal;
         uint256 deadline;
-        address creator;
+        address payable creator;
     }
 
     struct Contribution {
-        address contributor;
+        address payable contributor;
         uint256 amount;
     }
 
@@ -60,7 +60,7 @@ contract Project {
         string memory _url,
         uint256 _goal,
         uint256 _deadline,
-        address _creator
+        address payable _creator
     ) {
         require(
             Utils.compareStrings(_category, CATEGORY_KIA) || Utils.compareStrings(_category, CATEGORY_AON),
@@ -124,7 +124,7 @@ contract Project {
     /**
      * Contributes the provided amount for the specified contributor.
      */
-    function contribute(address _contributor) public payable {
+    function contribute(address payable _contributor) public payable {
         // TODO: use onlyManager modifier once other contracts can send funds
         require(msg.value > 0, "Contribution must be greater than 0.");
         require(info.deadline >= block.timestamp, "Project has expired.");
@@ -169,7 +169,7 @@ contract Project {
     /**
      * Withdraws all contributions as creator.
      */
-    function payout() public onlyCreator onlyExpired {
+    function payout() public onlyCreator  {
         bool allOrNothing = Utils.compareStrings(info.category, CATEGORY_AON);
         if (allOrNothing) {
             // TODO: allow withdraw after grace period even with AON category
@@ -181,6 +181,7 @@ contract Project {
         if (amount > 0) {
             // Set to 0 before sending the amount to prevent re-entrancy attacks
             totalFunding = 0;
+            //bool success = info.creator.send(amount);
             (bool success, ) = info.creator.call{ value: amount }("");
             require(success, "Failed to send amount.");
         }

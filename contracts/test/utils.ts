@@ -16,7 +16,7 @@ export function getOverrideOptions(nervosProviderUrl: string | undefined = undef
   }
 }
 
-export function assertEquals(expected: any, actual: any, message: string): void {
+export function assertEquals(expected: any, actual: any, message?: string): void {
   if (expected !== actual) {
     throw new Error(`Expected: '${expected}' Actual: '${actual}' - ${message}`)
   }

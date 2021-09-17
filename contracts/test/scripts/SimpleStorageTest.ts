@@ -1,7 +1,7 @@
 import { PolyjuiceWallet } from "@polyjuice-provider/ethers";
 import { BigNumber } from "ethers";
 import { SimpleStorage__factory } from "../../typechain";
-import { assertCondition, getOverrideOptions } from "../utils";
+import { assertCondition, getOverrideOptions, timeout } from "../utils";
 import { BaseTest } from "./BaseTest";
 
 class SimpleStorageTest extends BaseTest {
@@ -34,22 +34,55 @@ class SimpleStorageTest extends BaseTest {
 
   public async deploy() {
     const storage = await this.deploySimpleStorageContract();
+    const deployerPolyjuiceAddress = await this.godwoker.getShortAddressByAllTypeEthAddress(this.deployer.address);
     const actualValue1 = await storage.get();
     assertCondition(BigNumber.from("123").eq(actualValue1), actualValue1.toString());
     await storage.set(321, {
-      ...getOverrideOptions(this.nervosProviderUrl)
+      ...getOverrideOptions(this.nervosProviderUrl),
     });
+
     const actualValue2 = await storage.get();
     assertCondition(BigNumber.from("321").eq(actualValue2), actualValue2.toString());
     await storage.set(123);
     const storage2 = await this.getSimpleStorageContract(storage.address, this.accounts.admin.privateKey);
     await storage2.set(123);
+
     const timestamp = await storage.getTimestamp();
     console.log("getTimestamp", timestamp.toNumber());
+
+    const balanceBeforeFund = await this.rpcProvider.getBalance(this.deployer.address);
+    assertCondition(balanceBeforeFund.gt(0), balanceBeforeFund.toString());
+
+    const totalAmountBeforeFund = await storage.totalAmount();
+    assertCondition(totalAmountBeforeFund.eq(0), totalAmountBeforeFund.toString());
+
+    const fundValue = BigNumber.from(100);
+    await storage.fund({
+      value: fundValue,
+      ...getOverrideOptions(this.nervosProviderUrl),
+    });
+    const totalAmountAfterFund = await storage.totalAmount();
+    assertCondition(totalAmountAfterFund.eq(fundValue), totalAmountAfterFund.toString());
+
+    this.rpcProvider.blockNumber
+    let blockNumber = this.rpcProvider.blockNumber
+    const prevBlockNumber = blockNumber;
+    while (prevBlockNumber >= blockNumber) {
+      blockNumber = this.rpcProvider.blockNumber
+      console.log("Waiting for next block...", prevBlockNumber, blockNumber);
+      await timeout(2000);
+    }
+
+    const balanceAfterFund = await this.rpcProvider.getBalance(this.deployer.address);
+    assertCondition(balanceBeforeFund.gt(balanceAfterFund), `before: ${balanceBeforeFund.toString()} after: ${balanceAfterFund.toString()}`);
   }
 
   public async run() {
-    const adminWallet = new PolyjuiceWallet(this.accounts.admin.privateKey, this.nervosProviderConfig, this.rpcProvider);
+    const adminWallet = new PolyjuiceWallet(
+      this.accounts.admin.privateKey,
+      this.nervosProviderConfig,
+      this.rpcProvider,
+    );
     console.log("deployer balance:", await this.rpcProvider.getBalance(this.deployer.address));
     console.log("admin balance:", await this.rpcProvider.getBalance(adminWallet.address));
     console.log(adminWallet.address, this.accounts.admin.address);
