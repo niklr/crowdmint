@@ -44,37 +44,48 @@ class SimpleStorageTest extends BaseTest {
     const actualValue2 = await storage.get();
     assertCondition(BigNumber.from("321").eq(actualValue2), actualValue2.toString());
     await storage.set(123);
-    const storage2 = await this.getSimpleStorageContract(storage.address, this.accounts.admin.privateKey);
-    await storage2.set(123);
 
     const timestamp = await storage.getTimestamp();
     console.log("getTimestamp", timestamp.toNumber());
+  }
 
-    const balanceBeforeFund = await this.rpcProvider.getBalance(this.deployer.address);
+  public async fund() {
+    const storage = await this.deploySimpleStorageContract();
+    const storage2 = await this.getSimpleStorageContract(storage.address, this.accounts.admin.privateKey);
+    const accountAddress = this.accounts.admin.address;
+
+    const balanceBeforeFund = await this.rpcProvider.getBalance(accountAddress);
     assertCondition(balanceBeforeFund.gt(0), balanceBeforeFund.toString());
 
-    const totalAmountBeforeFund = await storage.totalAmount();
+    const totalAmountBeforeFund = await storage2.totalAmount();
     assertCondition(totalAmountBeforeFund.eq(0), totalAmountBeforeFund.toString());
 
     const fundValue = BigNumber.from(100);
-    await storage.fund({
+    await storage2.fund({
       value: fundValue,
       ...getOverrideOptions(this.nervosProviderUrl),
     });
-    const totalAmountAfterFund = await storage.totalAmount();
+    const totalAmountAfterFund = await storage2.totalAmount();
     assertCondition(totalAmountAfterFund.eq(fundValue), totalAmountAfterFund.toString());
 
     this.rpcProvider.blockNumber
     let blockNumber = this.rpcProvider.blockNumber
     const prevBlockNumber = blockNumber;
-    while (prevBlockNumber >= blockNumber) {
+    while (prevBlockNumber + 2 > blockNumber) {
       blockNumber = this.rpcProvider.blockNumber
       console.log("Waiting for next block...", prevBlockNumber, blockNumber);
       await timeout(2000);
     }
 
-    const balanceAfterFund = await this.rpcProvider.getBalance(this.deployer.address);
-    assertCondition(balanceBeforeFund.gt(balanceAfterFund), `before: ${balanceBeforeFund.toString()} after: ${balanceAfterFund.toString()}`);
+    const balanceAfterFund = await this.rpcProvider.getBalance(accountAddress);
+    console.log(`before: ${balanceBeforeFund.toString()} after: ${balanceAfterFund.toString()}`);
+    assertCondition(balanceBeforeFund.eq(balanceAfterFund.add(fundValue)));
+
+    await storage2.refund({
+      ...getOverrideOptions(this.nervosProviderUrl),
+    });
+    const totalAmountAfterRefund = await storage2.totalAmount();
+    assertCondition(totalAmountAfterRefund.eq(0), totalAmountAfterRefund.toString());
   }
 
   public async run() {
@@ -102,6 +113,7 @@ class SimpleStorageTest extends BaseTest {
   const test = new SimpleStorageTest();
   await test.initAsync();
   await test.deploy();
+  await test.fund();
   await test.run();
   process.exit(0);
 })();

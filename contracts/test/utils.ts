@@ -22,7 +22,7 @@ export function assertEquals(expected: any, actual: any, message?: string): void
   }
 }
 
-export function assertCondition(condition: boolean, message: string): void {
+export function assertCondition(condition: boolean, message?: string): void {
   if (!condition) {
     if (typeof message === 'object' && message !== null) {
       throw new Error(JSON.stringify(message, undefined, 2))
