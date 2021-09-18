@@ -41,10 +41,11 @@ contract ProjectManager {
         require(_deadline > block.timestamp, "Deadline must be greater than current timestamp.");
 
         Project project = new Project(_category, _title, _url, _goal, _deadline, msg.sender);
+        address addr = address(project);
+        require(addr != address(0), "Project deployment failed.");
 
         uint256 index = totalProjects + 1;
         indexes[_id] = index;
-        address addr = address(project);
         projects[index] = addr;
 
         emit ProjectCreated(index, _category, _title, addr, msg.sender);

@@ -18,12 +18,14 @@ export function getOverrideOptions(nervosProviderUrl: string | undefined = undef
 }
 
 export function assertEquals(expected: any, actual: any, message?: string): void {
+  console.log(`assertEquals - Expected: '${expected}' Actual: '${actual}' - ${message}`)
   if (expected !== actual) {
     throw new Error(`Expected: '${expected}' Actual: '${actual}' - ${message}`)
   }
 }
 
 export function assertCondition(condition: boolean, message?: string): void {
+  console.log(`assertCondition - Condition: '${condition}' - ${message}`)
   if (!condition) {
     if (typeof message === 'object' && message !== null) {
       throw new Error(JSON.stringify(message, undefined, 2))

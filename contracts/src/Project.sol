@@ -95,7 +95,7 @@ contract Project {
             string memory, // url
             uint256, // goal
             uint256, // deadline
-            address, // creator
+            address payable, // creator
             uint256, // totalContributions
             uint256, // totalContributors
             uint256, // totalFunding
@@ -169,7 +169,7 @@ contract Project {
     /**
      * Withdraws all contributions as creator.
      */
-    function payout() public onlyCreator  {
+    function payout() public onlyCreator onlyExpired {
         bool allOrNothing = Utils.compareStrings(info.category, CATEGORY_AON);
         if (allOrNothing) {
             // TODO: allow withdraw after grace period even with AON category

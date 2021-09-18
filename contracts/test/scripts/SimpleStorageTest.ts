@@ -87,6 +87,27 @@ class SimpleStorageTest extends BaseTest {
     assertCondition(balanceBeforeFund.eq(balanceAfterRefund));
   }
 
+  public async refund() {
+    const storage = await this.deploySimpleStorageContract();
+    const storage2 = await this.getSimpleStorageContract(storage.address, this.accounts.admin.privateKey);
+
+    const fundValue = BigNumber.from(100);
+    await storage2.fund({
+      value: fundValue,
+      ...getOverrideOptions(this.nervosProviderUrl),
+    });
+    const totalAmountAfterFund = await storage2.totalAmount();
+    assertCondition(totalAmountAfterFund.eq(fundValue), totalAmountAfterFund.toString());
+
+    await waitForBlocks(this.rpcProvider, 1);
+
+    await storage2.refund({
+      ...getOverrideOptions(this.nervosProviderUrl),
+    });
+    const totalAmountAfterRefund = await storage2.totalAmount();
+    assertCondition(totalAmountAfterRefund.eq(0), totalAmountAfterRefund.toString());
+  }
+
   public async run() {
     const adminWallet = new PolyjuiceWallet(
       this.accounts.admin.privateKey,
@@ -112,7 +133,7 @@ class SimpleStorageTest extends BaseTest {
   const test = new SimpleStorageTest();
   await test.initAsync();
   await test.deploy();
-  await test.fund();
+  await test.refund();
   await test.run();
   process.exit(0);
 })();

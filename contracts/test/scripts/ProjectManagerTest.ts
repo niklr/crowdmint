@@ -84,8 +84,13 @@ class ProjectManagerTest extends BaseTest {
     let timestamp = await contract.getTimestamp();
     const expectedProject = this.createProject();
     expectedProject.deadline = timestamp.add(5);
-    await this.submitProject(contract, expectedProject);
+    console.log("Submitting project...");
+    let success = await this.submitProject(contract, expectedProject);
+    assertEquals(true, success);
     assertEquals(1, (await contract.totalProjects()).toNumber(), "Total projects mismatch");
+
+    // console.log("Waiting for ProjectCreated event...");
+    // await waitForEvent("ProjectCreated", contract);
 
     const actualProjectIndex = await contract.indexes(expectedProject.id);
     assertCondition(expectedProjectIndex.eq(actualProjectIndex), "Project index mismatch");
@@ -94,19 +99,22 @@ class ProjectManagerTest extends BaseTest {
     assertCondition(projectAddress !== EmptyAddress, "Expected project after creation");
 
     // Test duplicate identifier
-    await this.submitProject(contract, expectedProject);
+    success = await this.submitProject(contract, expectedProject);
+    assertEquals(false, success);
     assertEquals(1, (await contract.totalProjects()).toNumber(), "Duplicate identifier");
 
     // Test invalid category
     let invalidProject = this.createProject();
     invalidProject.category = "Invalid";
-    await this.submitProject(contract, invalidProject);
+    success = await this.submitProject(contract, invalidProject);
+    assertEquals(false, success);
     assertEquals(1, (await contract.totalProjects()).toNumber(), "Invalid category");
 
     // Test invalid deadline
     invalidProject = this.createProject();
     invalidProject.deadline = BigNumber.from(0);
-    await this.submitProject(contract, invalidProject);
+    success = await this.submitProject(contract, invalidProject);
+    assertEquals(false, success);
     assertEquals(1, (await contract.totalProjects()).toNumber(), "Invalid deadline");
 
     const projectContract = await this.getProjectContract(projectAddress, this.deployer.privateKey);
@@ -161,6 +169,10 @@ class ProjectManagerTest extends BaseTest {
     timestamp = await contract.getTimestamp();
     console.log("Project expired", expectedProject.deadline.toNumber(), timestamp.toNumber());
     await timeout(2000);
+
+    console.log("balance:", await this.rpcProvider.getBalance(this.deployer.address));
+    console.log("project balance:", await this.rpcProvider.getBalance(projectAddress));
+    console.log("project total funding:", await projectContract.totalFunding());
 
     projectInfo = this.toProjectInfo(await projectContract.getInfo());
     assertEquals(deployerPolyjuiceAddress.value.toLowerCase(), projectInfo.creator.toLowerCase());
@@ -224,8 +236,10 @@ class ProjectManagerTest extends BaseTest {
   }
 
   private async submitProject(contract: ProjectManager, project: CreateProject) {
-    await contract.create(project.id, project.category, project.title, project.url, project.goal, project.deadline, {
-      ...getOverrideOptions(this.nervosProviderUrl)
+    return await this.submitTransaction(() => {
+      return contract.create(project.id, project.category, project.title, project.url, project.goal, project.deadline, {
+        ...getOverrideOptions(this.nervosProviderUrl)
+      })
     });
   }
 }

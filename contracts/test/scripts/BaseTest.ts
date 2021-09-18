@@ -1,7 +1,8 @@
 import { PolyjuiceWallet, PolyjuiceJsonRpcProvider } from "@polyjuice-provider/ethers";
 import { Godwoker, PolyjuiceConfig } from "@polyjuice-provider/base";
-import { PolyjuiceHttpProvider, PolyjuiceWebsocketProvider } from '@polyjuice-provider/web3';
+import { PolyjuiceHttpProvider, PolyjuiceWebsocketProvider } from "@polyjuice-provider/web3";
 import { config as dotenvConfig } from "dotenv";
+import { ContractTransaction } from "ethers";
 import { resolve } from "path";
 import { getAccounts } from "../utils";
 import { Accounts } from "../types";
@@ -63,5 +64,15 @@ export abstract class BaseTest {
     this.accounts = getAccounts(this.mnemonic);
     this.godwoker = new Godwoker(this.nervosProviderUrl);
     await this.godwoker.initSync();
+  }
+
+  public async submitTransaction(callbackFn: () => Promise<ContractTransaction>): Promise<boolean> {
+    const contractTransaction = await callbackFn();
+    const tx = await this.rpcProvider.getTransaction(contractTransaction.hash);
+    if (!tx) {
+      return false;
+    }
+    await tx.wait();
+    return true;
   }
 }
