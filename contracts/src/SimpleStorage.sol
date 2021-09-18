@@ -2,16 +2,20 @@
 
 pragma solidity ^0.7.0;
 
+import { Utils } from "./Utils.sol";
+
 contract SimpleStorage {
     uint256 storedData;
     uint256 public totalAmount;
     address payable funder;
 
     constructor() payable {
+        require(Utils.compareStrings("test123", "test123"), "test");
         storedData = 123;
     }
 
     function set(uint256 x) public payable {
+        require(Utils.compareStrings("test", "test123"), "test");
         storedData = x;
     }
 

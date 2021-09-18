@@ -1,8 +1,8 @@
 import { PolyjuiceWallet } from "@polyjuice-provider/ethers";
 import { BigNumber } from "ethers";
-import { SimpleManager__factory, SimpleStorage__factory } from "../../typechain";
+import { SimpleManager__factory, SimpleStorage__factory, Utils__factory } from "../../typechain";
 import { EmptyAddress } from "../constants";
-import { assertCondition, assertEquals, getOverrideOptions, timeout, waitForBlocks } from "../utils";
+import { assertCondition, assertEquals, getOverrideOptions, waitForBlocks } from "../utils";
 import { BaseTest } from "./BaseTest";
 
 class SimpleStorageTest extends BaseTest {
@@ -10,10 +10,29 @@ class SimpleStorageTest extends BaseTest {
     super();
   }
 
+  public async deployUtils() {
+    const factory = new Utils__factory(this.deployer);
+    const tx = factory.getDeployTransaction();
+    const receipt = await (
+      await this.deployer.sendTransaction({
+        ...tx,
+        ...getOverrideOptions(this.nervosProviderUrl),
+      })
+    ).wait();
+    const contract = Utils__factory.connect(receipt.contractAddress, this.deployer);
+    return contract;
+  }
+
   public async deploySimpleStorageContract() {
     console.log("Deploying SimpleStorage...");
 
-    const factory = new SimpleStorage__factory(this.deployer);
+    const utils = await this.deployUtils();
+    const factory = new SimpleStorage__factory(
+      {
+        "src/Utils.sol:Utils": utils.address,
+      },
+      this.deployer,
+    );
     const tx = factory.getDeployTransaction();
     const receipt = await (
       await this.deployer.sendTransaction({
@@ -31,7 +50,13 @@ class SimpleStorageTest extends BaseTest {
   public async deployManagerContract() {
     console.log("Deploying SimpleManager...");
 
-    const factory = new SimpleManager__factory(this.deployer);
+    const utils = await this.deployUtils();
+    const factory = new SimpleManager__factory(
+      {
+        "src/Utils.sol:Utils": utils.address,
+      },
+      this.deployer,
+    );
     const tx = factory.getDeployTransaction();
     const receipt = await (
       await this.deployer.sendTransaction({
@@ -48,15 +73,16 @@ class SimpleStorageTest extends BaseTest {
 
   public async deployManager() {
     const manager = await this.deployManagerContract();
-    assertCondition(EmptyAddress === await manager.storageAddress());
+    assertCondition(EmptyAddress === (await manager.storageAddress()));
     await manager.create();
-    assertCondition(EmptyAddress !== await manager.storageAddress());
+    assertCondition(EmptyAddress !== (await manager.storageAddress()));
 
     const storage = await this.getSimpleStorageContract(await manager.storageAddress(), this.deployer.privateKey);
     assertEquals("123", (await storage.get()).toString());
 
     await waitForBlocks(this.rpcProvider, 1);
 
+    assertCondition(EmptyAddress !== (await manager.storageAddress()));
     assertEquals("123", (await storage.get()).toString());
   }
 
@@ -102,7 +128,7 @@ class SimpleStorageTest extends BaseTest {
     assertCondition(totalAmountAfterFund.eq(fundValue), totalAmountAfterFund.toString());
 
     await waitForBlocks(this.rpcProvider, 2);
-    
+
     const balanceAfterFund = await this.rpcProvider.getBalance(accountAddress);
     console.log(`before: ${balanceBeforeFund.toString()} after: ${balanceAfterFund.toString()}`);
     assertCondition(balanceBeforeFund.eq(balanceAfterFund.add(fundValue)));

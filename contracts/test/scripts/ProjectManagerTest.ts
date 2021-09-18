@@ -83,20 +83,15 @@ class ProjectManagerTest extends BaseTest {
     // Test project creation
     let timestamp = await contract.getTimestamp();
     const expectedProject = this.createProject();
-    expectedProject.deadline = timestamp.add(5);
+    // WARNING: if deadline value is too low the transaction will be rejected depending on the block interval
+    // gw_mem_pool::pool] [mem pool] fail to re-inject tx ...
+    expectedProject.deadline = timestamp.add(30);
     console.log("Submitting project...");
     let txResult = await this.submitProject(contract, expectedProject);
     assertEquals(true, txResult.success);
     assertEquals(1, (await contract.totalProjects()).toNumber(), "Total projects mismatch");
 
-    const projectTxHash = txResult.hash;
-    console.log("project tx hash:", projectTxHash);
-    console.log(await this.rpcProvider.getTransaction(projectTxHash));
-
     await waitForBlocks(this.rpcProvider, 1);
-
-    console.log("project tx hash:", projectTxHash);
-    console.log(await this.rpcProvider.getTransaction(projectTxHash));
 
     const actualProjectIndex = await contract.indexes(expectedProject.id);
     assertEquals(expectedProjectIndex.toNumber(), actualProjectIndex.toNumber(), "Project index mismatch");
@@ -185,14 +180,6 @@ class ProjectManagerTest extends BaseTest {
 
     timestamp = await contract.getTimestamp();
     console.log("Project expired", expectedProject.deadline.toNumber(), timestamp.toNumber());
-
-    console.log("balance:", await this.rpcProvider.getBalance(this.deployer.address));
-    console.log("project balance:", await this.rpcProvider.getBalance(projectAddress));
-    console.log("total projects:", await contract.totalProjects());
-
-    console.log("project tx hash:", projectTxHash);
-    console.log(await this.rpcProvider.getTransaction(projectTxHash));
-    console.log("project total funding:", await projectContract.totalFunding());
 
     projectInfo = this.toProjectInfo(await projectContract.getInfo());
     assertEquals(deployerPolyjuiceAddress.value.toLowerCase(), projectInfo.creator.toLowerCase());
