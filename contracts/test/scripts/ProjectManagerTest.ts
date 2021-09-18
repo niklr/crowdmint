@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Project, ProjectManager, ProjectManager__factory, Project__factory, Utils__factory } from "../../typechain";
 import { EmptyAddress, ProjectCategory } from "../constants";
 import { CreateProject, ProjectInfo } from "../types";
-import { assertCondition, assertEquals, getOverrideOptions, timeout } from "../utils";
+import { assertCondition, assertEquals, getOverrideOptions, timeout, waitForBlocks } from "../utils";
 import { BaseTest } from "./BaseTest";
 
 class ProjectManagerTest extends BaseTest {
@@ -93,11 +93,13 @@ class ProjectManagerTest extends BaseTest {
     console.log("project tx hash:", projectTxHash);
     console.log(await this.rpcProvider.getTransaction(projectTxHash));
 
-    // console.log("Waiting for ProjectCreated event...");
-    // await waitForEvent("ProjectCreated", contract);
+    await waitForBlocks(this.rpcProvider, 1);
+
+    console.log("project tx hash:", projectTxHash);
+    console.log(await this.rpcProvider.getTransaction(projectTxHash));
 
     const actualProjectIndex = await contract.indexes(expectedProject.id);
-    assertCondition(expectedProjectIndex.eq(actualProjectIndex), "Project index mismatch");
+    assertEquals(expectedProjectIndex.toNumber(), actualProjectIndex.toNumber(), "Project index mismatch");
 
     const projectAddress = await contract.projects(actualProjectIndex);
     assertCondition(projectAddress !== EmptyAddress, "Expected project after creation");
@@ -130,10 +132,11 @@ class ProjectManagerTest extends BaseTest {
     txResult = await this.submitTransaction(() => {
       return projectContract.contribute(this.deployer.address, {
         value: BigNumber.from(100),
+        ...getOverrideOptions(this.nervosProviderUrl),
       });
     });
     assertEquals(true, txResult.success);
-    
+
     // TODO: use project manager to contribute once other contracts can send funds
     // await contract.contribute(projectAddress, {
     //   value: BigNumber.from(100),
@@ -147,6 +150,7 @@ class ProjectManagerTest extends BaseTest {
     txResult = await this.submitTransaction(() => {
       return projectContract.contribute(this.deployer.address, {
         value: BigNumber.from(100),
+        ...getOverrideOptions(this.nervosProviderUrl),
       });
     });
     assertEquals(true, txResult.success);
@@ -156,13 +160,10 @@ class ProjectManagerTest extends BaseTest {
     assertEquals(1, projectInfo.totalContributors.toNumber());
     assertEquals(200, projectInfo.totalFunding.toNumber());
 
-    timestamp = await contract.getTimestamp();
-    console.log(expectedProject.deadline.toNumber(), timestamp.toNumber());
-
     // Payout is not possible if project has not expired
     txResult = await this.submitTransaction(() => {
       return projectContract.payout({
-        ...getOverrideOptions(this.nervosProviderUrl)
+        ...getOverrideOptions(this.nervosProviderUrl),
       });
     });
     assertEquals(false, txResult.success);
@@ -172,6 +173,9 @@ class ProjectManagerTest extends BaseTest {
     assertEquals(200, projectInfo.totalFunding.toNumber());
 
     await this.contribute(projectContract, this.accounts.admin);
+
+    timestamp = await contract.getTimestamp();
+    console.log(expectedProject.deadline.toNumber(), timestamp.toNumber());
 
     while (expectedProject.deadline > timestamp) {
       timestamp = await contract.getTimestamp();
@@ -195,7 +199,7 @@ class ProjectManagerTest extends BaseTest {
     assertEquals(200, projectInfo.totalFunding.toNumber());
 
     await projectContract.payout({
-      ...getOverrideOptions(this.nervosProviderUrl)
+      ...getOverrideOptions(this.nervosProviderUrl),
     });
 
     projectInfo = this.toProjectInfo(await projectContract.getInfo());
@@ -207,6 +211,45 @@ class ProjectManagerTest extends BaseTest {
     //   console.log(Math.floor(Date.now() / 1000), timestamp.toNumber());
     //   await timeout(3000);
     // }
+  }
+
+  public async deployProject() {
+    console.log("Deploying Project...");
+
+    const utils = await this.deployUtils();
+    const factory = new Project__factory(
+      {
+        "src/Utils.sol:Utils": utils.address,
+      },
+      this.deployer,
+    );
+    const tx = factory.getDeployTransaction(
+      ProjectCategory.KIA,
+      "title 1234",
+      "http://localhost/1234",
+      BigNumber.from(1234),
+      BigNumber.from(Math.floor(Date.now() / 1000) + 3),
+      this.deployer.address,
+    );
+    const receipt = await (
+      await this.deployer.sendTransaction({
+        ...tx,
+        ...getOverrideOptions(this.nervosProviderUrl),
+      })
+    ).wait();
+    const contract = Project__factory.connect(receipt.contractAddress, this.deployer);
+
+    console.log(`Project deployed at: ${contract.address}`);
+
+    let projectInfo = this.toProjectInfo(await contract.getInfo());
+    assertEquals(0, projectInfo.totalFunding.toNumber());
+    assertEquals(ProjectCategory.KIA, projectInfo.category);
+
+    await waitForBlocks(this.rpcProvider, 1);
+
+    projectInfo = this.toProjectInfo(await contract.getInfo());
+    assertEquals(0, projectInfo.totalFunding.toNumber());
+    assertEquals(ProjectCategory.KIA, projectInfo.category);
   }
 
   public async contribute(projectContract: Project, account: HDNode) {
@@ -236,7 +279,9 @@ class ProjectManagerTest extends BaseTest {
     };
   }
 
-  private toProjectInfo(projectInfo: [string, string, string, BigNumber, BigNumber, string, BigNumber, BigNumber, BigNumber, string]): ProjectInfo {
+  private toProjectInfo(
+    projectInfo: [string, string, string, BigNumber, BigNumber, string, BigNumber, BigNumber, BigNumber, string],
+  ): ProjectInfo {
     return {
       category: projectInfo[0],
       title: projectInfo[1],
@@ -248,14 +293,14 @@ class ProjectManagerTest extends BaseTest {
       totalContributors: projectInfo[7],
       totalFunding: projectInfo[8],
       manager: projectInfo[9],
-    }
+    };
   }
 
   private async submitProject(contract: ProjectManager, project: CreateProject) {
     return await this.submitTransaction(() => {
       return contract.create(project.id, project.category, project.title, project.url, project.goal, project.deadline, {
-        ...getOverrideOptions(this.nervosProviderUrl)
-      })
+        ...getOverrideOptions(this.nervosProviderUrl),
+      });
     });
   }
 }

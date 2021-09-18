@@ -1,7 +1,8 @@
 import { PolyjuiceWallet } from "@polyjuice-provider/ethers";
 import { BigNumber } from "ethers";
-import { SimpleStorage__factory } from "../../typechain";
-import { assertCondition, getOverrideOptions, timeout, waitForBlocks } from "../utils";
+import { SimpleManager__factory, SimpleStorage__factory } from "../../typechain";
+import { EmptyAddress } from "../constants";
+import { assertCondition, assertEquals, getOverrideOptions, timeout, waitForBlocks } from "../utils";
 import { BaseTest } from "./BaseTest";
 
 class SimpleStorageTest extends BaseTest {
@@ -25,6 +26,38 @@ class SimpleStorageTest extends BaseTest {
     console.log(`SimpleStorage deployed at: ${storage.address}`);
 
     return storage;
+  }
+
+  public async deployManagerContract() {
+    console.log("Deploying SimpleManager...");
+
+    const factory = new SimpleManager__factory(this.deployer);
+    const tx = factory.getDeployTransaction();
+    const receipt = await (
+      await this.deployer.sendTransaction({
+        ...tx,
+        ...getOverrideOptions(this.nervosProviderUrl),
+      })
+    ).wait();
+    const storage = SimpleManager__factory.connect(receipt.contractAddress, this.deployer);
+
+    console.log(`SimpleManager deployed at: ${storage.address}`);
+
+    return storage;
+  }
+
+  public async deployManager() {
+    const manager = await this.deployManagerContract();
+    assertCondition(EmptyAddress === await manager.storageAddress());
+    await manager.create();
+    assertCondition(EmptyAddress !== await manager.storageAddress());
+
+    const storage = await this.getSimpleStorageContract(await manager.storageAddress(), this.deployer.privateKey);
+    assertEquals("123", (await storage.get()).toString());
+
+    await waitForBlocks(this.rpcProvider, 1);
+
+    assertEquals("123", (await storage.get()).toString());
   }
 
   public async getSimpleStorageContract(address: string, pk: string) {
@@ -132,8 +165,6 @@ class SimpleStorageTest extends BaseTest {
 (async () => {
   const test = new SimpleStorageTest();
   await test.initAsync();
-  await test.deploy();
-  await test.refund();
-  await test.run();
+  await test.deployManager();
   process.exit(0);
 })();
