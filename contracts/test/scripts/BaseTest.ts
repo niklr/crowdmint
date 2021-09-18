@@ -5,7 +5,7 @@ import { config as dotenvConfig } from "dotenv";
 import { ContractTransaction } from "ethers";
 import { resolve } from "path";
 import { getAccounts } from "../utils";
-import { Accounts } from "../types";
+import { Accounts, TransactionResult } from "../types";
 import Web3 from "web3";
 
 dotenvConfig({ path: resolve(__dirname, "../../.env") });
@@ -66,13 +66,19 @@ export abstract class BaseTest {
     await this.godwoker.initSync();
   }
 
-  public async submitTransaction(callbackFn: () => Promise<ContractTransaction>): Promise<boolean> {
+  public async submitTransaction(callbackFn: () => Promise<ContractTransaction>): Promise<TransactionResult> {
     const contractTransaction = await callbackFn();
     const tx = await this.rpcProvider.getTransaction(contractTransaction.hash);
     if (!tx) {
-      return false;
+      return {
+        hash: contractTransaction.hash,
+        success: false
+      };
     }
-    await tx.wait();
-    return true;
+    await tx.wait(1);
+    return {
+      hash: contractTransaction.hash,
+      success: true
+    };
   }
 }

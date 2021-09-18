@@ -28,6 +28,11 @@ declare module "mocha" {
   }
 }
 
+export interface TransactionResult {
+  hash: string;
+  success: boolean;
+}
+
 export interface CreateProject {
   id: string;
   category: string;
