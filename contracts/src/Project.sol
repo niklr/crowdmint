@@ -129,6 +129,9 @@ contract Project {
         return (c.contributor, c.amount);
     }
 
+    /**
+     * Updates the info of the project.
+     */
     function setInfo(
         string memory _category,
         string memory _title,

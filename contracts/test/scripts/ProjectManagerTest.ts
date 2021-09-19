@@ -179,7 +179,7 @@ class ProjectManagerTest extends BaseTest {
 
     projectInfo = this.toProjectInfo(await projectContract.getInfo());
     // By now the project should be mined (ProjectCreated event received)
-    // -> resets the state of unmined transactions such as contributions
+    // -> may reset the state of unmined transactions such as contributions
     assertEquals(0, projectInfo.totalFunding.toNumber());
 
     console.log("Manager address, Project address", contract.address, projectAddress);
@@ -234,8 +234,8 @@ class ProjectManagerTest extends BaseTest {
   public async contribute(managerAddress: string, projectAddress: string) {
     const account = this.accounts.admin;
     //const accountPolyjuiceAddress = await this.godwoker.getShortAddressByAllTypeEthAddress(account.address);
-    const accountBalance = await this.rpcProvider.getBalance(account.address);
-    if (accountBalance.lte(0)) {
+    const accountBalanceBefore = await this.rpcProvider.getBalance(account.address);
+    if (accountBalanceBefore.lte(0)) {
       return;
     }
 
@@ -243,6 +243,8 @@ class ProjectManagerTest extends BaseTest {
 
     const manager = await this.getProjectManagerContract(managerAddress, account.privateKey);
     const project = await this.getProjectContract(projectAddress, account.privateKey);
+
+    const projectBalanceBefore = await this.rpcProvider.getBalance(project.address);
 
     assertEquals(projectAddress, await manager.projects(1));
     let timestamp = await manager.getTimestamp();
@@ -290,6 +292,13 @@ class ProjectManagerTest extends BaseTest {
 
     projectInfo = this.toProjectInfo(await project.getInfo());
     assertEquals(initialFunding.add(contribution).toString(), projectInfo.totalFunding.toString());
+
+    const projectBalanceAfter = await this.rpcProvider.getBalance(project.address);
+    assertEquals(projectBalanceBefore.add(contribution).toString(), projectBalanceAfter.toString());
+    assertEquals(projectInfo.totalFunding.toString(), projectBalanceAfter.toString());
+
+    const accountBalanceAfter = await this.rpcProvider.getBalance(account.address);
+    assertEquals(accountBalanceBefore.sub(contribution).toString(), accountBalanceAfter.toString());
   }
 
   private createProject(
@@ -340,6 +349,6 @@ class ProjectManagerTest extends BaseTest {
   const test = new ProjectManagerTest();
   await test.initAsync();
   //await test.deploy();
-  await test.contribute("0xde42A4e4b374453e1AABF41AaE34A351e06a4630", "0xA6060811ab1B2964A8FE0a3DB550bF38B19C6097");
+  await test.contribute("0x5B635aA13AE9c1907517087FD7C0a845F1aDb582", "0x817b7D90D74539D359aD68Cc14E1129802aF1615");
   process.exit(0);
 })();
