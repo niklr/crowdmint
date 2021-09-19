@@ -161,13 +161,13 @@ class ProjectManagerTest extends BaseTest {
         ...getOverrideOptions(this.nervosProviderUrl),
       });
     });
+    const failedPayoutTxHash = txResult.hash;
     assertEquals(false, txResult.success);
+    assertEquals(null, await this.rpcProvider.getTransaction(failedPayoutTxHash));
 
     projectInfo = this.toProjectInfo(await projectContract.getInfo());
     assertEquals(deployerPolyjuiceAddress.value.toLowerCase(), projectInfo.creator.toLowerCase());
     assertEquals(200, projectInfo.totalFunding.toNumber());
-
-    await this.contribute(projectContract, this.accounts.admin);
 
     timestamp = await contract.getTimestamp();
     console.log(expectedProject.deadline.toNumber(), timestamp.toNumber());
@@ -181,15 +181,11 @@ class ProjectManagerTest extends BaseTest {
     timestamp = await contract.getTimestamp();
     console.log("Project expired", expectedProject.deadline.toNumber(), timestamp.toNumber());
 
-    projectInfo = this.toProjectInfo(await projectContract.getInfo());
-    assertEquals(deployerPolyjuiceAddress.value.toLowerCase(), projectInfo.creator.toLowerCase());
-    assertEquals(200, projectInfo.totalFunding.toNumber());
-
-    await projectContract.payout({
-      ...getOverrideOptions(this.nervosProviderUrl),
-    });
+    assertEquals(null, await this.rpcProvider.getTransaction(failedPayoutTxHash));
 
     projectInfo = this.toProjectInfo(await projectContract.getInfo());
+    // By now the project should be mined (ProjectCreated event received) 
+    // -> resets the state of unmined transactions such as contributions
     assertEquals(0, projectInfo.totalFunding.toNumber());
 
     // Test events

@@ -6,17 +6,30 @@ import { Utils } from "./Utils.sol";
 
 contract SimpleStorage {
     uint256 storedData;
+    uint256 public refTimestamp;
+    string public category;
     uint256 public totalAmount;
     address payable funder;
 
-    constructor() payable {
-        require(Utils.compareStrings("test123", "test123"), "test");
-        storedData = 123;
+    modifier onlyExpired() {
+        require(refTimestamp <= block.timestamp, "Only expired.");
+        _;
     }
 
-    function set(uint256 x) public payable {
-        require(Utils.compareStrings("test", "test123"), "test");
+    constructor() payable {
+        storedData = 123;
+        category = "test1";
+    }
+
+    function set(uint256 x, uint256 _refTimestamp) public payable {
+        require(_refTimestamp > block.timestamp, "Reference timestamp must be greater than current timestamp.");
         storedData = x;
+        refTimestamp = _refTimestamp;
+    }
+
+    function setCategory(string memory _category) public onlyExpired {
+        require(Utils.compareStrings(_category, "test1") || Utils.compareStrings(_category, "test2"), "test");
+        category = _category;
     }
 
     function get() public view returns (uint256) {

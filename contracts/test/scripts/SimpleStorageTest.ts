@@ -2,7 +2,7 @@ import { PolyjuiceWallet } from "@polyjuice-provider/ethers";
 import { BigNumber } from "ethers";
 import { SimpleManager__factory, SimpleStorage__factory, Utils__factory } from "../../typechain";
 import { EmptyAddress } from "../constants";
-import { assertCondition, assertEquals, getOverrideOptions, waitForBlocks } from "../utils";
+import { assertCondition, assertEquals, getOverrideOptions, timeout, waitForBlocks } from "../utils";
 import { BaseTest } from "./BaseTest";
 
 class SimpleStorageTest extends BaseTest {
@@ -93,24 +93,61 @@ class SimpleStorageTest extends BaseTest {
 
   public async deploy() {
     const storage = await this.deploySimpleStorageContract();
-    const deployerPolyjuiceAddress = await this.godwoker.getShortAddressByAllTypeEthAddress(this.deployer.address);
-    const actualValue1 = await storage.get();
-    assertCondition(BigNumber.from("123").eq(actualValue1), actualValue1.toString());
-    await storage.set(321, {
-      ...getOverrideOptions(this.nervosProviderUrl),
-    });
-
-    const actualValue2 = await storage.get();
-    assertCondition(BigNumber.from("321").eq(actualValue2), actualValue2.toString());
-    await storage.set(123);
-
-    const timestamp = await storage.getTimestamp();
+    let timestamp = await storage.getTimestamp();
     console.log("getTimestamp", timestamp.toNumber());
+
+    assertEquals("123", (await storage.get()).toString());
+    assertEquals("test1", await storage.category());
+
+    const refTimestamp = timestamp.add(30);
+    await storage.set(321, refTimestamp);
+    assertEquals("321", (await storage.get()).toString());
+    assertEquals(refTimestamp.toString(), (await storage.refTimestamp()).toString());
+
+    await waitForBlocks(this.rpcProvider, 1);
+
+    assertEquals("321", (await storage.get()).toString());
+
+    const txResult = await this.submitTransaction(() => {
+      return storage.setCategory("test2", {
+        ...getOverrideOptions(this.nervosProviderUrl)
+      });
+    });
+    assertEquals(false, txResult.success);
+    assertEquals("test1", await storage.category());
+
+    let tx = await this.rpcProvider.getTransaction(txResult.hash);
+    console.log(txResult.hash, tx);
+
+    console.log("Waiting for timestamp to expire...");
+    timestamp = await storage.getTimestamp();
+    while (refTimestamp > timestamp) {
+      timestamp = await storage.getTimestamp();
+      //console.log("Waiting for timestamp to expire...", refTimestamp.toNumber(), timestamp.toNumber());
+      await timeout(2000);
+    }
+
+    timestamp = await storage.getTimestamp();
+    console.log("Timestamp expired", refTimestamp.toNumber(), timestamp.toNumber());
+
+    tx = await this.rpcProvider.getTransaction(txResult.hash);
+    console.log(txResult.hash, tx);
+
+    assertEquals("test1", await storage.category());
+
+    // Reset
+    await storage.set(321, timestamp.add(30));
+    assertEquals("321", (await storage.get()).toString());
+    await storage.setCategory("test1", {
+      ...getOverrideOptions(this.nervosProviderUrl)
+    });
+    assertEquals("test1", await storage.category());
   }
 
   public async fund() {
     const storage = await this.deploySimpleStorageContract();
     const storage2 = await this.getSimpleStorageContract(storage.address, this.accounts.admin.privateKey);
+    const deployerPolyjuiceAddress = await this.godwoker.getShortAddressByAllTypeEthAddress(this.deployer.address);
     const accountAddress = this.accounts.admin.address;
 
     const balanceBeforeFund = await this.rpcProvider.getBalance(accountAddress);
@@ -191,6 +228,6 @@ class SimpleStorageTest extends BaseTest {
 (async () => {
   const test = new SimpleStorageTest();
   await test.initAsync();
-  await test.deployManager();
+  await test.deploy();
   process.exit(0);
 })();
