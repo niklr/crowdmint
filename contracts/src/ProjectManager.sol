@@ -16,6 +16,11 @@ contract ProjectManager {
 
     event ProjectCreated(uint256 indexed index, string category, string title, address addr, address creator);
 
+    modifier onlyOwner() {
+        require(owner == msg.sender, "Only owner.");
+        _;
+    }
+
     constructor() {
         owner = msg.sender;
         totalProjects = 0;
@@ -64,11 +69,28 @@ contract ProjectManager {
         Project project = Project(_projectAddress);
         require(project.manager() == address(this), "Invalid project.");
 
-        project.contribute{value: msg.value}(msg.sender);
+        project.contribute{ value: msg.value }(msg.sender);
     }
 
     /**
-     * Prevent ETH from being sent to this contract
+     * Updates the info of the specified project.
+     */
+    function setInfo(
+        address payable _projectAddress,
+        string memory _category,
+        string memory _title,
+        string memory _url,
+        uint256 _goal,
+        uint256 _deadline
+    ) public onlyOwner {
+        Project project = Project(_projectAddress);
+        require(project.manager() == address(this), "Invalid project.");
+
+        project.setInfo(_category, _title, _url, _goal, _deadline);
+    }
+
+    /**
+     * Prevent accidental transactions
      */
     fallback() external payable {
         revert();

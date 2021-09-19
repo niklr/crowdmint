@@ -1,6 +1,6 @@
 import { TransactionRequest } from "@ethersproject/providers";
 import { PolyjuiceJsonRpcProvider } from "@polyjuice-provider/ethers";
-import { utils } from 'ethers';
+import { BaseContract, utils } from 'ethers';
 import { Accounts } from "./types";
 
 export function getOverrideOptions(nervosProviderUrl: string | undefined = undefined): TransactionRequest {
@@ -54,6 +54,15 @@ export function getAccounts(mnemonic: string): Accounts {
     bob: hdNode.derivePath(`m/44'/60'/0'/0/4`),
     charlie: hdNode.derivePath(`m/44'/60'/0'/0/5`)
   }
+}
+
+export async function waitForEvent(eventName: string, contract: BaseContract): Promise<void> {
+  console.log("Waiting for event:", eventName);
+  return new Promise((resolve) => {
+    contract.on(eventName, () => {
+      resolve();
+    });
+  });
 }
 
 export async function waitForBlocks(provider: PolyjuiceJsonRpcProvider, amount: number): Promise<void> {

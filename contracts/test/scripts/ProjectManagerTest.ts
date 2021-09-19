@@ -1,11 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { HDNode } from "@ethersproject/hdnode";
 import { PolyjuiceWallet } from "@polyjuice-provider/ethers";
 import { v4 as uuidv4 } from "uuid";
-import { Project, ProjectManager, ProjectManager__factory, Project__factory, Utils__factory } from "../../typechain";
+import { ProjectManager, ProjectManager__factory, Project__factory, Utils__factory } from "../../typechain";
 import { EmptyAddress, ProjectCategory } from "../constants";
 import { CreateProject, ProjectInfo } from "../types";
-import { assertCondition, assertEquals, getOverrideOptions, timeout, waitForBlocks } from "../utils";
+import { assertCondition, assertEquals, getOverrideOptions, timeout, waitForBlocks, waitForEvent } from "../utils";
 import { BaseTest } from "./BaseTest";
 
 class ProjectManagerTest extends BaseTest {
@@ -125,17 +124,12 @@ class ProjectManagerTest extends BaseTest {
     assertEquals(0, projectInfo.totalFunding.toNumber());
 
     txResult = await this.submitTransaction(() => {
-      return projectContract.contribute(this.deployer.address, {
+      return contract.contribute(projectAddress, {
         value: BigNumber.from(100),
         ...getOverrideOptions(this.nervosProviderUrl),
       });
     });
     assertEquals(true, txResult.success);
-
-    // TODO: use project manager to contribute once other contracts can send funds
-    // await contract.contribute(projectAddress, {
-    //   value: BigNumber.from(100),
-    // });
 
     projectInfo = this.toProjectInfo(await projectContract.getInfo());
     assertEquals(1, projectInfo.totalContributions.toNumber());
@@ -143,7 +137,7 @@ class ProjectManagerTest extends BaseTest {
     assertEquals(100, projectInfo.totalFunding.toNumber());
 
     txResult = await this.submitTransaction(() => {
-      return projectContract.contribute(this.deployer.address, {
+      return contract.contribute(projectAddress, {
         value: BigNumber.from(100),
         ...getOverrideOptions(this.nervosProviderUrl),
       });
@@ -184,9 +178,11 @@ class ProjectManagerTest extends BaseTest {
     assertEquals(null, await this.rpcProvider.getTransaction(failedPayoutTxHash));
 
     projectInfo = this.toProjectInfo(await projectContract.getInfo());
-    // By now the project should be mined (ProjectCreated event received) 
+    // By now the project should be mined (ProjectCreated event received)
     // -> resets the state of unmined transactions such as contributions
     assertEquals(0, projectInfo.totalFunding.toNumber());
+
+    console.log("Manager address, Project address", contract.address, projectAddress);
 
     // Test events
     // while (true) {
@@ -235,13 +231,65 @@ class ProjectManagerTest extends BaseTest {
     assertEquals(ProjectCategory.KIA, projectInfo.category);
   }
 
-  public async contribute(projectContract: Project, account: HDNode) {
-    const adminBalance = await this.rpcProvider.getBalance(account.address);
-    if (adminBalance.lte(0)) {
+  public async contribute(managerAddress: string, projectAddress: string) {
+    const account = this.accounts.admin;
+    //const accountPolyjuiceAddress = await this.godwoker.getShortAddressByAllTypeEthAddress(account.address);
+    const accountBalance = await this.rpcProvider.getBalance(account.address);
+    if (accountBalance.lte(0)) {
       return;
     }
 
     console.log("Contributing as:", account.address);
+
+    const manager = await this.getProjectManagerContract(managerAddress, account.privateKey);
+    const project = await this.getProjectContract(projectAddress, account.privateKey);
+
+    assertEquals(projectAddress, await manager.projects(1));
+    let timestamp = await manager.getTimestamp();
+    let projectInfo = this.toProjectInfo(await project.getInfo());
+    if (timestamp.gt(projectInfo.deadline)) {
+      const newDeadlne = timestamp.add(86400);
+      project.on("InfoUpdated", (addr: string, title: string, url: string) => {
+        console.log("InfoUpdated", addr, title, url);
+      });
+      const managerAsOwner = await this.getProjectManagerContract(managerAddress, this.deployer.privateKey);
+      await managerAsOwner.setInfo(
+        projectAddress,
+        projectInfo.category,
+        projectInfo.title,
+        projectInfo.url,
+        projectInfo.goal,
+        newDeadlne,
+        {
+          ...getOverrideOptions(this.nervosProviderUrl),
+        },
+      );
+      await waitForEvent("InfoUpdated", project);
+    }
+    timestamp = await manager.getTimestamp();
+    projectInfo = this.toProjectInfo(await project.getInfo());
+    assertCondition(timestamp.lt(projectInfo.deadline), "Project deadline");
+
+    const initialFunding = await project.totalFunding();
+    console.log("Project total funding", initialFunding);
+
+    project.on("ContributionReceived", (addr: string, contributor: string, amount: BigNumber) => {
+      console.log("ContributionReceived", addr, contributor, amount);
+    });
+
+    const contribution = BigNumber.from(300);
+    const txResult = await this.submitTransaction(() => {
+      return manager.contribute(project.address, {
+        value: contribution,
+        ...getOverrideOptions(this.nervosProviderUrl),
+      });
+    });
+    assertEquals(true, txResult.success);
+
+    await waitForEvent("ContributionReceived", project);
+
+    projectInfo = this.toProjectInfo(await project.getInfo());
+    assertEquals(initialFunding.add(contribution).toString(), projectInfo.totalFunding.toString());
   }
 
   private createProject(
@@ -291,6 +339,7 @@ class ProjectManagerTest extends BaseTest {
 (async () => {
   const test = new ProjectManagerTest();
   await test.initAsync();
-  await test.deploy();
+  //await test.deploy();
+  await test.contribute("0xde42A4e4b374453e1AABF41AaE34A351e06a4630", "0xA6060811ab1B2964A8FE0a3DB550bF38B19C6097");
   process.exit(0);
 })();

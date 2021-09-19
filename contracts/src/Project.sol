@@ -37,7 +37,10 @@ contract Project {
 
     ProjectInfo public info;
 
-    event ContributionReceived(address project, address contributor, uint256 amount);
+    event InfoUpdated(address indexed project, string title, string url);
+    event ContributionReceived(address indexed project, address contributor, uint256 amount);
+    event RefundRequested(address indexed project, address requestor, uint256 amount);
+    event PayoutRequested(address indexed project, address requestor, uint256 amount);
 
     modifier onlyCreator() {
         require(info.creator == msg.sender, "Only creator.");
@@ -46,6 +49,11 @@ contract Project {
 
     modifier onlyManager() {
         require(manager == msg.sender, "Only manager.");
+        _;
+    }
+
+    modifier onlyManagerOrCreator() {
+        require(manager == msg.sender || info.creator == msg.sender, "Only manager or creator.");
         _;
     }
 
@@ -121,11 +129,27 @@ contract Project {
         return (c.contributor, c.amount);
     }
 
+    function setInfo(
+        string memory _category,
+        string memory _title,
+        string memory _url,
+        uint256 _goal,
+        uint256 _deadline
+    ) public onlyManagerOrCreator {
+        info.title = _title;
+        info.url = _url;
+        if (manager == msg.sender) {
+            info.category = _category;
+            info.goal = _goal;
+            info.deadline = _deadline;
+        }
+        emit InfoUpdated(address(this), info.title, info.url);
+    }
+
     /**
      * Contributes the provided amount for the specified contributor.
      */
-    function contribute(address payable _contributor) public payable {
-        // TODO: use onlyManager modifier once other contracts can send funds
+    function contribute(address payable _contributor) public payable onlyManager {
         require(msg.value > 0, "Contribution must be greater than 0.");
         require(info.deadline >= block.timestamp, "Project has expired.");
 
@@ -163,6 +187,7 @@ contract Project {
             contributors[msg.sender] = 0;
             (bool success, ) = msg.sender.call{ value: amount }("");
             require(success, "Failed to send amount.");
+            emit RefundRequested(address(this), msg.sender, amount);
         }
     }
 
@@ -184,11 +209,12 @@ contract Project {
             //bool success = info.creator.send(amount);
             (bool success, ) = info.creator.call{ value: amount }("");
             require(success, "Failed to send amount.");
+            emit PayoutRequested(address(this), msg.sender, amount);
         }
     }
 
     /**
-     * Prevent ETH from being sent to this contract
+     * Prevent accidental transactions
      */
     fallback() external payable {
         revert();
