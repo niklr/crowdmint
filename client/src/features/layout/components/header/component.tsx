@@ -22,9 +22,9 @@ export const Header: React.FC = (props: any) => {
     <Root>
       <AppBar position="static">
         <Toolbar>
-          <img src={"./logo_white.png"} alt="logo" width="30" />
+          {/* <img src={"./logo_white.png"} alt="logo" width="30" /> */}
           <TitleTypography variant="h6">
-            <Link color="inherit" component={RouterLink} to="/">
+            <Link color="inherit" component={RouterLink} to="/" underline="none">
               {CommonConstants.APP_NAME}
             </Link>
           </TitleTypography>

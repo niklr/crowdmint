@@ -14,8 +14,8 @@ export const Hero = () => {
     <HeroContent>
       <Container maxWidth="sm">
         <Typography variant="h5" align="center" color="textSecondary" paragraph>
-          De-centralized crowdfunding and investing on <i>Nervos Network</i>.<br></br>
-          HYPERCROWD is an blockchain based solution leveraging NFT's to crowdfund projects.
+          De-centralized crowdfunding on <i>Nervos Network</i>.<br></br>
+          MINTCROWD is an blockchain based solution leveraging NFT's to crowdfund projects.
         </Typography>
       </Container>
     </HeroContent>
