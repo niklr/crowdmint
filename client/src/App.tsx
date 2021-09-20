@@ -1,6 +1,7 @@
 import { Web3ReactProvider } from '@web3-react/core'
 import { ethers } from 'ethers';
 import React from 'react';
+import { SnackbarProvider } from 'notistack';
 import { Main } from './features/main/components/main';
 
 function getLibrary(provider: ethers.providers.ExternalProvider | ethers.providers.JsonRpcFetchFunc, connector: any) {
@@ -9,9 +10,11 @@ function getLibrary(provider: ethers.providers.ExternalProvider | ethers.provide
 
 const App: React.FC = () => {
   return (
-    <Web3ReactProvider getLibrary={getLibrary}>
-      <Main />
-    </Web3ReactProvider>
+    <SnackbarProvider maxSnack={3}>
+      <Web3ReactProvider getLibrary={getLibrary}>
+        <Main />
+      </Web3ReactProvider>
+    </SnackbarProvider>
   );
 }
 

@@ -1,19 +1,16 @@
 
 import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItemText from '@mui/material/ListItemText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Dialog from '@mui/material/Dialog';
+import { useEffect } from 'react';
+import { useSnackbar } from 'notistack';
+import { Avatar, Dialog, DialogTitle, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { styled } from '@mui/system';
 import { useWeb3React } from '@web3-react/core';
 import { InjectedConnector } from '@web3-react/injected-connector';
-import MetaMaskSVG from './img/metamask.svg';
 import { WalletType } from '../../../../util/types';
 import { getLogger } from '../../../../util/logger';
+import { FormatUtil } from '../../../../util/format.util';
+import MetaMaskSVG from './img/metamask.svg';
 
 const Icon = styled('span')(`
   background-position: 50% 50%;
@@ -39,10 +36,11 @@ export const LoginDialog: React.FC<Props> = (props: Props) => {
   const { onClose, open } = props;
 
   const context = useWeb3React();
+  const { enqueueSnackbar } = useSnackbar();
   const injected = new InjectedConnector({});
 
   if (context.error) {
-    logger.error('Error in web3 context', context.error)
+    enqueueSnackbar(FormatUtil.formatSnackbarMessage(context.error));
     onClose();
   }
 
@@ -53,21 +51,27 @@ export const LoginDialog: React.FC<Props> = (props: Props) => {
   };
 
   const handleClick = (type: WalletType) => {
-    console.log(type, context.connector);
     switch (type) {
       case WalletType.MetaMask:
         if (!isMetamaskEnabled) {
-          // TODO: show snackbar
-          console.log('Metamask is not enabled');
+          enqueueSnackbar(FormatUtil.formatSnackbarMessage('Metamask is not enabled'));
+          break;
         }
         context.activate(injected, (error) => {
-          console.log(error);
+          enqueueSnackbar(FormatUtil.formatSnackbarMessage(error));
         });
         break;
       default:
         break;
     }
   };
+
+  useEffect(() => {
+    logger.info('Account address:', context.account)();
+    if (context.account) {
+      onClose()
+    }
+  }, [context, onClose])
 
   return (
     <Dialog onClose={handleClose} open={open}>

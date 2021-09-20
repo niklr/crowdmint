@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { AppBar, Button, Link, styled, Toolbar, Typography } from '@mui/material';
+import { useWeb3React } from '@web3-react/core';
 import { CommonConstants } from '../../../../common/constants';
 import { LoginDialog } from '../../../main/components/login';
 
@@ -18,15 +19,19 @@ const TitleTypography = styled(Typography)(
 );
 
 export const Header: React.FC = (props: any) => {
-  const [connected, setConnected] = React.useState(false);
-  const [open, setOpen] = React.useState(true);
+  const context = useWeb3React();
+  const [loginOpen, setLoginOpen] = React.useState(false);
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleClickLogin = () => {
+    setLoginOpen(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleClickLogout = () => {
+    context.deactivate();
+  };
+
+  const handleLoginClose = () => {
+    setLoginOpen(false);
   };
 
   return (
@@ -39,17 +44,16 @@ export const Header: React.FC = (props: any) => {
               {CommonConstants.APP_NAME}
             </Link>
           </TitleTypography>
-          {connected ? (
-            <Button color="inherit">
+          {context.active ? (
+            <Button color="inherit" onClick={handleClickLogout}>
               Logout
             </Button>
           ) : (
-            <Button color="inherit" onClick={handleClickOpen}>
+            <Button color="inherit" onClick={handleClickLogin}>
               Login
             </Button>
           )}
-          <LoginDialog open={open}
-            onClose={handleClose}></LoginDialog>
+          <LoginDialog open={loginOpen} onClose={handleLoginClose}></LoginDialog>
         </Toolbar>
       </AppBar>
     </Root>
