@@ -9,6 +9,7 @@ import { Footer } from '../../../layout/components/footer';
 import { Header } from '../../../layout/components/header';
 import { MainScroll } from '../../../layout/components/main-scroll';
 import { MainWrapper } from '../../../layout/components/main-wrapper';
+import { ProjectList } from '../../../project/components/list';
 
 export const Main: React.FC = (props: any) => {
   const context = useConnectedWeb3Context();
@@ -37,6 +38,7 @@ export const Main: React.FC = (props: any) => {
               </Route>
               <Route path="/">
                 <Hero></Hero>
+                <ProjectList></ProjectList>
               </Route>
             </Switch>
           )}
