@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { AppBar, Button, Link, styled, Toolbar, Typography } from '@mui/material';
-import { useWeb3React } from '@web3-react/core';
 import { CommonConstants } from '../../../../common/constants';
 import { LoginDialog } from '../../../main/components/login';
+import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
 
 const Root = styled('div')(
   ({ theme }) => `
@@ -19,7 +19,7 @@ const TitleTypography = styled(Typography)(
 );
 
 export const Header: React.FC = (props: any) => {
-  const context = useWeb3React();
+  const context = useConnectedWeb3Context();
   const [loginOpen, setLoginOpen] = React.useState(false);
 
   const handleClickLogin = () => {
@@ -27,7 +27,7 @@ export const Header: React.FC = (props: any) => {
   };
 
   const handleClickLogout = () => {
-    context.deactivate();
+    context.logout();
   };
 
   const handleLoginClose = () => {
@@ -44,7 +44,7 @@ export const Header: React.FC = (props: any) => {
               {CommonConstants.APP_NAME}
             </Link>
           </TitleTypography>
-          {context.active ? (
+          {context.account ? (
             <Button color="inherit" onClick={handleClickLogout}>
               Logout
             </Button>

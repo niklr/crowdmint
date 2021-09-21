@@ -8,23 +8,21 @@ import { MainWrapper } from '../../../layout/components/main-wrapper';
 
 export const Main: React.FC = (props: any) => {
   return (
-    <>
-      <MainWrapper>
-        <HashRouter>
-          <Header />
-          <MainScroll>
-            <Switch>
-              <Route path="/test">
-                <Test />
-              </Route>
-              <Route path="/">
-                <Hero></Hero>
-              </Route>
-            </Switch>
-          </MainScroll>
-          <Footer />
-        </HashRouter>
-      </MainWrapper>
-    </>
+    <MainWrapper>
+      <HashRouter>
+        <Header />
+        <MainScroll>
+          <Switch>
+            <Route path="/test">
+              <Test />
+            </Route>
+            <Route path="/">
+              <Hero></Hero>
+            </Route>
+          </Switch>
+        </MainScroll>
+        <Footer />
+      </HashRouter>
+    </MainWrapper>
   )
 }

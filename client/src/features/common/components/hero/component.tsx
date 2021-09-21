@@ -15,7 +15,7 @@ export const Hero = () => {
       <Container maxWidth="sm">
         <Typography variant="h5" align="center" color="textSecondary" paragraph>
           De-centralized crowdfunding on <i>Nervos Network</i>.<br></br>
-          MINTCROWD is an blockchain based solution leveraging NFT's to crowdfund projects.
+          CROWDMINT is an blockchain based solution leveraging NFT's to crowdfund projects.
         </Typography>
       </Container>
     </HeroContent>

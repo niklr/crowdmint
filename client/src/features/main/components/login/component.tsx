@@ -5,8 +5,7 @@ import { useSnackbar } from 'notistack';
 import { Avatar, Dialog, DialogTitle, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { styled } from '@mui/system';
-import { useWeb3React } from '@web3-react/core';
-import { InjectedConnector } from '@web3-react/injected-connector';
+import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
 import { WalletType } from '../../../../util/types';
 import { getLogger } from '../../../../util/logger';
 import { FormatUtil } from '../../../../util/format.util';
@@ -35,34 +34,18 @@ interface Props {
 export const LoginDialog: React.FC<Props> = (props: Props) => {
   const { onClose, open } = props;
 
-  const context = useWeb3React();
+  const context = useConnectedWeb3Context();
   const { enqueueSnackbar } = useSnackbar();
-  const injected = new InjectedConnector({});
-
-  if (context.error) {
-    enqueueSnackbar(FormatUtil.formatSnackbarMessage(context.error));
-    onClose();
-  }
-
-  const isMetamaskEnabled = 'ethereum' in window || 'web3' in window;
 
   const handleClose = () => {
     onClose();
   };
 
-  const handleClick = (type: WalletType) => {
-    switch (type) {
-      case WalletType.MetaMask:
-        if (!isMetamaskEnabled) {
-          enqueueSnackbar(FormatUtil.formatSnackbarMessage('Metamask is not enabled'));
-          break;
-        }
-        context.activate(injected, (error) => {
-          enqueueSnackbar(FormatUtil.formatSnackbarMessage(error));
-        });
-        break;
-      default:
-        break;
+  const handleClickAsync = async (type: WalletType) => {
+    try {
+      await context.login(type);
+    } catch (error) {
+      enqueueSnackbar(FormatUtil.formatSnackbarMessage(error));
     }
   };
 
@@ -77,7 +60,7 @@ export const LoginDialog: React.FC<Props> = (props: Props) => {
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle>Connect Wallet</DialogTitle>
       <List sx={{ pt: 0 }}>
-        <ListItem autoFocus button onClick={() => handleClick(WalletType.MetaMask)}>
+        <ListItem autoFocus button onClick={() => handleClickAsync(WalletType.MetaMask)}>
           <ListItemAvatar>
             <Avatar sx={{ bgcolor: grey[200] }}>
               <IconMetaMask />
