@@ -37,6 +37,8 @@ export const LoginDialog: React.FC<Props> = (props: Props) => {
   const context = useConnectedWeb3Context();
   const { enqueueSnackbar } = useSnackbar();
 
+  const { account } = context;
+
   const handleClose = () => {
     onClose();
   };
@@ -50,11 +52,11 @@ export const LoginDialog: React.FC<Props> = (props: Props) => {
   };
 
   useEffect(() => {
-    logger.info('Account address:', context.account)();
-    if (context.account) {
-      onClose()
+    if (account && open) {
+      logger.info('Account address:', account)();
+      onClose();
     }
-  }, [context, onClose])
+  }, [account, open, onClose])
 
   return (
     <Dialog onClose={handleClose} open={open}>

@@ -6,7 +6,7 @@ import { Main } from './features/main/components/main';
 import { ConnectedWeb3 } from './contexts/connectedWeb3';
 
 function getLibrary(provider: ethers.providers.ExternalProvider | ethers.providers.JsonRpcFetchFunc, connector: any) {
-  return new ethers.providers.Web3Provider(provider) // this will vary according to whether you use e.g. ethers or web3.js
+  return new ethers.providers.Web3Provider(provider)
 }
 
 const App: React.FC = () => {

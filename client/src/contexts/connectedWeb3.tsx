@@ -9,6 +9,7 @@ const logger = getLogger();
 
 export interface ConnectedWeb3Context {
   account: Maybe<string>,
+  chainId: Maybe<number>,
   login: (type: WalletType) => Promise<void>,
   logout: () => void
 }
@@ -34,7 +35,7 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   const [connection, setConnection] = useState<Maybe<ConnectedWeb3Context>>(null);
   const context = useWeb3React();
 
-  const { activate, deactivate } = context;
+  const { activate, deactivate, account, chainId } = context;
 
   const login = useCallback(async (type: WalletType) => {
     switch (type) {
@@ -53,7 +54,6 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
       default:
         break;
     }
-    window.location.reload();
   }, [activate]);
 
   const logout = useCallback(() => {
@@ -65,24 +65,24 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     const connector = localStorage.getItem(CommonConstants.WALLET_CONNECTOR_STORAGE_KEY);
     const connectWalletAsync = async () => {
-      let account = undefined;
-      if (connector) {
+      if (!account && connector) {
         const injected = new InjectedConnector({});
-        account = await injected.getAccount();
-        logger.info('Account address:', account)();
+        logger.info('Injected account address:', await injected.getAccount())();
         await activate(injected, (error) => {
           logger.info(error)();
           localStorage.removeItem(CommonConstants.WALLET_CONNECTOR_STORAGE_KEY);
         });
       }
+      logger.info('Account:', account, 'ChainId:', chainId)();
       setConnection({
         account,
+        chainId,
         login,
         logout
       });
     }
     connectWalletAsync();
-  }, [activate, deactivate, login, logout]);
+  }, [activate, deactivate, login, logout, account, chainId]);
 
   if (!connection) {
     return null;
