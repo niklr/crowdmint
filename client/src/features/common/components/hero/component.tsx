@@ -5,7 +5,7 @@ import { Container, styled, Typography } from '@mui/material';
 const HeroContent = styled('div')(
   ({ theme }) => `
   background-color: ${theme.palette.background.paper};
-  padding: ${theme.spacing(1, 0, 1)};
+  padding: ${theme.spacing(1, 0, 0)};
 `,
 );
 

@@ -8,15 +8,13 @@ import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
 const Root = styled('div')(
   ({ theme }) => `
   flex-grow: 1;
-`,
-);
+`);
 
 const TitleTypography = styled(Typography)(
   ({ theme }) => `
   flex-grow: 1;
   margin-left: 10px !important;
-`,
-);
+`);
 
 export const Header: React.FC = (props: any) => {
   const context = useConnectedWeb3Context();
@@ -36,7 +34,7 @@ export const Header: React.FC = (props: any) => {
 
   return (
     <Root>
-      <AppBar position="static">
+      <AppBar position="static" color="primary">
         <Toolbar>
           {/* <img src={"./logo_white.png"} alt="logo" width="30" /> */}
           <TitleTypography variant="h6">

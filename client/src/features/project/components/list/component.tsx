@@ -35,10 +35,10 @@ export const ProjectList = () => {
   }
   return (
     <>
-      <Button variant="contained" color="primary" onClick={createProjectAsync}>
+      <Button sx={{ marginTop: 2 }} variant="contained" color="primary" onClick={createProjectAsync}>
         Create project
       </Button>
-      <Container sx={{ paddingTop: 8, paddingBottom: 8 }} maxWidth="md">
+      <Container sx={{ paddingTop: 6, paddingBottom: 6 }} maxWidth="md">
         <Typography sx={{ fontWeight: 500 }} textAlign="center">
           Latest projects
           <IconButton sx={{ float: 'right' }} aria-label="refresh">
