@@ -63,17 +63,17 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   }, [deactivate]);
 
   useEffect(() => {
+    logger.info('Account:', account, 'ChainId:', chainId)();
     const connector = localStorage.getItem(CommonConstants.WALLET_CONNECTOR_STORAGE_KEY);
     const connectWalletAsync = async () => {
       if (!account && connector) {
         const injected = new InjectedConnector({});
-        logger.info('Injected account address:', await injected.getAccount())();
-        await activate(injected, (error) => {
+        // Don't await here, MetaMask could be locked -> render the page regardless
+        activate(injected, (error) => {
           logger.info(error)();
           localStorage.removeItem(CommonConstants.WALLET_CONNECTOR_STORAGE_KEY);
         });
       }
-      logger.info('Account:', account, 'ChainId:', chainId)();
       setConnection({
         account,
         chainId,
