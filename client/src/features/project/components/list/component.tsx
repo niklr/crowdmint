@@ -1,7 +1,9 @@
-import { Button } from '@mui/material';
+import { Button, Container, Grid, IconButton, Typography } from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { BigNumber } from 'ethers';
 import { getNervosClient } from '../../../../clients/nervos.client';
 import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
+import { ListItem } from '../list-item';
 
 export const ProjectList = () => {
   const context = useConnectedWeb3Context();
@@ -36,6 +38,22 @@ export const ProjectList = () => {
       <Button variant="contained" color="primary" onClick={createProjectAsync}>
         Create project
       </Button>
+      <Container sx={{ paddingTop: 8, paddingBottom: 8 }} maxWidth="md">
+        <Typography sx={{ fontWeight: 500 }} textAlign="center">
+          Latest projects
+          <IconButton sx={{ float: 'right' }} aria-label="refresh">
+            <RefreshIcon fontSize="small" />
+          </IconButton>
+        </Typography>
+        <Grid container spacing={4} justifyContent="center" alignItems="center">
+          <Grid item key='1' xs={12} sm={6} md={4}>
+            <ListItem loading={true}></ListItem>
+          </Grid>
+          <Grid item key='2' xs={12} sm={6} md={4}>
+            <ListItem loading={false}></ListItem>
+          </Grid>
+        </Grid>
+      </Container>
     </>
   );
 }

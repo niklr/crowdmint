@@ -5,6 +5,7 @@
   "dependencies": {
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
+    "@mui/icons-material": "^5.0.1",
     "@mui/material": "^5.0.0",
     "@polyjuice-provider/ethers": "^0.0.1-rc11",
     "@polyjuice-provider/web3": "^0.0.1-rc11",
