@@ -17,7 +17,10 @@ interface Props {
 export const Editor = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [content, setContent] = useState('');
-  const height = props.editorRef.current.clientHeight + "px";
+  let height = "400px";
+  if (props.editorRef?.current?.clientHeight) {
+    height = props.editorRef?.current?.clientHeight + "px";
+  }
 
   useEffect(() => {
     const fileUtil = new BrowserFileUtil();

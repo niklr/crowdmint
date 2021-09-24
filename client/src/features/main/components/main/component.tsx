@@ -9,6 +9,7 @@ import { Footer } from '../../../layout/components/footer';
 import { Header } from '../../../layout/components/header';
 import { MainScroll } from '../../../layout/components/main-scroll';
 import { MainWrapper } from '../../../layout/components/main-wrapper';
+import { ProjectEdit } from '../../../project/components/edit';
 import { ProjectList } from '../../../project/components/list';
 import { ProjectOverview } from '../../../project/components/overview';
 
@@ -34,6 +35,9 @@ export const Main: React.FC = (props: any) => {
             <NetworkCheck />
           ) : (
             <Switch>
+              <Route path="/projects/:id/edit">
+                <ProjectEdit />
+              </Route>
               <Route path="/projects/:id">
                 <ProjectOverview />
               </Route>
