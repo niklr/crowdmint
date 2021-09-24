@@ -1,4 +1,4 @@
-import { Box, Button, Container, Grid, IconButton, Stack, Typography } from '@mui/material';
+import { Button, Container, Grid, IconButton, Stack, Typography } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { BigNumber } from 'ethers';
 import { getNervosClient } from '../../../../clients/nervos.client';
@@ -57,19 +57,19 @@ export const ProjectList = () => {
           </IconButton>
         </Typography>
         <Grid container spacing={2} justifyContent="center" alignItems="center">
-          <Grid item key='1' xs={12} sm={6} md={4}>
+          <Grid item key='1' xs={12} sm={6} md={4} sx={{ minWidth: "350px" }}>
             <ListItem loading={true}></ListItem>
           </Grid>
-          <Grid item key='2' xs={12} sm={6} md={4}>
+          <Grid item key='2' xs={12} sm={6} md={4} sx={{ minWidth: "350px" }}>
             <ListItem loading={true}></ListItem>
           </Grid>
-          <Grid item key='3' xs={12} sm={6} md={4}>
+          <Grid item key='3' xs={12} sm={6} md={4} sx={{ minWidth: "350px" }}>
             <ListItem loading={true}></ListItem>
           </Grid>
-          <Grid item key='4' xs={12} sm={6} md={4}>
+          <Grid item key='4' xs={12} sm={6} md={4} sx={{ minWidth: "350px" }}>
             <ListItem loading={true}></ListItem>
           </Grid>
-          <Grid item key='5' xs={12} sm={6} md={4}>
+          <Grid item key='5' xs={12} sm={6} md={4} sx={{ minWidth: "350px" }}>
             <ListItem loading={false}></ListItem>
           </Grid>
         </Grid>
