@@ -147,12 +147,12 @@ export const ListItem = (props: MediaProps) => {
         <CardActions sx={{ paddingTop: 0 }}>
           <Grid container rowSpacing={0} columnSpacing={2} sx={{ marginTop: 1 }}>
             <Grid item xs={6}>
-              <Tooltip title="0x61d64AfBbD3b5CC2D0554A8a92aa5C7540501E7c" arrow>
+              <Tooltip title="Contract: 0x61d64AfBbD3b5CC2D0554A8a92aa5C7540501E7c" arrow>
                 <Chip sx={{ width: "100%" }} icon={<DescriptionOutlinedIcon />} label="0x61d64AfBbD3b5CC2D0554A8a92aa5C7540501E7c" size="small" />
               </Tooltip>
             </Grid>
             <Grid item xs={6}>
-              <Tooltip title="0x61d64AfBbD3b5CC2D0554A8a92aa5C7540501E7c">
+              <Tooltip title="Creator: 0x61d64AfBbD3b5CC2D0554A8a92aa5C7540501E7c">
                 <Chip sx={{ width: "100%" }} icon={<PersonOutlineRoundedIcon />} label="0x61d64AfBbD3b5CC2D0554A8a92aa5C7540501E7c" size="small" />
               </Tooltip>
             </Grid>

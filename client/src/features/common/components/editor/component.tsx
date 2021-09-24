@@ -42,7 +42,11 @@ export const Editor = (props: Props) => {
 
   if (isLoading) {
     return (
-      <Alert message="Loading..." type="default"></Alert>
+      <>
+        <Box sx={{ m: 2 }}>
+          <Alert message="Loading..." type="default"></Alert>
+        </Box>
+      </>
     );
   }
 

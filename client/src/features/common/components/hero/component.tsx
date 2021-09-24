@@ -1,6 +1,6 @@
 import React from 'react';
 // import { Link as RouterLink } from 'react-router-dom';
-import { Container, styled, Typography } from '@mui/material';
+import { Box, Container, styled, Typography } from '@mui/material';
 
 const HeroContent = styled('div')(
   ({ theme }) => `
@@ -11,13 +11,18 @@ const HeroContent = styled('div')(
 
 export const Hero = () => {
   return (
-    <HeroContent>
-      <Container maxWidth="sm">
-        <Typography variant="h5" align="center" color="textSecondary" paragraph>
-          De-centralized crowdfunding on <i>Nervos Network</i>.<br></br>
-          CROWDMINT is a blockchain based solution leveraging NFT's to crowdfund projects.
-        </Typography>
-      </Container>
-    </HeroContent>
+    <>
+      <Box sx={{ mb: 2 }}>
+        <img src={"./assets/images/logo_text.png"} alt="logo" />
+      </Box>
+      <HeroContent>
+        <Container maxWidth="sm">
+          <Typography variant="h5" align="center" color="textSecondary" paragraph>
+            De-centralized crowdfunding on <i>Nervos Network</i>.<br></br>
+            CROWDMINT is a blockchain based solution leveraging NFT's to crowdfund projects.
+          </Typography>
+        </Container>
+      </HeroContent>
+    </>
   );
 }

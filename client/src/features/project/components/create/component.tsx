@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { DateTimePicker } from '@mui/lab';
-import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, Slider, Stack, TextField, Typography } from '@mui/material';
 import { Editor } from '../../../common/components/editor';
 import { MomentUtil } from '../../../../util/moment.util';
 import { ProjectType, ProjectTypes } from '../../../../common/constants';
@@ -78,6 +78,17 @@ export const ProjectCreate = () => {
                   onChange={handleExpirationDateChange}
                   renderInput={(params) => <TextField {...params} />}
                 />
+                <TextField
+                  label="NFT shares"
+                  type="number"
+                  defaultValue={1000}
+                />
+                <Box>
+                  <Typography gutterBottom>
+                    Overfunding distribution
+                  </Typography>
+                  <Slider defaultValue={50} valueLabelDisplay="auto" />
+                </Box>
               </Stack>
             </Box>
           </Paper>
