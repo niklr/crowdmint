@@ -1,28 +1,31 @@
-import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { useRef } from 'react';
+// import { Link as RouterLink } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-import { Box, Button, Chip, Grid, LinearProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Box, Button, Grid, LinearProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { Alert } from '../../../common/components/alert';
 import { MomentUtil } from '../../../../util/moment.util';
+import { Editor } from '../../../common/components/editor';
 
 function createData(
+  index: string,
   name: string,
   date: string,
   amount: string
 ) {
-  return { name, date, amount };
+  return { index, name, date, amount };
 }
 
 const rows = [
-  createData('0x61d64AfBbD3b5CC2D0554A8a92aa5C7540501E7c', '1632462812', '500'),
-  createData('0x61d64AfBbD3b5CC2D0554A8a92aa5C7540501E7c', '1632462812', '1500'),
+  createData('1', '0x61d64AfBbD3b5CC2D0554A8a92aa5C7540501E7c', '1632462812', '500'),
+  createData('2', '0x61d64AfBbD3b5CC2D0554A8a92aa5C7540501E7c', '1632462812', '1500'),
 ];
 
 export const ProjectOverview = () => {
   const { id } = useParams<{ id: any }>();
+  console.log("Project id:", id);
   const momentUtil = new MomentUtil();
-
+  const editorRef = useRef(null);
 
   const formatTimestamp = (timestamp: any) => {
     return momentUtil.getLocalReverseFormatted(momentUtil.getFromUnix(timestamp));
@@ -58,8 +61,8 @@ export const ProjectOverview = () => {
             <Typography color="GrayText" noWrap>75%</Typography>
           </Box>
         </Paper>
-        <Paper sx={{ maxHeight: "800px", minHeight: "600px", my: 2 }}>
-
+        <Paper ref={editorRef} sx={{ maxHeight: "800px", minHeight: "600px", my: 2, overflow: "auto" }}>
+          <Editor editorRef={editorRef} readOnly={true} markdownUrl={'https://raw.githubusercontent.com/nhn/tui.editor/master/apps/react-editor/README.md'}></Editor>
         </Paper>
       </Grid>
       <Grid item md={4} xs={12}>
@@ -72,6 +75,10 @@ export const ProjectOverview = () => {
           }}>
             <InfoOutlinedIcon sx={{ mr: 1 }} />
             <Typography variant="h5">Project information</Typography>
+          </Box>
+          <Box sx={{ px: 2, pt: 2 }} >
+            <Typography fontWeight="bold">Type</Typography>
+            <Typography fontSize={13} noWrap>All-Or-Nothing (AON)</Typography>
           </Box>
           <Box sx={{ px: 2, pt: 2 }} >
             <Typography fontWeight="bold">Creation date</Typography>
@@ -122,7 +129,7 @@ export const ProjectOverview = () => {
             <TableBody>
               {rows.map((row) => (
                 <TableRow
-                  key={row.name}
+                  key={row.index}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">
@@ -132,7 +139,7 @@ export const ProjectOverview = () => {
                     {formatTimestamp(row.date)}
                   </TableCell>
                   <TableCell align="right">
-                    {row.amount}
+                    {row.amount} CKB
                   </TableCell>
                 </TableRow>
               ))}

@@ -7,16 +7,13 @@ import {
   Skeleton,
   Card,
   CardHeader,
-  IconButton,
   CardContent,
   Typography,
   Avatar,
-  CardMedia,
   CardActionArea,
   CardActions
 } from '@mui/material';
 import LinearProgress, { LinearProgressProps } from '@mui/material/LinearProgress';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded';
 import { Box } from '@mui/system';
@@ -53,8 +50,6 @@ export const ListItem = (props: MediaProps) => {
   const truncate = (text: string) => {
     return CommonUtil.truncateString(text, 26);
   }
-
-  const color = '#cc0000';
 
   return (
     <Card sx={{ m: 2 }}>
