@@ -36,7 +36,7 @@ export const ProjectOverview = () => {
   }
 
   return (
-    <Grid container spacing={2}>
+    <Grid sx={{ pt: 4 }} container spacing={2}>
       <Grid item md={8} xs={12}>
         <Paper>
           <Box sx={{ p: 2, wordBreak: "break-all" }}>

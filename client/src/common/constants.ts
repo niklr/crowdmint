@@ -1,4 +1,4 @@
-import { Network } from "../util/types"
+import { GenericType, Network } from "../util/types"
 
 export const CommonConstants = {
   APP_NAME: 'CROWDMINT',
@@ -10,5 +10,21 @@ export const Networks: Network[] = [
   {
     id: 71393,
     name: "Godwoken Testnet"
+  }
+]
+
+export enum ProjectType {
+  AON = 0,
+  KIA = 1
+}
+
+export const ProjectTypes: GenericType[] = [
+  {
+    name: "All-Or-Nothing",
+    type: "AON"
+  },
+  {
+    name: "Keep-It-All",
+    type: "KIA"
   }
 ]

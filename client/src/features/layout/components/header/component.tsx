@@ -34,7 +34,7 @@ export const Header: React.FC = (props: any) => {
 
   return (
     <Root>
-      <AppBar position="static" color="primary">
+      <AppBar position="static" color="secondary">
         <Toolbar>
           {/* <img src={"./logo_white.png"} alt="logo" width="30" /> */}
           <TitleTypography variant="h6">

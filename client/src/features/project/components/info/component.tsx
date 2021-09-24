@@ -18,7 +18,7 @@ export const ProjectInfo = (props: Props) => {
 
   return (
     <Paper>
-      <Box sx={{ display: 'flex', p: 2, bgcolor: "primary.main" }}>
+      <Box sx={{ display: 'flex', p: 2, bgcolor: "secondary.main" }}>
         <Box sx={{ flexGrow: 1 }}>
           <Box sx={{
             display: "flex",
@@ -30,7 +30,7 @@ export const ProjectInfo = (props: Props) => {
         </Box>
         <Box>
           {props.canEdit && (
-            <Button variant="contained" color="secondary" sx={{ ml: 2 }} component={RouterLink} to={'/projects/' + props.id + '/edit'}>
+            <Button variant="contained" color="primary" sx={{ ml: 2 }} component={RouterLink} to={'/projects/' + props.id + '/edit'}>
               Edit
             </Button>
           )}

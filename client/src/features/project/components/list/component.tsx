@@ -1,3 +1,4 @@
+import { Link as RouterLink } from 'react-router-dom';
 import { Button, Container, Grid, IconButton, Stack, Typography } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { BigNumber } from 'ethers';
@@ -36,10 +37,10 @@ export const ProjectList = () => {
   return (
     <>
       <Stack spacing={2} sx={{ marginTop: 2 }} direction="row">
-        <Button variant="contained" color="primary" onClick={createProjectAsync}>
-          Create project
+        <Button variant="contained" color="primary" component={RouterLink} to='/projects/create'>
+          Start project
         </Button>
-        <Button variant="contained" color="secondary">
+        <Button variant="contained" color="secondary" onClick={createProjectAsync}>
           Test 123
         </Button>
         <Button variant="outlined" color="primary">

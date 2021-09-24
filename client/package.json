@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@date-io/moment": "^2.11.0",
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
     "@mui/icons-material": "^5.0.1",
+    "@mui/lab": "^5.0.0-alpha.48",
     "@mui/material": "^5.0.0",
     "@polyjuice-provider/ethers": "^0.0.1-rc11",
     "@polyjuice-provider/web3": "^0.0.1-rc11",

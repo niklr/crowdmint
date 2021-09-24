@@ -1,5 +1,7 @@
 import { Web3ReactProvider } from '@web3-react/core';
 import styled from '@emotion/styled';
+import { LocalizationProvider } from '@mui/lab';
+import DateAdapter from '@mui/lab/AdapterMoment';
 import { ethers } from 'ethers';
 import React from 'react';
 import { SnackbarProvider } from 'notistack';
@@ -22,15 +24,17 @@ const Background = styled('div')(`
 
 const App: React.FC = () => {
   return (
-    <Background>
-      <SnackbarProvider maxSnack={3}>
-        <Web3ReactProvider getLibrary={getLibrary}>
-          <ConnectedWeb3>
-            <Main />
-          </ConnectedWeb3>
-        </Web3ReactProvider>
-      </SnackbarProvider>
-    </Background>
+    <LocalizationProvider dateAdapter={DateAdapter}>
+      <Background>
+        <SnackbarProvider maxSnack={3}>
+          <Web3ReactProvider getLibrary={getLibrary}>
+            <ConnectedWeb3>
+              <Main />
+            </ConnectedWeb3>
+          </Web3ReactProvider>
+        </SnackbarProvider>
+      </Background>
+    </LocalizationProvider>
   );
 }
 
