@@ -5,8 +5,8 @@ import { ListItem } from '../list-item';
 export const ProjectList = () => {
   return (
     <>
-      <Container sx={{ paddingTop: 6, paddingBottom: 6 }} maxWidth="lg">
-        <Typography sx={{ fontWeight: 500 }} textAlign="center">
+      <Container sx={{ pt: 6, pb: 6 }} maxWidth="lg">
+        <Typography sx={{ fontWeight: 500, ml: "36px" }} textAlign="center">
           Latest projects
           <IconButton sx={{ float: 'right' }} aria-label="refresh">
             <RefreshIcon fontSize="small" />

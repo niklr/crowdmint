@@ -40,4 +40,15 @@ export class MomentUtil {
   public getLocalReverseFormatted(date: any): string {
     return this.getLocalDate(date) + ' ' + this.getLocalTime(date);
   }
+
+  public isExpired(date: any): boolean {
+    try {
+      if (date) {
+        return moment.utc() >= moment.utc(date);
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
 }

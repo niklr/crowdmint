@@ -43,9 +43,9 @@ export const Hero = () => {
         <Button variant="contained" color="primary" component={RouterLink} to='/projects/create'>
           Start project
         </Button>
-        <Button variant="outlined" color="primary">
+        {/* <Button variant="outlined" color="primary">
           Browse existing
-        </Button>
+        </Button> */}
       </Stack>
     </>
   );

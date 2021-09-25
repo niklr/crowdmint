@@ -22,3 +22,4 @@ node ./packages/tools/lib/account-cli.js deposit -p 0x6cd5e7be2f6504aa5ae7c0c041
 ### Explorer
 
 https://testnet1.godwoken.nervos.org/
+https://aggron.layerview.io/tx/0xd3d378a0b00dbd4341c8c3af89b923dbcea8082f576ae4421aa8bca41bae1fcf
