@@ -4,10 +4,8 @@ import { PolyjuiceHttpProvider } from "@polyjuice-provider/web3";
 import { ethers } from "ethers";
 import { CommonConstants } from "../common/constants";
 import { ProjectManager, ProjectManager__factory } from "../typechain";
+import { CommonUtil } from "../util/common.util";
 import { Ensure } from "../util/ensure";
-import { getLogger } from "../util/logger";
-
-const logger = getLogger();
 
 export class NervosClient {
 
@@ -31,24 +29,14 @@ export class NervosClient {
     return this._rpcProvider;
   }
 
-  private createProjectManager(account: string): ProjectManager {
+  async getProjectManagerAsync(account: Maybe<string>): Promise<ProjectManager> {
     // https://github.com/dethcrypto/TypeChain/blob/master/examples/ethers-v5/src/index.ts
     // https://github.com/RetricSu/polyjuice-provider-example/blob/main/src/godwoken.ts
-    const signer = this._web3Provider.getSigner(account);
+    if (CommonUtil.isNullOrWhitespace(account)) {
+      return ProjectManager__factory.connect(CommonConstants.PROJECT_MANAGER_CONTRACT, this._web3Provider);
+    }
+    const signer = this._web3Provider.getSigner(account as string);
     return ProjectManager__factory.connect(CommonConstants.PROJECT_MANAGER_CONTRACT, signer);
-  }
-
-  async getProjectManagerAsync(account: Maybe<string>): Promise<ProjectManager> {
-    Ensure.notNullOrWhiteSpace(account, "account");
-    if (!this._projectManager) {
-      this._projectManager = this.createProjectManager(account as string);
-    }
-    const currentAccount = await this._projectManager.signer.getAddress();
-    if (currentAccount !== account) {
-      logger.info(`Creating new ProjectManager, prev account: ${currentAccount} / new account: ${account}`)();
-      this._projectManager = this.createProjectManager(account as string);
-    }
-    return this._projectManager;
   }
 }
 
