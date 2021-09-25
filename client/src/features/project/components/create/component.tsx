@@ -10,6 +10,7 @@ import { getNervosClient } from '../../../../clients/nervos.client';
 import { SnackbarUtil } from '../../../../util/snackbar.util';
 import { getLogger } from '../../../../util/logger';
 import { Ensure } from '../../../../util/ensure';
+import { ClickOnceButton } from '../../../common/components/click-once-button';
 
 interface CreateProject {
   type: string;
@@ -101,10 +102,12 @@ export const ProjectCreate = () => {
             <Editor editorRef={editorRef} readOnly={false} markdownUrl={'https://raw.githubusercontent.com/nhn/tui.editor/master/apps/react-editor/README.md'}></Editor>
           </Paper>
           <Paper>
-            <Box sx={{ p: 2, textAlign: "center" }}>
-              <Button sx={{ width: "40%" }} variant="contained" color="primary" onClick={createProjectAsync}>
-                Submit
-              </Button>
+            <Box sx={{ p: 2 }}>
+              <Box sx={{ width: "40%", margin: "auto" }}>
+                <ClickOnceButton size="medium" color="primary" callbackFn={createProjectAsync} fullWidth={true}>
+                  Submit
+                </ClickOnceButton>
+              </Box>
             </Box>
           </Paper>
         </Grid>
