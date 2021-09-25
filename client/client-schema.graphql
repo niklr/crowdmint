@@ -1,0 +1,25 @@
+# https://www.apollographql.com/blog/tooling/apollo-codegen/typescript-graphql-code-generator-generate-graphql-types/
+type Item {
+  id: ID!
+  createdDate: String!
+  modifiedDate: String!
+  name: String!
+  description: String!
+  imageUrl: String!
+}
+
+type Profile {
+  id: ID!
+  createdDate: String!
+  modifiedDate: String!
+  name: String!
+  useDarkMode: Boolean!
+}
+
+extend type Query {
+  items(
+    first: Int!
+    skip: Int!
+  ): [Item!]!
+  profile: Profile
+}

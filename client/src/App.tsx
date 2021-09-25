@@ -1,3 +1,4 @@
+import { ApolloProvider } from '@apollo/client';
 import { Web3ReactProvider } from '@web3-react/core';
 import styled from '@emotion/styled';
 import { LocalizationProvider } from '@mui/lab';
@@ -7,6 +8,7 @@ import React from 'react';
 import { SnackbarProvider } from 'notistack';
 import { Main } from './features/main/components/main';
 import { ConnectedWeb3 } from './contexts/connectedWeb3';
+import { getApolloClient } from './clients/apollo.client';
 import BackgroundSVG from './bg.svg';
 
 function getLibrary(provider: ethers.providers.ExternalProvider | ethers.providers.JsonRpcFetchFunc, connector: any) {
@@ -23,13 +25,16 @@ const Background = styled('div')(`
 );
 
 const App: React.FC = () => {
+  const apolloClient = React.useMemo(() => getApolloClient(), [])
   return (
     <LocalizationProvider dateAdapter={DateAdapter}>
       <Background>
         <SnackbarProvider maxSnack={3}>
           <Web3ReactProvider getLibrary={getLibrary}>
             <ConnectedWeb3>
-              <Main />
+              <ApolloProvider client={apolloClient}>
+                <Main />
+              </ApolloProvider>
             </ConnectedWeb3>
           </Web3ReactProvider>
         </SnackbarProvider>
