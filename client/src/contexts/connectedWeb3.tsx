@@ -5,8 +5,7 @@ import { CommonConstants } from '../common/constants';
 import { getLogger } from '../util/logger';
 import { WalletType } from '../util/types';
 import { getAccountStorage } from '../storage';
-import { IDataGateway } from '../gateways';
-import { getNervosClient } from '../clients/nervos.client';
+import { IDataGateway, getNervosGateway } from '../gateways';
 
 const logger = getLogger();
 
@@ -83,7 +82,7 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
         });
       }
       accountStorage.account = account;
-      const gateway = getNervosClient();
+      const gateway = getNervosGateway();
       setConnection({
         account,
         chainId,
