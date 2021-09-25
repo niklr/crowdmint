@@ -66,7 +66,7 @@ export const ProjectCreate = () => {
       }
 
       const id = now.toString();
-      const tx = await context.gateway.createProjectAsync(id, values.type, values.title, "http://localhost:3000/#/", goal, BigNumber.from(deadline));
+      const tx = await context.datasource.createProjectAsync(id, values.type, values.title, "http://localhost:3000/#/", goal, BigNumber.from(deadline));
       console.log(tx);
     } catch (error) {
       logger.error(error)();

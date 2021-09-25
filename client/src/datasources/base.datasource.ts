@@ -2,7 +2,7 @@
 import { BigNumber } from "ethers";
 import { AccountStorage, getAccountStorage } from "../storage";
 
-export interface IDataGateway {
+export interface IDataSource {
   getBalanceAsync(_address: string): Promise<BigNumber>;
   getTimestampAsync(): Promise<BigNumber>;
   getTotalProjectsAsync(): Promise<BigNumber>;
@@ -16,7 +16,7 @@ export interface IDataGateway {
   ): Promise<string>;
 }
 
-export abstract class BaseDataGateway implements IDataGateway {
+export abstract class BaseDataSource implements IDataSource {
   private readonly _accountStorage: AccountStorage;
 
   constructor() {

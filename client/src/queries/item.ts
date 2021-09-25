@@ -15,9 +15,10 @@ export const GET_ITEMS_QUERY = gql`
 `;
 
 export const ItemQueries = {
-  async items(_: any, { first, skip }: any): Promise<Item[] | null> {
+  async items(rootValue: any, { first, skip }: any, context: any): Promise<Item[] | null> {
     try {
-      console.log('first', first, 'skip', skip);
+      console.log(rootValue, 'first', first, 'skip', skip);
+      console.log(context);
       return [];
     } catch (e) {
       console.error(e);

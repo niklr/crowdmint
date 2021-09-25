@@ -14,11 +14,11 @@ export const Hero = () => {
   const context = useConnectedWeb3Context();
   const testAsync = async () => {
     if (context.account) {
-      const balance = await context.gateway.getBalanceAsync(context.account);
+      const balance = await context.datasource.getBalanceAsync(context.account);
       console.log(context.account, 'Balance:', balance.toString());
 
-      const timestamp = await context.gateway.getTimestampAsync();
-      const totalProjects = await context.gateway.getTotalProjectsAsync();
+      const timestamp = await context.datasource.getTimestampAsync();
+      const totalProjects = await context.datasource.getTotalProjectsAsync();
       console.log('ProjectManager timestamp:', timestamp.toString(), 'local timestamp:', Math.floor(Date.now() / 1000), 'totalProjects:', totalProjects.toString());
     }
   }

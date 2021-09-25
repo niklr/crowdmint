@@ -1,11 +1,11 @@
 import { BigNumber } from "ethers";
+import { BaseDataSource } from ".";
 import { getNervosClient, NervosClient } from "../clients/nervos.client";
-import { BaseDataGateway } from "../gateways";
 import { getLogger } from "../util/logger";
 
 const logger = getLogger();
 
-export class NervosGateway extends BaseDataGateway {
+export class NervosDataSource extends BaseDataSource {
   private readonly _client: NervosClient;
 
   constructor() {
@@ -42,8 +42,8 @@ export class NervosGateway extends BaseDataGateway {
   }
 }
 
-const gateway = new NervosGateway();
+const ds = new NervosDataSource();
 
-export const getNervosGateway = () => {
-  return gateway;
+export const getNervosDataSource = () => {
+  return ds;
 }

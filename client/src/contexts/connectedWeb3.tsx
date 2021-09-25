@@ -5,14 +5,15 @@ import { CommonConstants } from '../common/constants';
 import { getLogger } from '../util/logger';
 import { WalletType } from '../util/types';
 import { getAccountStorage } from '../storage';
-import { IDataGateway, getNervosGateway } from '../gateways';
+import { IDataSource } from '../datasources';
+import { DependencyInjectionUtil } from '../util/di.util';
 
 const logger = getLogger();
 
 export interface ConnectedWeb3Context {
   account: Maybe<string>,
   chainId: Maybe<number>,
-  gateway: IDataGateway;
+  datasource: IDataSource;
   login: (type: WalletType) => Promise<void>,
   logout: () => void
 }
@@ -82,11 +83,11 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
         });
       }
       accountStorage.account = account;
-      const gateway = getNervosGateway();
+      const datasource = DependencyInjectionUtil.getDataSource();
       setConnection({
         account,
         chainId,
-        gateway,
+        datasource,
         login,
         logout
       });
