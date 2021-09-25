@@ -1,7 +1,9 @@
+import { useSnackbar } from 'notistack';
 import React, { useEffect } from 'react';
 import { HashRouter, Route, Switch } from 'react-router-dom';
 import { Networks } from '../../../../common/constants';
 import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
+import { SnackbarUtil } from '../../../../util/snackbar.util';
 import { NetworkCheck } from '../../../account/components/network';
 import { Hero } from '../../../common/components/hero';
 import { Test } from '../../../common/components/test';
@@ -17,6 +19,8 @@ import { ProjectOverview } from '../../../project/components/overview';
 export const Main: React.FC = (props: any) => {
   const context = useConnectedWeb3Context();
   const [isNetworkSupported, setIsNetworkSupported] = React.useState(true);
+
+  SnackbarUtil.snackbar = useSnackbar();
 
   const { chainId } = context;
 

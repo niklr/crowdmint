@@ -1,6 +1,8 @@
 import React from 'react';
-// import { Link as RouterLink } from 'react-router-dom';
-import { Box, Container, styled, Typography } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
+import { Box, Button, Container, Link, Stack, styled, Typography } from '@mui/material';
+import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
+import { getNervosClient } from '../../../../clients/nervos.client';
 
 const HeroContent = styled('div')(
   ({ theme }) => `
@@ -10,6 +12,20 @@ const HeroContent = styled('div')(
 );
 
 export const Hero = () => {
+  const context = useConnectedWeb3Context();
+  const nervosClient = getNervosClient();
+  const testAsync = async () => {
+    if (context.account) {
+      const balance = await nervosClient.rpcProvider.getBalance(context.account);
+      console.log(context.account, 'Balance:', balance.toString());
+
+      const projectManager = nervosClient.getProjectManager(context.account);
+      const timestamp = await projectManager.getTimestamp();
+      const totalProjects = await projectManager.totalProjects();
+      console.log('ProjectManager timestamp:', timestamp.toString(), 'local timestamp:', Math.floor(Date.now() / 1000), 'totalProjects:', totalProjects.toString());
+    }
+  }
+  testAsync();
   return (
     <>
       <Box sx={{ mb: 2 }}>
@@ -18,11 +34,19 @@ export const Hero = () => {
       <HeroContent>
         <Container maxWidth="sm">
           <Typography variant="h5" align="center" color="textSecondary" paragraph>
-            De-centralized crowdfunding on <i>Nervos Network</i>.<br></br>
+            De-centralized crowdfunding on <Link href="https://www.nervos.org/" target="_blank" underline="none">Nervos Network</Link>.<br></br>
             CROWDMINT is a blockchain based solution leveraging NFT's to crowdfund projects.
           </Typography>
         </Container>
       </HeroContent>
+      <Stack spacing={2} sx={{ mt: 6 }} direction="row">
+        <Button variant="contained" color="primary" component={RouterLink} to='/projects/create'>
+          Start project
+        </Button>
+        <Button variant="outlined" color="primary">
+          Browse existing
+        </Button>
+      </Stack>
     </>
   );
 }

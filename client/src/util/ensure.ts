@@ -1,8 +1,12 @@
 export class Ensure {
 
-  public static notNull(property: any, propertyName: string) {
+  public static notNull(property: any, propertyName: string, message?: string) {
     if (property === null || property === undefined) {
-      throw new Error('Unexpected null exception. ' + propertyName);
+      if (message) {
+        throw new Error(message);
+      } else {
+        throw new Error('Unexpected null exception. ' + propertyName);
+      }
     }
   }
 

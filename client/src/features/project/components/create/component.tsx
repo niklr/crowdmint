@@ -1,31 +1,80 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { DateTimePicker } from '@mui/lab';
-import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, Slider, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, FormControl, Grid, InputAdornment, InputLabel, MenuItem, OutlinedInput, Paper, Select, SelectChangeEvent, Slider, Stack, TextField, Typography } from '@mui/material';
+import { BigNumber } from 'ethers';
 import { Editor } from '../../../common/components/editor';
 import { MomentUtil } from '../../../../util/moment.util';
 import { ProjectType, ProjectTypes } from '../../../../common/constants';
+import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
+import { getNervosClient } from '../../../../clients/nervos.client';
+import { SnackbarUtil } from '../../../../util/snackbar.util';
+import { getLogger } from '../../../../util/logger';
+import { Ensure } from '../../../../util/ensure';
+
+interface CreateProject {
+  type: string;
+  title: string;
+  goal: string;
+  expirationDate: Date | null;
+}
+
+const logger = getLogger();
 
 export const ProjectCreate = () => {
   const editorRef = useRef(null);
   const momentUtil = new MomentUtil();
+  const context = useConnectedWeb3Context();
+  const nervosClient = getNervosClient();
 
-  const [type, setType] = React.useState(ProjectTypes[ProjectType.AON].type);
-  const [expirationDate, setExpirationDate] = React.useState<Date>(
-    momentUtil.get().add(1, 'days').toDate(),
-  );
+  const [values, setValues] = useState<CreateProject>({
+    type: ProjectTypes[ProjectType.AON].type,
+    title: "",
+    goal: "",
+    expirationDate: momentUtil.get().add(1, "days").toDate()
+  });
 
   const handleTypeChange = (event: SelectChangeEvent) => {
-    const newValue = event.target.value;
-    if (newValue) {
-      setType(newValue as string);
-    }
+    setValues({ ...values, type: event.target.value });
   };
 
   const handleExpirationDateChange = (newValue: Date | null) => {
-    if (newValue) {
-      setExpirationDate(newValue);
-    }
+    setValues({ ...values, expirationDate: newValue });
   };
+
+  const handleChange = (prop: keyof CreateProject) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValues({ ...values, [prop]: event.target.value });
+  };
+
+  const createProjectAsync = async () => {
+    try {
+      Ensure.notNullOrWhiteSpace(context.account, "context.account", "Please connect your wallet first.");
+      Ensure.notNullOrWhiteSpace(values.title, "title", "Please enter a title.");
+      Ensure.notNullOrWhiteSpace(values.type, "type", "Please specify a valid project type.");
+      Ensure.notNullOrWhiteSpace(values.goal, "goal", "Please specify a valid goal.");
+      Ensure.notNull(values.expirationDate, "expirationDate", "Please specify a valid expiration date.");
+      if (values.title?.length > 48) {
+        throw new Error("Title is too long.")
+      }
+      const now = Math.floor(Date.now() / 1000);
+      const expirationDate = values.expirationDate as Date;
+      const deadline = Math.floor(expirationDate.getTime() / 1000);
+      if (now >= deadline) {
+        throw new Error("Expiration date is in the past.");
+      }
+      const goal = BigNumber.from(values.goal);
+      if (goal.lte(0)) {
+        throw new Error("Goal is not valid.");
+      }
+
+      const projectManager = nervosClient.getProjectManager(context.account as string);
+      const id = now.toString();
+      const tx = await projectManager.create(id, values.type, values.title, "http://localhost:3000/#/", goal, BigNumber.from(deadline));
+      console.log(tx);
+    } catch (error) {
+      logger.error(error);
+      SnackbarUtil.enqueueError(error);
+    }
+  }
 
   return (
     <>
@@ -36,7 +85,16 @@ export const ProjectCreate = () => {
         <Grid item md={8} xs={12}>
           <Paper>
             <Box sx={{ p: 2 }}>
-              <TextField label="Title" variant="outlined" fullWidth />
+              <FormControl fullWidth>
+                <InputLabel htmlFor="title-input">Title</InputLabel>
+                <OutlinedInput
+                  id="title-input"
+                  value={values.title}
+                  label="Title"
+                  autoComplete="off"
+                  onChange={handleChange('title')}
+                />
+              </FormControl>
             </Box>
           </Paper>
           <Paper ref={editorRef} sx={{ maxHeight: "800px", minHeight: "600px", my: 2, overflow: "auto" }}>
@@ -44,7 +102,7 @@ export const ProjectCreate = () => {
           </Paper>
           <Paper>
             <Box sx={{ p: 2, textAlign: "center" }}>
-              <Button sx={{ width: "40%" }} variant="contained" color="primary">
+              <Button sx={{ width: "40%" }} variant="contained" color="primary" onClick={createProjectAsync}>
                 Submit
               </Button>
             </Box>
@@ -63,8 +121,9 @@ export const ProjectCreate = () => {
                     <Select
                       labelId="project-type-select-label"
                       id="project-type-select"
-                      value={type}
+                      value={values.type}
                       label="Type"
+                      autoComplete="off"
                       onChange={handleTypeChange}
                     >
                       <MenuItem value={ProjectTypes[ProjectType.AON].type}>{ProjectTypes[ProjectType.AON].name}</MenuItem>
@@ -72,16 +131,27 @@ export const ProjectCreate = () => {
                     </Select>
                   </FormControl>
                 </Box>
+                <FormControl fullWidth sx={{ m: 1 }}>
+                  <InputLabel htmlFor="goal-input">Goal</InputLabel>
+                  <OutlinedInput
+                    id="goal-input"
+                    value={values.goal}
+                    label="Goal"
+                    autoComplete="off"
+                    onChange={handleChange('goal')}
+                    startAdornment={<InputAdornment position="start">$CKB</InputAdornment>}
+                  />
+                </FormControl>
                 <DateTimePicker
+                  value={values.expirationDate}
                   label="Expiration date"
-                  value={expirationDate}
                   onChange={handleExpirationDateChange}
                   renderInput={(params) => <TextField {...params} />}
                 />
                 <TextField
+                  defaultValue={1000}
                   label="NFT shares"
                   type="number"
-                  defaultValue={1000}
                 />
                 <Box>
                   <Typography gutterBottom>

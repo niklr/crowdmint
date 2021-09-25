@@ -1,14 +1,13 @@
 
 import * as React from 'react';
 import { useEffect } from 'react';
-import { useSnackbar } from 'notistack';
 import { Avatar, Dialog, DialogTitle, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { styled } from '@mui/system';
 import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
 import { WalletType } from '../../../../util/types';
 import { getLogger } from '../../../../util/logger';
-import { FormatUtil } from '../../../../util/format.util';
+import { SnackbarUtil } from '../../../../util/snackbar.util';
 import MetaMaskSVG from './img/metamask.svg';
 
 const Icon = styled('span')(`
@@ -35,7 +34,6 @@ export const LoginDialog: React.FC<Props> = (props: Props) => {
   const { onClose, open } = props;
 
   const context = useConnectedWeb3Context();
-  const { enqueueSnackbar } = useSnackbar();
 
   const { account } = context;
 
@@ -47,7 +45,7 @@ export const LoginDialog: React.FC<Props> = (props: Props) => {
     try {
       await context.login(type);
     } catch (error) {
-      enqueueSnackbar(FormatUtil.formatSnackbarMessage(error));
+      SnackbarUtil.enqueueError(error);
     }
   };
 
