@@ -4,12 +4,16 @@ import { InjectedConnector } from '@web3-react/injected-connector';
 import { CommonConstants } from '../common/constants';
 import { getLogger } from '../util/logger';
 import { WalletType } from '../util/types';
+import { getAccountStorage } from '../storage';
+import { IDataGateway } from '../gateways';
+import { getNervosClient } from '../clients/nervos.client';
 
 const logger = getLogger();
 
 export interface ConnectedWeb3Context {
   account: Maybe<string>,
   chainId: Maybe<number>,
+  gateway: IDataGateway;
   login: (type: WalletType) => Promise<void>,
   logout: () => void
 }
@@ -34,6 +38,7 @@ interface Props {
 export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   const [connection, setConnection] = useState<Maybe<ConnectedWeb3Context>>(null);
   const context = useWeb3React();
+  const accountStorage = getAccountStorage();
 
   const { activate, deactivate, account, chainId } = context;
 
@@ -48,19 +53,22 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
         await activate(injected, (error) => {
           throw error;
         });
-        logger.info('Account address:', await injected.getAccount())();
+        const account = await injected.getAccount();
+        accountStorage.account = account;
+        logger.info('Account address:', account)();
         localStorage.setItem(CommonConstants.WALLET_CONNECTOR_STORAGE_KEY, type);
         break;
       default:
         break;
     }
-  }, [activate]);
+  }, [activate, accountStorage]);
 
   const logout = useCallback(() => {
     deactivate();
+    accountStorage.account = undefined;
     localStorage.removeItem(CommonConstants.WALLET_CONNECTOR_STORAGE_KEY);
     window.location.reload();
-  }, [deactivate]);
+  }, [deactivate, accountStorage]);
 
   useEffect(() => {
     logger.info('Account:', account, 'ChainId:', chainId)();
@@ -74,15 +82,18 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
           localStorage.removeItem(CommonConstants.WALLET_CONNECTOR_STORAGE_KEY);
         });
       }
+      accountStorage.account = account;
+      const gateway = getNervosClient();
       setConnection({
         account,
         chainId,
+        gateway,
         login,
         logout
       });
     }
     connectWalletAsync();
-  }, [activate, deactivate, login, logout, account, chainId]);
+  }, [activate, deactivate, login, logout, accountStorage, account, chainId]);
 
   if (!connection) {
     return null;

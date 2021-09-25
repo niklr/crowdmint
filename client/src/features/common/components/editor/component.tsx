@@ -32,7 +32,7 @@ export const Editor = (props: Props) => {
           setContent(response);
         }
       } catch (error) {
-        logger.error(error);
+        logger.error(error)();
       } finally {
         setIsLoading(false);
       }

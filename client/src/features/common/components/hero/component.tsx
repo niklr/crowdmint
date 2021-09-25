@@ -2,7 +2,6 @@ import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Box, Button, Container, Link, Stack, styled, Typography } from '@mui/material';
 import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
-import { getNervosClient } from '../../../../clients/nervos.client';
 
 const HeroContent = styled('div')(
   ({ theme }) => `
@@ -13,15 +12,13 @@ const HeroContent = styled('div')(
 
 export const Hero = () => {
   const context = useConnectedWeb3Context();
-  const nervosClient = getNervosClient();
   const testAsync = async () => {
     if (context.account) {
-      const balance = await nervosClient.rpcProvider.getBalance(context.account);
+      const balance = await context.gateway.getBalanceAsync(context.account);
       console.log(context.account, 'Balance:', balance.toString());
 
-      const projectManager = nervosClient.getProjectManager(context.account);
-      const timestamp = await projectManager.getTimestamp();
-      const totalProjects = await projectManager.totalProjects();
+      const timestamp = await context.gateway.getTimestampAsync();
+      const totalProjects = await context.gateway.getTotalProjectsAsync();
       console.log('ProjectManager timestamp:', timestamp.toString(), 'local timestamp:', Math.floor(Date.now() / 1000), 'totalProjects:', totalProjects.toString());
     }
   }

@@ -6,7 +6,6 @@ import { Editor } from '../../../common/components/editor';
 import { MomentUtil } from '../../../../util/moment.util';
 import { ProjectType, ProjectTypes } from '../../../../common/constants';
 import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
-import { getNervosClient } from '../../../../clients/nervos.client';
 import { SnackbarUtil } from '../../../../util/snackbar.util';
 import { getLogger } from '../../../../util/logger';
 import { Ensure } from '../../../../util/ensure';
@@ -25,7 +24,6 @@ export const ProjectCreate = () => {
   const editorRef = useRef(null);
   const momentUtil = new MomentUtil();
   const context = useConnectedWeb3Context();
-  const nervosClient = getNervosClient();
 
   const [values, setValues] = useState<CreateProject>({
     type: ProjectTypes[ProjectType.AON].type,
@@ -67,12 +65,11 @@ export const ProjectCreate = () => {
         throw new Error("Goal is not valid.");
       }
 
-      const projectManager = nervosClient.getProjectManager(context.account as string);
       const id = now.toString();
-      const tx = await projectManager.create(id, values.type, values.title, "http://localhost:3000/#/", goal, BigNumber.from(deadline));
+      const tx = await context.gateway.createProjectAsync(id, values.type, values.title, "http://localhost:3000/#/", goal, BigNumber.from(deadline));
       console.log(tx);
     } catch (error) {
-      logger.error(error);
+      logger.error(error)();
       SnackbarUtil.enqueueError(error);
     }
   }
