@@ -47,4 +47,8 @@ export abstract class CommonUtil {
   static async imageUrlToBlob(url: string): Promise<Blob> {
     return (await fetch(url)).blob();
   }
+
+  static random(min: number, max: number) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
 }

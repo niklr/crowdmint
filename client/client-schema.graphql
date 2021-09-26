@@ -8,6 +8,21 @@ type Item {
   imageUrl: String!
 }
 
+type Project {
+  address: String!
+  category: String!
+  title: String!
+  description: String!
+  url: String!
+  goal: String!
+  createdTimestamp: String!
+  expirationTimestamp: String!
+  creator: String!
+  totalContributions: String!
+  totalContributors: String!
+  totalFunding: String!
+}
+
 type Profile {
   id: ID!
   createdDate: String!
@@ -22,5 +37,7 @@ extend type Query {
     skip: Int!
   ): [Item!]!
   totalProjects: String!
+  projectAddress(index: String!): String
+  project(address: String): Project
   profile: Profile
 }

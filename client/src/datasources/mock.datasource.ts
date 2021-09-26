@@ -44,13 +44,14 @@ export class MockDataSource extends BaseDataSource {
     return BigNumber.from(0);
   }
 
-  async getProjectAddressAsync(index: BigNumber): Promise<string> {
+  async getProjectAddressAsync(index: BigNumber): Promise<Maybe<string>> {
     await this.initAsync();
     return this._projects[index.toNumber()].address;
   }
 
   async getProjectAsync(address: string): Promise<Project> {
     await this.initAsync();
+    await CommonUtil.timeout(CommonUtil.random(500, 3000));
     const p = this._projects.find(e => e.address === address);
     if (!p) {
       throw new Error("Project not found.")

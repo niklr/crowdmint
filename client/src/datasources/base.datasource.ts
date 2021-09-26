@@ -5,6 +5,8 @@ import { Project } from "../util/types";
 
 export interface IDataSource {
   getBalanceAsync(_address: string): Promise<BigNumber>;
+  getProjectAddressAsync(index: BigNumber): Promise<Maybe<string>>;
+  getProjectAsync(address: string): Promise<Project>
   getTimestampAsync(): Promise<BigNumber>;
   getTotalProjectsAsync(): Promise<BigNumber>;
   createProjectAsync(
@@ -29,7 +31,7 @@ export abstract class BaseDataSource implements IDataSource {
   }
 
   abstract getBalanceAsync(_address: string): Promise<BigNumber>;
-  abstract getProjectAddressAsync(index: BigNumber): Promise<string>;
+  abstract getProjectAddressAsync(index: BigNumber): Promise<Maybe<string>>;
   abstract getProjectAsync(address: string): Promise<Project>;
   abstract getTimestampAsync(): Promise<BigNumber>;
   abstract getTotalProjectsAsync(): Promise<BigNumber>;

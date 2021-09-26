@@ -7,21 +7,19 @@ interface Props {
 }
 
 export const ProjectList: React.FC<Props> = (props: Props) => {
-  console.log(props.total);
+  const total = props.total.toNumber();
+  const indexes: number[] = [];
+  for (let index = total - 1; indexes.length < 3; index--) {
+    indexes.push(index);
+  }
+  console.log("ProjectList indexes", indexes);
   return (
     <>
-      <Grid item key='2' xs={12} sm={6} md={4} sx={{ minWidth: "350px" }}>
-        <ListItem loading={true}></ListItem>
-      </Grid>
-      <Grid item key='3' xs={12} sm={6} md={4} sx={{ minWidth: "350px" }}>
-        <ListItem loading={true}></ListItem>
-      </Grid>
-      <Grid item key='4' xs={12} sm={6} md={4} sx={{ minWidth: "350px" }}>
-        <ListItem loading={true}></ListItem>
-      </Grid>
-      <Grid item key='5' xs={12} sm={6} md={4} sx={{ minWidth: "350px" }}>
-        <ListItem loading={false}></ListItem>
-      </Grid>
+      {indexes.map((index: number) => (
+        <Grid item key={index} xs={12} sm={6} md={4} sx={{ minWidth: "350px" }}>
+          <ListItem index={BigNumber.from(index)}></ListItem>
+        </Grid>
+      ))}
     </>
   );
 }

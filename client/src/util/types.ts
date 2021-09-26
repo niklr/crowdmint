@@ -1,5 +1,3 @@
-import { BigNumber } from "ethers"
-
 export enum WalletType {
   MetaMask = 'MetaMask',
 }
@@ -20,13 +18,13 @@ export type Project = {
   title: string;
   description: string;
   url: string;
-  goal: BigNumber;
-  createdTimestamp: BigNumber;
-  expirationTimestamp: BigNumber;
+  goal: string;
+  createdTimestamp: string;
+  expirationTimestamp: string;
   creator: string;
-  totalContributions: BigNumber;
-  totalContributors: BigNumber;
-  totalFunding: BigNumber;
+  totalContributions: string;
+  totalContributors: string;
+  totalFunding: string;
 }
 
 export type Item = {

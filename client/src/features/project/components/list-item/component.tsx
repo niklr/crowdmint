@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { useQuery } from '@apollo/client';
 import {
   Chip,
   Grid,
@@ -17,11 +18,15 @@ import LinearProgress, { LinearProgressProps } from '@mui/material/LinearProgres
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded';
 import { Box } from '@mui/system';
+import { BigNumber } from 'ethers';
 import { MomentUtil } from '../../../../util/moment.util';
 import { CommonUtil } from '../../../../util/common.util';
+import { GET_PROJECT_ADDRESS_QUERY, GET_PROJECT_QUERY } from '../../../../queries/project';
+import { GetProjectAddress, GetProjectAddressVariables } from '../../../../queries/__generated__/GetProjectAddress';
+import { GetProject, GetProjectVariables } from '../../../../queries/__generated__/GetProject';
 
-interface MediaProps {
-  loading?: boolean;
+interface Props {
+  index: BigNumber;
 }
 
 function LinearProgressWithLabel(props: LinearProgressProps & { value: number }) {
@@ -39,21 +44,39 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
   );
 }
 
-export const ListItem = (props: MediaProps) => {
-  const { loading = false } = props;
+export const ListItem: React.FC<Props> = (props: Props) => {
   const momentUtil = new MomentUtil();
+
+  const projectAddressQuery = useQuery<GetProjectAddress, GetProjectAddressVariables>(GET_PROJECT_ADDRESS_QUERY, {
+    variables: {
+      index: props.index.toString()
+    },
+    fetchPolicy: 'network-only'
+  });
+
+  const projectQuery = useQuery<GetProject, GetProjectVariables>(GET_PROJECT_QUERY, {
+    skip: !projectAddressQuery.data,
+    variables: {
+      address: projectAddressQuery.data?.projectAddress
+    },
+    fetchPolicy: 'network-only'
+  });
+
+  const error = projectAddressQuery.error || projectQuery.error;
+  const loading = projectAddressQuery.loading || projectQuery.loading;
+  const project = projectQuery.data?.project;
 
   const formatTimestamp = (timestamp: any) => {
     return momentUtil.getLocalReverseFormatted(momentUtil.getFromUnix(timestamp));
   }
 
-  const truncate = (text: string) => {
+  const truncate = (text: Maybe<string>) => {
     return CommonUtil.truncateString(text, 26);
   }
 
   return (
     <Card sx={{ m: 2 }}>
-      <CardActionArea disabled={loading} component={RouterLink} to="/projects/3">
+      <CardActionArea disabled={loading} component={RouterLink} to={'/projects/' + project?.address}>
         <CardHeader sx={{ paddingBottom: 1 }}
           avatar={
             loading ? (
@@ -82,7 +105,7 @@ export const ListItem = (props: MediaProps) => {
             ) : (
               <Box component="div" sx={{ width: "100%", whiteSpace: "nowrap" }}>
                 <Box component="div" textOverflow="ellipsis" overflow="hidden">
-                  {truncate('Overflow Hiddenssssssssssssssssssssssssssssssssssssssss')}
+                  {truncate(project?.title)}
                 </Box>
               </Box>
             )
@@ -93,7 +116,7 @@ export const ListItem = (props: MediaProps) => {
             ) : (
               <Box sx={{ position: "relative" }}>
                 <Typography variant="caption" color="GrayText">
-                  {formatTimestamp('1632462812')}
+                  {formatTimestamp(project?.createdTimestamp)}
                 </Typography>
                 <Typography variant="caption" color="GrayText" sx={{ position: "absolute", top: 1, right: 0 }}>
                   <b>Expired</b>
@@ -108,14 +131,14 @@ export const ListItem = (props: MediaProps) => {
               <Skeleton sx={{ height: 20, marginBottom: 1 }} animation="wave" variant="rectangular" />
             </Box>
           ) : (
-            <Box>
+            <>
               {/* <CardMedia
             component="img"
             height="140"
             image="https://pi.tedcdn.com/r/talkstar-photos.s3.amazonaws.com/uploads/72bda89f-9bbf-4685-910a-2f151c4f3a8a/NicolaSturgeon_2019T-embed.jpg?w=512"
             alt="Nicola Sturgeon on a TED talk stage"
           /> */}
-            </Box>
+            </>
           )
         }
         <CardContent sx={{ paddingTop: 0, paddingBottom: 0 }}>
@@ -136,7 +159,7 @@ export const ListItem = (props: MediaProps) => {
               </Box>
               <Box component="div" style={{ width: "100%", whiteSpace: "nowrap" }}>
                 <Box component="div" textOverflow="ellipsis" overflow="hidden">
-                  <Typography variant="body2" align="center">7500 / 10000 CKB</Typography>
+                  <Typography variant="body2" align="center">{project?.totalFunding} / {project?.goal} CKB</Typography>
                 </Box>
               </Box>
             </>
@@ -147,13 +170,13 @@ export const ListItem = (props: MediaProps) => {
         <CardActions sx={{ paddingTop: 0 }}>
           <Grid container rowSpacing={0} columnSpacing={2} sx={{ marginTop: 1 }}>
             <Grid item xs={6}>
-              <Tooltip title="Contract: 0x61d64AfBbD3b5CC2D0554A8a92aa5C7540501E7c" arrow>
-                <Chip sx={{ width: "100%" }} icon={<DescriptionOutlinedIcon />} label="0x61d64AfBbD3b5CC2D0554A8a92aa5C7540501E7c" size="small" />
+              <Tooltip title={"Contract: " + project?.address} arrow>
+                <Chip sx={{ width: "100%" }} icon={<DescriptionOutlinedIcon />} label={project?.address} size="small" />
               </Tooltip>
             </Grid>
             <Grid item xs={6}>
-              <Tooltip title="Creator: 0x61d64AfBbD3b5CC2D0554A8a92aa5C7540501E7c">
-                <Chip sx={{ width: "100%" }} icon={<PersonOutlineRoundedIcon />} label="0x61d64AfBbD3b5CC2D0554A8a92aa5C7540501E7c" size="small" />
+              <Tooltip title={"Creator: " + project?.creator}>
+                <Chip sx={{ width: "100%" }} icon={<PersonOutlineRoundedIcon />} label={project?.creator} size="small" />
               </Tooltip>
             </Grid>
           </Grid>

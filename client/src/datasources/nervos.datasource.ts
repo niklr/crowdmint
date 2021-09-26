@@ -18,7 +18,7 @@ export class NervosDataSource extends BaseDataSource {
     return this._client.rpcProvider.getBalance(address);
   }
 
-  async getProjectAddressAsync(index: BigNumber): Promise<string> {
+  async getProjectAddressAsync(index: BigNumber): Promise<Maybe<string>> {
     const manager = await this._client.getProjectManagerAsync(super.getAccount());
     return manager.projects(index);
   }
@@ -32,13 +32,13 @@ export class NervosDataSource extends BaseDataSource {
       title: info[1],
       description: "",
       url: info[2],
-      goal: info[3],
-      createdTimestamp: BigNumber.from("0"),
-      expirationTimestamp: info[4],
+      goal: info[3].toString(),
+      createdTimestamp: "0",
+      expirationTimestamp: info[4].toString(),
       creator: info[5],
-      totalContributions: info[6],
-      totalContributors: info[7],
-      totalFunding: info[8]
+      totalContributions: info[6].toString(),
+      totalContributors: info[7].toString(),
+      totalFunding: info[8].toString()
     }
   }
 
