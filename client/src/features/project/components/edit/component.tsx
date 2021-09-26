@@ -7,7 +7,7 @@ import { Editor } from '../../../common/components/editor';
 import { ProjectInfo } from '../info';
 
 export const ProjectEdit = () => {
-  const { id } = useParams<{ id: any }>();
+  const { address } = useParams<{ address: any }>();
   const editorRef = useRef(null);
 
   if (false) {
@@ -33,7 +33,7 @@ export const ProjectEdit = () => {
           </Paper>
           <Paper>
             <Box sx={{ p: 2, textAlign: "right" }}>
-              <Button variant="outlined" color="primary" sx={{ mr: 2 }} component={RouterLink} to={'/projects/' + id}>
+              <Button variant="outlined" color="primary" sx={{ mr: 2 }} component={RouterLink} to={'/projects/' + address}>
                 Cancel
               </Button>
               <Button variant="contained" color="primary">
@@ -43,7 +43,7 @@ export const ProjectEdit = () => {
           </Paper>
         </Grid>
         <Grid item md={4} xs={12}>
-          <ProjectInfo id={id} canEdit={false}></ProjectInfo>
+          <ProjectInfo canEdit={false}></ProjectInfo>
         </Grid>
       </Grid>
     </>

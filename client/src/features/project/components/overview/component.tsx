@@ -1,21 +1,51 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Chip, Grid, LinearProgress, Paper, Typography } from '@mui/material';
+import { useQuery } from '@apollo/client';
+import { Box, Chip, Grid, LinearProgress, Paper, Skeleton, Typography } from '@mui/material';
 import { Alert } from '../../../common/components/alert';
 import { MomentUtil } from '../../../../util/moment.util';
 import { Editor } from '../../../common/components/editor';
 import { ClickOnceButton } from '../../../common/components/click-once-button';
 import { CommonUtil } from '../../../../util/common.util';
 import { ProjectContributorList } from '../contributor-list';
+import { GET_PROJECT_QUERY } from '../../../../queries/project';
+import { GetProject, GetProjectVariables } from '../../../../queries/__generated__/GetProject';
+import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
+import { getLogger } from '../../../../util/logger';
+import { Project } from '../../../../util/types';
+import { TransformUtil } from '../../../../util/transform.util';
 import { ProjectInfo } from '../info';
 
+const logger = getLogger();
+
 export const ProjectOverview = () => {
-  const { id } = useParams<{ id: any }>();
+  const { address } = useParams<{ address: any }>();
+  const context = useConnectedWeb3Context();
+  const [project, setProject] = useState<Maybe<Project>>(undefined);
+  const [percentage, setPercentage] = useState<number>(0);
+  const [canEdit, setCanEdit] = useState<boolean>(false);
   const momentUtil = new MomentUtil();
   const editorRef = useRef(null);
-  const isExpired = momentUtil.isExpired(momentUtil.get().add(1, "days"));
 
-  if (false) {
+  const projectQuery = useQuery<GetProject, GetProjectVariables>(GET_PROJECT_QUERY, {
+    variables: {
+      address: address
+    },
+    fetchPolicy: 'network-only'
+  });
+
+  const error = projectQuery.error;
+  const loading = projectQuery.loading;
+
+  useEffect(() => {
+    const p = projectQuery.data?.project;
+    logger.info("Creator:", p?.creator)();
+    setProject(TransformUtil.toProject(p));
+    setPercentage(CommonUtil.calculatePercentage(p?.totalFunding, p?.goal));
+    setCanEdit(p?.creator === context.account);
+  }, [context.account, projectQuery.data?.project]);
+
+  if (error) {
     return (
       <Alert message="Could not find the specified project." type="warning"></Alert>
     );
@@ -30,34 +60,46 @@ export const ProjectOverview = () => {
       <Grid item md={8} xs={12}>
         <Paper>
           <Box sx={{ p: 2, wordBreak: "break-all" }}>
-            <Typography variant="h5">Project title</Typography>
+            {loading ? (
+              <Skeleton animation="wave" height={30} width="60%" />
+            ) : (
+              <Typography variant="h5">{project?.title}</Typography>
+            )}
           </Box>
           <Box sx={{ px: 2, pb: 2 }}>
-            <LinearProgress sx={{ height: "20px", borderRadius: "5px" }} variant="determinate" value={75} />
-          </Box>
-          <Box sx={{
-            px: 2, pb: 2,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between"
-          }}>
-            <Typography color="GrayText" noWrap>7500 / 10000 CKB</Typography>
-            {isExpired ? (
-              <Chip label="Expired" size="small" />
+            {loading ? (
+              <Skeleton animation="wave" height={30} width="80%" />
             ) : (
-              <ClickOnceButton size="medium" color="secondary" callbackFn={contributeAsync}>
-                Contribute
-              </ClickOnceButton>
+              <LinearProgress sx={{ height: "20px", borderRadius: "5px" }} variant="determinate" value={percentage} />
             )}
-            <Typography color="GrayText" noWrap>75%</Typography>
           </Box>
+          {!loading && (
+            <Box sx={{
+              px: 2, pb: 2,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between"
+            }}>
+              <Typography color="GrayText" noWrap>{project?.totalFunding} / {project?.goal} CKB</Typography>
+              {momentUtil.isExpired(project?.expirationTimestamp) ? (
+                <Chip label="Expired" size="small" />
+              ) : (
+                <ClickOnceButton size="medium" color="secondary" callbackFn={contributeAsync}>
+                  Contribute
+                </ClickOnceButton>
+              )}
+              <Typography color="GrayText" noWrap>{percentage}%</Typography>
+            </Box>
+          )}
         </Paper>
         <Paper ref={editorRef} sx={{ maxHeight: "800px", minHeight: "600px", my: 2, overflow: "auto" }}>
-          <Editor editorRef={editorRef} readOnly={true} markdownUrl={'https://raw.githubusercontent.com/nhn/tui.editor/master/apps/react-editor/README.md'}></Editor>
+          {!loading && (
+            <Editor editorRef={editorRef} readOnly={true} markdownUrl={project?.url}></Editor>
+          )}
         </Paper>
       </Grid>
       <Grid item md={4} xs={12}>
-        <ProjectInfo id={id} canEdit={true}></ProjectInfo>
+        <ProjectInfo canEdit={canEdit} loading={loading} project={project}></ProjectInfo>
       </Grid>
       <Grid item xs={12}>
         <ProjectContributorList></ProjectContributorList>

@@ -43,10 +43,10 @@ export const Main: React.FC = (props: any) => {
               <Route path="/projects/create">
                 <ProjectCreate />
               </Route>
-              <Route path="/projects/:id/edit">
+              <Route path="/projects/:address/edit">
                 <ProjectEdit />
               </Route>
-              <Route path="/projects/:id">
+              <Route path="/projects/:address">
                 <ProjectOverview />
               </Route>
               <Route path="/test">

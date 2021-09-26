@@ -126,9 +126,11 @@ export const ListItem: React.FC<Props> = (props: Props) => {
                 <Typography variant="caption" color="GrayText">
                   {formatTimestamp(project?.createdTimestamp)}
                 </Typography>
-                <Typography variant="caption" color="GrayText" sx={{ position: "absolute", top: 1, right: 0 }}>
-                  <b>Expired</b>
-                </Typography>
+                {momentUtil.isExpired(project?.expirationTimestamp) && (
+                  <Typography variant="caption" color="GrayText" sx={{ position: "absolute", top: 1, right: 0 }}>
+                    <b>Expired</b>
+                  </Typography>
+                )}
               </Box>
             )
           }

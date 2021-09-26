@@ -12,8 +12,7 @@ function createData(
 }
 
 const rows = [
-  createData('1', '0x61d64AfBbD3b5CC2D0554A8a92aa5C7540501E7c', '1632462812', '500'),
-  createData('2', '0x61d64AfBbD3b5CC2D0554A8a92aa5C7540501E7c', '1632462812', '1500'),
+  createData('1', '...', '1632462812', '...'),
 ];
 
 export const ProjectContributorList = () => {
