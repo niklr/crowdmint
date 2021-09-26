@@ -14,6 +14,7 @@ import { ClickOnceButton } from '../../../common/components/click-once-button';
 interface CreateProject {
   type: string;
   title: string;
+  description: string;
   goal: string;
   expirationDate: Date | null;
 }
@@ -28,6 +29,7 @@ export const ProjectCreate = () => {
   const [values, setValues] = useState<CreateProject>({
     type: ProjectTypes[ProjectType.AON].type,
     title: "",
+    description: "",
     goal: "",
     expirationDate: momentUtil.get().add(1, "days").toDate()
   });
@@ -48,6 +50,7 @@ export const ProjectCreate = () => {
     try {
       Ensure.notNullOrWhiteSpace(context.account, "context.account", "Please connect your wallet first.");
       Ensure.notNullOrWhiteSpace(values.title, "title", "Please enter a title.");
+      Ensure.notNullOrWhiteSpace(values.description, "description", "Please enter a description.");
       Ensure.notNullOrWhiteSpace(values.type, "type", "Please specify a valid project type.");
       Ensure.notNullOrWhiteSpace(values.goal, "goal", "Please specify a valid goal.");
       Ensure.notNull(values.expirationDate, "expirationDate", "Please specify a valid expiration date.");
@@ -115,22 +118,33 @@ export const ProjectCreate = () => {
             </Box>
             <Box sx={{ p: 2 }}>
               <Stack spacing={3}>
-                <Box sx={{ minWidth: 120 }}>
-                  <FormControl fullWidth>
-                    <InputLabel id="project-type-select-label">Type</InputLabel>
-                    <Select
-                      labelId="project-type-select-label"
-                      id="project-type-select"
-                      value={values.type}
-                      label="Type"
-                      autoComplete="off"
-                      onChange={handleTypeChange}
-                    >
-                      <MenuItem value={ProjectTypes[ProjectType.AON].type}>{ProjectTypes[ProjectType.AON].name}</MenuItem>
-                      <MenuItem value={ProjectTypes[ProjectType.KIA].type}>{ProjectTypes[ProjectType.KIA].name}</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Box>
+                <FormControl fullWidth>
+                  <InputLabel htmlFor="description-input">Description</InputLabel>
+                  <OutlinedInput
+                    id="description-input"
+                    value={values.description}
+                    label="Description"
+                    autoComplete="off"
+                    multiline
+                    rows={4}
+                    size="small"
+                    onChange={handleChange('description')}
+                  />
+                </FormControl>
+                <FormControl fullWidth>
+                  <InputLabel id="project-type-select-label">Type</InputLabel>
+                  <Select
+                    labelId="project-type-select-label"
+                    id="project-type-select"
+                    value={values.type}
+                    label="Type"
+                    autoComplete="off"
+                    onChange={handleTypeChange}
+                  >
+                    <MenuItem value={ProjectTypes[ProjectType.AON].type}>{ProjectTypes[ProjectType.AON].name}</MenuItem>
+                    <MenuItem value={ProjectTypes[ProjectType.KIA].type}>{ProjectTypes[ProjectType.KIA].name}</MenuItem>
+                  </Select>
+                </FormControl>
                 <FormControl fullWidth sx={{ m: 1 }}>
                   <InputLabel htmlFor="goal-input">Goal</InputLabel>
                   <OutlinedInput

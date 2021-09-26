@@ -14,6 +14,7 @@ import { ClickOnceButton } from '../../../common/components/click-once-button';
 
 interface EditProject {
   title: string;
+  description: string;
 }
 
 export const ProjectEdit = () => {
@@ -21,6 +22,7 @@ export const ProjectEdit = () => {
   const [project, setProject] = useState<Maybe<Project>>(undefined);
   const [values, setValues] = useState<EditProject>({
     title: "",
+    description: ""
   });
   const editorRef = useRef(null);
 
@@ -37,7 +39,10 @@ export const ProjectEdit = () => {
   useEffect(() => {
     const p = projectQuery.data?.project;
     setProject(TransformUtil.toProject(p));
-    setValues({ title: p?.title ?? "" });
+    setValues({
+      title: p?.title ?? "",
+      description: p?.description ?? ""
+    });
   }, [projectQuery.data?.project]);
 
   const handleChange = (prop: keyof EditProject) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,6 +83,25 @@ export const ProjectEdit = () => {
                 </FormControl>
               )}
             </Box>
+            <Box sx={{ p: 2 }}>
+              {loading ? (
+                <Skeleton animation="wave" height={30} width="80%" />
+              ) : (
+                <FormControl fullWidth>
+                  <InputLabel htmlFor="description-input">Description</InputLabel>
+                  <OutlinedInput
+                    id="description-input"
+                    value={values.description}
+                    label="Description"
+                    autoComplete="off"
+                    multiline
+                    rows={2}
+                    size="small"
+                    onChange={handleChange('description')}
+                  />
+                </FormControl>
+              )}
+            </Box>
           </Paper>
           <Paper ref={editorRef} sx={{ maxHeight: "800px", minHeight: "600px", my: 2, overflow: "auto" }}>
             {!loading && (
@@ -96,7 +120,7 @@ export const ProjectEdit = () => {
           </Paper>
         </Grid>
         <Grid item md={4} xs={12}>
-          <ProjectInfo canEdit={false} loading={loading} project={project}></ProjectInfo>
+          <ProjectInfo canEdit={false} isEdit={true} loading={loading} project={project}></ProjectInfo>
         </Grid>
       </Grid>
     </>

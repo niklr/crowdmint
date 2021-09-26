@@ -52,16 +52,14 @@ export const ListItem: React.FC<Props> = (props: Props) => {
   const projectAddressQuery = useQuery<GetProjectAddress, GetProjectAddressVariables>(GET_PROJECT_ADDRESS_QUERY, {
     variables: {
       index: props.index.toString()
-    },
-    fetchPolicy: 'network-only'
+    }
   });
 
   const projectQuery = useQuery<GetProject, GetProjectVariables>(GET_PROJECT_QUERY, {
     skip: !projectAddressQuery.data,
     variables: {
       address: projectAddressQuery.data?.projectAddress
-    },
-    fetchPolicy: 'network-only'
+    }
   });
 
   const error = projectAddressQuery.error || projectQuery.error;
@@ -70,10 +68,6 @@ export const ListItem: React.FC<Props> = (props: Props) => {
 
   const formatTimestamp = (timestamp: any) => {
     return momentUtil.getLocalReverseFormatted(momentUtil.getFromUnix(timestamp));
-  }
-
-  const truncate = (text: Maybe<string>) => {
-    return CommonUtil.truncateString(text, 26);
   }
 
   if (error) {
@@ -91,7 +85,7 @@ export const ListItem: React.FC<Props> = (props: Props) => {
               <Skeleton animation="wave" variant="circular" width={40} height={40} />
             ) : (
               <Tooltip title="Placeholder" placement="top" arrow>
-                <Avatar>&nbsp;</Avatar>
+                <Avatar sx={{ bgcolor: "secondary.main" }}>&nbsp;</Avatar>
               </Tooltip>
             )
           }
@@ -113,7 +107,7 @@ export const ListItem: React.FC<Props> = (props: Props) => {
             ) : (
               <Box component="div" sx={{ width: "100%", whiteSpace: "nowrap" }}>
                 <Box component="div" textOverflow="ellipsis" overflow="hidden">
-                  {truncate(project?.title)}
+                  {CommonUtil.truncateString(project?.title, 26)}
                 </Box>
               </Box>
             )
@@ -138,7 +132,7 @@ export const ListItem: React.FC<Props> = (props: Props) => {
         {
           loading ? (
             <Box sx={{ paddingTop: 1 }}>
-              <Skeleton sx={{ height: 20, marginBottom: 1 }} animation="wave" variant="rectangular" />
+              <Skeleton sx={{ height: 115, marginBottom: 1 }} animation="wave" variant="rectangular" />
             </Box>
           ) : (
             <>
@@ -151,7 +145,7 @@ export const ListItem: React.FC<Props> = (props: Props) => {
             </>
           )
         }
-        <CardContent sx={{ paddingTop: 0, paddingBottom: 0 }}>
+        <CardContent sx={{ pt: 0, pb: 1 }}>
           {loading ? (
             <Box sx={{ paddingTop: 1, paddingBottom: 2 }}>
               <Skeleton animation="wave" height={10} style={{ marginBottom: 6 }} />
@@ -172,6 +166,13 @@ export const ListItem: React.FC<Props> = (props: Props) => {
                   <Typography variant="body2" align="center">{project?.totalFunding} / {project?.goal} CKB</Typography>
                 </Box>
               </Box>
+              <Card sx={{ height: "100px", overflow: "auto" }} variant="outlined">
+                <Box sx={{ p: 1 }}>
+                  <Typography variant="body2" color="GrayText">
+                    {CommonUtil.isNullOrWhitespace(project?.description) ? "No description available." : project?.description}
+                  </Typography>
+                </Box>
+              </Card>
             </>
           )}
         </CardContent>

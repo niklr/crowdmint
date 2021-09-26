@@ -9,6 +9,7 @@ import { ProjectTypes } from '../../../../common/constants';
 
 interface Props {
   canEdit: boolean;
+  isEdit?: boolean;
   loading?: boolean;
   project?: Maybe<Project>;
 }
@@ -46,6 +47,18 @@ export const ProjectInfo = (props: Props) => {
             </Button>
           )}
         </Box>
+      </Box>
+      <Box sx={{ px: 2, pt: 2, display: props.isEdit ? "none" : "block" }}>
+        <Typography fontWeight="bold">Description</Typography>
+        {props.loading || !category ? (
+          <Skeleton animation="wave" height={15} width="50%" />
+        ) : (
+          <Typography fontSize={14}>
+            {CommonUtil.isNullOrWhitespace(props.project?.description) ?
+              "No description available." : CommonUtil.truncateString(props.project?.description, 256)
+            }
+          </Typography>
+        )}
       </Box>
       <Box sx={{ px: 2, pt: 2 }} >
         <Typography fontWeight="bold">Type</Typography>
