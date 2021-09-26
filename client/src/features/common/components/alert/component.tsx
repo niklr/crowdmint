@@ -12,12 +12,12 @@ interface Props {
 
 export const Alert: React.FC<Props> = (props: Props) => {
   let color = '#000000';
-  let backgroundColor = '#f2f2f2';
+  let backgroundColor = 'rgba(255, 255, 255, 0.5)';
 
   switch (props.type) {
     case 'warning':
       color = '#611a15';
-      backgroundColor = '#fdecea';
+      backgroundColor = 'rgba(255, 0, 0, 0.1)';
       break;
     default:
       break;

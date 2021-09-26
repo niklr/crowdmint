@@ -2,6 +2,7 @@ import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Box, Button, Container, Link, Stack, styled, Typography } from '@mui/material';
 import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
+import { SnackbarUtil } from '../../../../util/snackbar.util';
 
 const HeroContent = styled('div')(
   ({ theme }) => `
@@ -14,12 +15,16 @@ export const Hero = () => {
   const context = useConnectedWeb3Context();
   const testAsync = async () => {
     if (context.account) {
-      const balance = await context.datasource.getBalanceAsync(context.account);
-      console.log(context.account, 'Balance:', balance.toString());
+      try {
+        const balance = await context.datasource.getBalanceAsync(context.account);
+        console.log(context.account, 'Balance:', balance.toString());
 
-      const timestamp = await context.datasource.getTimestampAsync();
-      const totalProjects = await context.datasource.getTotalProjectsAsync();
-      console.log('ProjectManager timestamp:', timestamp.toString(), 'local timestamp:', Math.floor(Date.now() / 1000), 'totalProjects:', totalProjects.toString());
+        const timestamp = await context.datasource.getTimestampAsync();
+        const totalProjects = await context.datasource.getTotalProjectsAsync();
+        console.log('ProjectManager timestamp:', timestamp.toString(), 'local timestamp:', Math.floor(Date.now() / 1000), 'totalProjects:', totalProjects.toString());
+      } catch (error) {
+        SnackbarUtil.enqueueError(error);
+      }
     }
   }
   testAsync();

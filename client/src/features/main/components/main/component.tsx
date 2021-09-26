@@ -13,7 +13,7 @@ import { MainScroll } from '../../../layout/components/main-scroll';
 import { MainWrapper } from '../../../layout/components/main-wrapper';
 import { ProjectCreate } from '../../../project/components/create';
 import { ProjectEdit } from '../../../project/components/edit';
-import { ProjectList } from '../../../project/components/list';
+import { LatestProjects } from '../../../project/components/latest';
 import { ProjectOverview } from '../../../project/components/overview';
 
 export const Main: React.FC = (props: any) => {
@@ -54,7 +54,7 @@ export const Main: React.FC = (props: any) => {
               </Route>
               <Route path="/">
                 <Hero></Hero>
-                <ProjectList></ProjectList>
+                <LatestProjects></LatestProjects>
               </Route>
             </Switch>
           )}
