@@ -24,6 +24,8 @@ import { CommonUtil } from '../../../../util/common.util';
 import { GET_PROJECT_ADDRESS_QUERY, GET_PROJECT_QUERY } from '../../../../queries/project';
 import { GetProjectAddress, GetProjectAddressVariables } from '../../../../queries/__generated__/GetProjectAddress';
 import { GetProject, GetProjectVariables } from '../../../../queries/__generated__/GetProject';
+import { Alert } from '../../../common/components/alert';
+import { FormatUtil } from '../../../../util/format.util';
 
 interface Props {
   index: BigNumber;
@@ -72,6 +74,12 @@ export const ListItem: React.FC<Props> = (props: Props) => {
 
   const truncate = (text: Maybe<string>) => {
     return CommonUtil.truncateString(text, 26);
+  }
+
+  if (error) {
+    return (
+      <Alert message={FormatUtil.formatMessage(error)} type="warning"></Alert>
+    );
   }
 
   return (

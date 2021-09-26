@@ -1,7 +1,7 @@
 import { CommonUtil } from './common.util';
 
 export abstract class FormatUtil {
-  static formatSnackbarMessage(data: any): string {
+  static formatMessage(data: any): string {
     if (data) {
       console.log(data)
       let message: string
@@ -11,6 +11,8 @@ export abstract class FormatUtil {
         }
         else if (data.error?.message) {
           message = data.error.message
+        } else if (data.graphQLErrors) {
+          message = data.graphQLErrors[0].message;
         } else {
           message = JSON.stringify(data)
         }

@@ -5,6 +5,7 @@ import { BigNumber } from 'ethers';
 import { GetTotalProjects } from '../../../../queries/__generated__/GetTotalProjects';
 import { GET_TOTAL_PROJECTS_QUERY } from '../../../../queries/project';
 import { Alert } from '../../../common/components/alert';
+import { FormatUtil } from '../../../../util/format.util';
 import { ProjectList } from '../list';
 
 export const LatestProjects = () => {
@@ -33,7 +34,7 @@ export const LatestProjects = () => {
             {loading ? (
               <Alert message="Loading..." type="default" ></Alert>
             ) : (
-              <Alert message={error?.message ?? "Something went wrong"} type="warning"></Alert>
+              <Alert message={FormatUtil.formatMessage(error)} type="warning"></Alert>
             )}
           </Grid>
         ) : (
