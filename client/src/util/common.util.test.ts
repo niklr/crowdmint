@@ -10,4 +10,10 @@ describe('truncateStringInTheMiddle', () => {
     expect(CommonUtil.truncateStringInTheMiddle('foobarbaz', 3, 2)).toBe('foo...az')
     expect(CommonUtil.truncateStringInTheMiddle('foobarbaz', 1, 1)).toBe('f...z')
   })
+
+  it('should calculate percentage', () => {
+    expect(CommonUtil.calculatePercentage(undefined, undefined)).toBe(0)
+    expect(CommonUtil.calculatePercentage("750", "1000")).toBe(75)
+    expect(CommonUtil.calculatePercentage("751", "1000")).toBe(75)
+  })
 })

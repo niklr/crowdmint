@@ -163,7 +163,7 @@ export const ListItem: React.FC<Props> = (props: Props) => {
               }
             </Typography> */}
               <Box>
-                <LinearProgressWithLabel value={75} />
+                <LinearProgressWithLabel value={CommonUtil.calculatePercentage(project?.totalFunding, project?.goal)} />
               </Box>
               <Box component="div" style={{ width: "100%", whiteSpace: "nowrap" }}>
                 <Box component="div" textOverflow="ellipsis" overflow="hidden">

@@ -1,3 +1,4 @@
+import Big from 'big.js';
 
 export abstract class CommonUtil {
   static isString(value: any): boolean {
@@ -50,5 +51,15 @@ export abstract class CommonUtil {
 
   static random(min: number, max: number) {
     return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+  static calculatePercentage(current: Maybe<string>, goal: Maybe<string>): number {
+    try {
+      if (current && goal) {
+        return Math.floor(Big(current).div(Big(goal)).mul(100).toNumber());
+      }
+    } catch (error) {
+    }
+    return 0;
   }
 }
