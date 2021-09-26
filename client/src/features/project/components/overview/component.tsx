@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { Box, Chip, Grid, LinearProgress, Paper, Skeleton, Typography } from '@mui/material';
+import { ProjectInfo } from '../info';
 import { Alert } from '../../../common/components/alert';
 import { MomentUtil } from '../../../../util/moment.util';
 import { Editor } from '../../../common/components/editor';
@@ -14,7 +15,6 @@ import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
 import { getLogger } from '../../../../util/logger';
 import { Project } from '../../../../util/types';
 import { TransformUtil } from '../../../../util/transform.util';
-import { ProjectInfo } from '../info';
 
 const logger = getLogger();
 

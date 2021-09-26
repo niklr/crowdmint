@@ -3,8 +3,9 @@ import { Link as RouterLink } from 'react-router-dom';
 import { Box, Button, Paper, Skeleton, Typography } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { MomentUtil } from '../../../../util/moment.util';
-import { Project } from '../../../../util/types';
+import { GenericType, Project } from '../../../../util/types';
 import { CommonUtil } from '../../../../util/common.util';
+import { ProjectTypes } from '../../../../common/constants';
 
 interface Props {
   canEdit: boolean;
@@ -14,10 +15,12 @@ interface Props {
 
 export const ProjectInfo = (props: Props) => {
   const [percentage, setPercentage] = useState<number>(0);
+  const [category, setCategory] = useState<Maybe<GenericType>>(undefined);
   const momentUtil = new MomentUtil();
 
   useEffect(() => {
     setPercentage(CommonUtil.calculatePercentage(props.project?.totalFunding, props.project?.goal));
+    setCategory(ProjectTypes.find(e => e.type === props.project?.category));
   }, [props.project]);
 
   const formatTimestamp = (timestamp: any) => {
@@ -46,10 +49,10 @@ export const ProjectInfo = (props: Props) => {
       </Box>
       <Box sx={{ px: 2, pt: 2 }} >
         <Typography fontWeight="bold">Type</Typography>
-        {props.loading ? (
+        {props.loading || !category ? (
           <Skeleton animation="wave" height={15} width="50%" />
         ) : (
-          <Typography fontSize={13} noWrap>All-Or-Nothing (AON)</Typography>
+          <Typography fontSize={13} noWrap>{category?.name} ({category?.type})</Typography>
         )}
       </Box>
       <Box sx={{ px: 2, pt: 2 }} >
