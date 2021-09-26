@@ -21,5 +21,6 @@ extend type Query {
     first: Int!
     skip: Int!
   ): [Item!]!
+  totalProjects: String!
   profile: Profile
 }

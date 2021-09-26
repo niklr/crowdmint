@@ -13,7 +13,6 @@ export class NervosClient {
   private readonly _httpProvider;
   private readonly _web3Provider;
   private readonly _nervosProviderConfig: PolyjuiceConfig;
-  private _projectManager?: ProjectManager;
 
   constructor() {
     Ensure.notNullOrWhiteSpace(process.env.REACT_APP_NERVOS_PROVIDER_URL, 'REACT_APP_NERVOS_PROVIDER_URL');

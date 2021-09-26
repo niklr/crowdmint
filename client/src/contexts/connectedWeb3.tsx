@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { InjectedConnector } from '@web3-react/injected-connector';
+import { CommonContext } from './common.context';
 import { CommonConstants } from '../common/constants';
 import { getLogger } from '../util/logger';
 import { WalletType } from '../util/types';
 import { getAccountStorage } from '../storage';
 import { IDataSource } from '../datasources';
-import { DependencyInjectionUtil } from '../util/di.util';
 
 const logger = getLogger();
 
@@ -83,7 +83,7 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
         });
       }
       accountStorage.account = account;
-      const datasource = DependencyInjectionUtil.getDataSource();
+      const datasource = CommonContext.getDataSource();
       setConnection({
         account,
         chainId,

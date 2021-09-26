@@ -1,7 +1,8 @@
 import { ApolloClient, InMemoryCache, NormalizedCacheObject } from '@apollo/client';
+import { CommonContext } from '../contexts/common.context';
 import { IDataSource } from '../datasources';
 import { ItemQueries } from '../queries';
-import { DependencyInjectionUtil } from '../util/di.util';
+import { ProjectQueries } from '../queries/project';
 
 export type ApolloContext = {
   cache: InMemoryCache,
@@ -15,7 +16,7 @@ export class ApolloClientWrapper extends ApolloClient<NormalizedCacheObject> {
 
   constructor(options: any) {
     super(options);
-    this._datasource = DependencyInjectionUtil.getDataSource();
+    this._datasource = CommonContext.getDataSource();
   }
 
   get datasource(): IDataSource {
@@ -34,7 +35,8 @@ const cache: InMemoryCache = new InMemoryCache({
 
 const resolvers = {
   Query: {
-    ...ItemQueries
+    ...ItemQueries,
+    ...ProjectQueries
   }
 };
 

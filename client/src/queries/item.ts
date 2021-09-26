@@ -16,7 +16,7 @@ export const GET_ITEMS_QUERY = gql`
 `;
 
 export const ItemQueries = {
-  async items(_: any, { first, skip }: any, context: ApolloContext): Promise<Item[] | null> {
+  async items(parent: any, { first, skip }: any, context: ApolloContext): Promise<Item[] | null> {
     try {
       console.log('first', first, 'skip', skip);
       console.log(await context.client.datasource.getTimestampAsync());
