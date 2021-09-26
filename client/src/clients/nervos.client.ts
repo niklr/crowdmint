@@ -3,7 +3,7 @@ import { PolyjuiceJsonRpcProvider } from "@polyjuice-provider/ethers";
 import { PolyjuiceHttpProvider } from "@polyjuice-provider/web3";
 import { ethers } from "ethers";
 import { CommonConstants } from "../common/constants";
-import { ProjectManager, ProjectManager__factory } from "../typechain";
+import { Project, ProjectManager, ProjectManager__factory, Project__factory } from "../typechain";
 import { CommonUtil } from "../util/common.util";
 import { Ensure } from "../util/ensure";
 
@@ -36,6 +36,15 @@ export class NervosClient {
     }
     const signer = this._web3Provider.getSigner(account as string);
     return ProjectManager__factory.connect(CommonConstants.PROJECT_MANAGER_CONTRACT, signer);
+  }
+
+  async getProjectAsync(address: string, account: Maybe<string>): Promise<Project> {
+    Ensure.notNullOrWhiteSpace(address, "address");
+    if (CommonUtil.isNullOrWhitespace(account)) {
+      return Project__factory.connect(address, this._web3Provider);
+    }
+    const signer = this._web3Provider.getSigner(account as string);
+    return Project__factory.connect(address, signer);
   }
 }
 

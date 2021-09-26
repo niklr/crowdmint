@@ -15,14 +15,14 @@ export interface GenericType {
 }
 
 export type Project = {
-  id: string;
+  address: string;
   category: string;
   title: string;
   description: string;
   url: string;
   goal: BigNumber;
-  createdTimestamp: string;
-  expirationTimestamp: string;
+  createdTimestamp: BigNumber;
+  expirationTimestamp: BigNumber;
   creator: string;
   totalContributions: BigNumber;
   totalContributors: BigNumber;

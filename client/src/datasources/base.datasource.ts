@@ -1,6 +1,7 @@
 
 import { BigNumber } from "ethers";
 import { AccountStorage, getAccountStorage } from "../storage";
+import { Project } from "../util/types";
 
 export interface IDataSource {
   getBalanceAsync(_address: string): Promise<BigNumber>;
@@ -28,6 +29,8 @@ export abstract class BaseDataSource implements IDataSource {
   }
 
   abstract getBalanceAsync(_address: string): Promise<BigNumber>;
+  abstract getProjectAddressAsync(index: BigNumber): Promise<string>;
+  abstract getProjectAsync(address: string): Promise<Project>;
   abstract getTimestampAsync(): Promise<BigNumber>;
   abstract getTotalProjectsAsync(): Promise<BigNumber>;
   abstract createProjectAsync(

@@ -21,7 +21,7 @@ export class MockDataSource extends BaseDataSource {
       for (let index = 0; index < projects.length; index++) {
         const p = projects[index];
         this._projects.push({
-          id: index.toString(),
+          address: p.address,
           category: p.category,
           createdTimestamp: p.created,
           expirationTimestamp: p.deadline,
@@ -40,6 +40,18 @@ export class MockDataSource extends BaseDataSource {
 
   async getBalanceAsync(_address: string): Promise<BigNumber> {
     return BigNumber.from(0);
+  }
+
+  async getProjectAddressAsync(index: BigNumber): Promise<string> {
+    return this._projects[index.toNumber()].address;
+  }
+
+  async getProjectAsync(address: string): Promise<Project> {
+    const p = this._projects.find(e => e.address === address);
+    if (!p) {
+      throw new Error("Project not found.")
+    }
+    return p;
   }
 
   async getTimestampAsync(): Promise<BigNumber> {
