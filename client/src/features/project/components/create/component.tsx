@@ -2,25 +2,15 @@ import React, { useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { DateTimePicker } from '@mui/lab';
 import { Box, FormControl, Grid, InputAdornment, InputLabel, MenuItem, OutlinedInput, Paper, Select, SelectChangeEvent, Slider, Stack, TextField, Typography } from '@mui/material';
-import { BigNumber } from 'ethers';
 import { Editor } from '../../../common/components/editor';
 import { MomentUtil } from '../../../../util/moment.util';
 import { ProjectType, ProjectTypes } from '../../../../common/constants';
 import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
 import { SnackbarUtil } from '../../../../util/snackbar.util';
 import { getLogger } from '../../../../util/logger';
-import { Ensure } from '../../../../util/ensure';
 import { ClickOnceButton } from '../../../common/components/click-once-button';
-import { CommonUtil } from '../../../../util/common.util';
 import { getProjectService } from '../../../../services/project.service';
-
-interface CreateProject {
-  type: string;
-  title: string;
-  description: string;
-  goal: string;
-  expirationDate: Date | null;
-}
+import { CreateProject } from '../../../../util/types';
 
 const logger = getLogger();
 
@@ -55,39 +45,8 @@ export const ProjectCreate = () => {
 
   const createProjectAsync = async () => {
     try {
-      Ensure.notNullOrWhiteSpace(context.account, "context.account", "Please connect your wallet first.");
-      Ensure.notNullOrWhiteSpace(values.title, "title", "Please enter a title.");
-      Ensure.notNullOrWhiteSpace(values.description, "description", "Please enter a description.");
-      Ensure.notNullOrWhiteSpace(values.type, "type", "Please specify a valid project type.");
-      Ensure.notNullOrWhiteSpace(values.goal, "goal", "Please specify a valid goal.");
-      Ensure.notNull(values.expirationDate, "expirationDate", "Please specify a valid expiration date.");
-      if (values.title?.length > 48) {
-        throw new Error("Title is too long.")
-      }
-      const now = Math.floor(Date.now() / 1000);
-      const expirationDate = values.expirationDate as Date;
-      const deadline = Math.floor(expirationDate.getTime() / 1000);
-      if (now >= deadline) {
-        throw new Error("Expiration date is in the past.");
-      }
-      const goal = CommonUtil.toCKBit(values.goal);
-      if (goal.lte(0)) {
-        throw new Error("Goal is not valid.");
-      }
-
       const markdown = editorRef?.current?.getInstance().getMarkdown();
-      const markdownUrl = await projectService.saveAsync(markdown);
-
-      const id = CommonUtil.uuid();
-      logger.info("Project id:", id)();
-      const tx = await context.datasource.createProjectAsync(id, values.type, values.title, markdownUrl, goal, BigNumber.from(deadline));
-      logger.info(tx)();
-      const projectIndex = await context.datasource.getProjectIndexAsync(id);
-      const projectAddress = await context.datasource.getProjectAddressAsync(projectIndex);
-      if (CommonUtil.isNullOrWhitespace(projectAddress)) {
-        throw new Error("Project could not be created.");
-      }
-      // TODO: pin with pinata
+      const projectAddress = await projectService.createAsync(context, values, markdown);
       history.push(`/projects/${projectAddress}`);
     } catch (error) {
       logger.error(error)();

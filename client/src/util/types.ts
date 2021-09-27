@@ -34,6 +34,14 @@ export type Project = {
   totalFunding: string;
 }
 
+export interface CreateProject {
+  type: string;
+  title: string;
+  description: string;
+  goal: string;
+  expirationDate: Date | null;
+}
+
 export type Item = {
   id: string;
   createdDate: string;
