@@ -65,6 +65,15 @@ export class NervosDataSource extends BaseDataSource {
     logger.info(tx)();
     return tx.hash;
   }
+
+  async contributeAsync(_address: string, _amount: BigNumber): Promise<string> {
+    const manager = await this._client.getProjectManagerAsync(super.getAccount());
+    const tx = await manager.contribute(_address, {
+      value: _amount
+    });
+    logger.info(tx)();
+    return tx.hash;
+  }
 }
 
 const ds = new NervosDataSource();

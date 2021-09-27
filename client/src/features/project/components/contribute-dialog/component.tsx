@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import Big from 'big.js';
 import { Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, FormControl, InputLabel, Input, InputAdornment } from '@mui/material';
 import { Project } from '../../../../util/types';
 import { ClickOnceButton } from '../../../common/components/click-once-button';
 import { CommonUtil } from '../../../../util/common.util';
 import { SnackbarUtil } from '../../../../util/snackbar.util';
-import { CommonConstants } from '../../../../common/constants';
+import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
 
 interface ContributeProject {
   amount: string
@@ -18,6 +17,8 @@ interface Props {
 }
 
 export const ProjectContributeDialog: React.FC<Props> = (props: Props) => {
+  const context = useConnectedWeb3Context();
+
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState<ContributeProject>({
     amount: ""
@@ -38,15 +39,19 @@ export const ProjectContributeDialog: React.FC<Props> = (props: Props) => {
 
   const handleConfirmAsync = async () => {
     try {
+      if (!props.project) {
+        throw new Error("Project could not be loaded.");
+      }
       const amount = CommonUtil.toCKBit(values.amount);
-      console.log(amount.toString(), CommonUtil.toCKByte(amount.toString()).toString())
+      // console.log(amount.toString(), CommonUtil.toCKByte(amount.toString()).toString())
       if (amount.lt(1)) {
         throw new Error("Invalid amount");
       }
+      await context.datasource.contributeAsync(props.project.address, amount);
+      setOpen(false);
     } catch (error) {
       SnackbarUtil.enqueueError(error);
     }
-    await CommonUtil.timeout(2000);
   }
 
   return (

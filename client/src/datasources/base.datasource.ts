@@ -17,6 +17,7 @@ export interface IDataSource {
     _goal: BigNumber,
     _deadline: BigNumber
   ): Promise<string>;
+  contributeAsync(_address: string, _amount: BigNumber): Promise<string>;
 }
 
 export abstract class BaseDataSource implements IDataSource {
@@ -43,4 +44,5 @@ export abstract class BaseDataSource implements IDataSource {
     _goal: BigNumber,
     _deadline: BigNumber
   ): Promise<string>;
+  abstract contributeAsync(_address: string, _amount: BigNumber): Promise<string>;
 }
