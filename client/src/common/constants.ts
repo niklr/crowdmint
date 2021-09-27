@@ -11,6 +11,10 @@ export const Networks: Network[] = [
   {
     id: 71393,
     name: "Godwoken Testnet"
+  },
+  {
+    id: 1024777,
+    name: "Godwoken Devnet"
   }
 ]
 

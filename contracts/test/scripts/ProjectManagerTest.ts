@@ -246,7 +246,6 @@ class ProjectManagerTest extends BaseTest {
 
     const projectBalanceBefore = await this.rpcProvider.getBalance(project.address);
 
-    assertEquals(projectAddress, await manager.projects(1));
     let timestamp = await manager.getTimestamp();
     let projectInfo = this.toProjectInfo(await project.getInfo());
     if (timestamp.gt(projectInfo.deadline)) {

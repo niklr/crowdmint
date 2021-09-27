@@ -9,7 +9,7 @@ interface Props {
 export const ProjectList: React.FC<Props> = (props: Props) => {
   const total = props.total.toNumber();
   const indexes: number[] = [];
-  for (let index = total; indexes.length < 5; index--) {
+  for (let index = total; indexes.length < 5 && indexes.length < total; index--) {
     indexes.push(index);
   }
   console.log("ProjectList indexes", indexes);
