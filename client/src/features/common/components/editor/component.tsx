@@ -18,6 +18,7 @@ interface Props {
 export const Editor = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [content, setContent] = useState('');
+  const [markdownUrl, setMarkdownUrl] = useState('');
   let height = "400px";
   if (props.containerRef?.current?.clientHeight) {
     height = props.containerRef?.current?.clientHeight + "px";
@@ -31,6 +32,7 @@ export const Editor = (props: Props) => {
           setIsLoading(true);
           const response = await fileUtil.readFileAsync(props.markdownUrl);
           setContent(response);
+          setMarkdownUrl(props.markdownUrl);
         }
       } catch (error) {
         logger.error(error)();
@@ -38,8 +40,10 @@ export const Editor = (props: Props) => {
         setIsLoading(false);
       }
     }
-    downloadAsync();
-  }, [props.markdownUrl])
+    if (props.markdownUrl !== markdownUrl) {
+      downloadAsync();
+    }
+  }, [markdownUrl, props.markdownUrl])
 
   if (isLoading) {
     return (

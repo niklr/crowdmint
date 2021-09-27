@@ -18,6 +18,14 @@ export interface IDataSource {
     _goal: BigNumber,
     _deadline: BigNumber
   ): Promise<string>;
+  editProjectAsync(
+    _address: string,
+    _category: string,
+    _title: string,
+    _url: string,
+    _goal: BigNumber,
+    _deadline: BigNumber
+  ): Promise<string>;
   contributeAsync(_address: string, _amount: BigNumber): Promise<string>;
 }
 
@@ -40,6 +48,14 @@ export abstract class BaseDataSource implements IDataSource {
   abstract getTotalProjectsAsync(): Promise<BigNumber>;
   abstract createProjectAsync(
     _id: string,
+    _category: string,
+    _title: string,
+    _url: string,
+    _goal: BigNumber,
+    _deadline: BigNumber
+  ): Promise<string>;
+  abstract editProjectAsync(
+    _address: string,
     _category: string,
     _title: string,
     _url: string,

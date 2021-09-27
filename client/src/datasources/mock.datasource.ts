@@ -80,6 +80,11 @@ export class MockDataSource extends BaseDataSource {
     throw new Error("Method not implemented.");
   }
 
+  async editProjectAsync(_address: string, _category: string, _title: string, _url: string, _goal: BigNumber, _deadline: BigNumber): Promise<string> {
+    await this.initAsync();
+    throw new Error("Method not implemented.");
+  }
+
   async contributeAsync(_address: string, _amount: BigNumber): Promise<string> {
     await this.initAsync();
     throw new Error("Method not implemented.");

@@ -7,7 +7,7 @@ import { ConnectedWeb3Context } from '../contexts/connectedWeb3';
 import { CommonUtil } from '../util/common.util';
 import { Ensure } from '../util/ensure';
 import { getLogger } from '../util/logger';
-import { CreateProject } from '../util/types';
+import { CreateProject, EditProject, SaveProject } from '../util/types';
 
 const logger = getLogger();
 
@@ -21,18 +21,26 @@ class ProjectService {
     this._ipfs = getIpfsClient();
   }
 
-  async createAsync(context: ConnectedWeb3Context, values: CreateProject, markdown: any): Promise<string> {
+  private validate(context: ConnectedWeb3Context, values: SaveProject, markdown: any): void {
     Ensure.notNull(context, "context");
+    Ensure.notNull(values, "values");
     Ensure.notNullOrWhiteSpace(context.account, "context.account", "Please connect your wallet first.");
     Ensure.notNullOrWhiteSpace(values.title, "title", "Please enter a title.");
     Ensure.notNullOrWhiteSpace(values.description, "description", "Please enter a description.");
+    Ensure.notNullOrWhiteSpace(markdown, "markdown", "Please enter content in the markdown editor.");
+    if (values.title.length > CommonConstants.PROJECT_TITLE_MAX_LENGTH) {
+      throw new Error("Title is too long.")
+    }
+    if (values.description.length > CommonConstants.PROJECT_DESCRIPTION_MAX_LENGTH) {
+      throw new Error("Description is too long.")
+    }
+  }
+
+  async createAsync(context: ConnectedWeb3Context, values: CreateProject, markdown: any): Promise<string> {
+    this.validate(context, values, markdown);
     Ensure.notNullOrWhiteSpace(values.type, "type", "Please specify a valid project type.");
     Ensure.notNullOrWhiteSpace(values.goal, "goal", "Please specify a valid goal.");
     Ensure.notNull(values.expirationDate, "expirationDate", "Please specify a valid expiration date.");
-    Ensure.notNullOrWhiteSpace(markdown, "markdown", "Please enter content in the markdown editor.");
-    if (values.title?.length > CommonConstants.PROJECT_TITLE_MAX_LENGTH) {
-      throw new Error("Title is too long.")
-    }
 
     const now = Math.floor(Date.now() / 1000);
     const expirationDate = values.expirationDate as Date;
@@ -58,6 +66,22 @@ class ProjectService {
     }
     // TODO: pin with pinata
     return projectAddress;
+  }
+
+  async editAsync(context: ConnectedWeb3Context, values: EditProject, markdown: any): Promise<void> {
+    this.validate(context, values, markdown);
+    Ensure.notNullOrWhiteSpace(values.address, "address", "Project address is empty.");
+
+    const ipfsResult = await this._ipfs.uploadAsync(markdown);
+
+    const empty = {
+      category: "",
+      goal: BigNumber.from(0),
+      deadline: BigNumber.from(0)
+    }
+
+    const tx = await context.datasource.editProjectAsync(values.address, empty.category, values.title, ipfsResult.url, empty.goal, empty.deadline);
+    logger.info(tx)();
   }
 }
 

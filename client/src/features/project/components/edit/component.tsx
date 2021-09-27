@@ -9,29 +9,34 @@ import { Alert } from '../../../common/components/alert';
 import { Editor } from '../../../common/components/editor';
 import { GetProject, GetProjectVariables } from '../../../../queries/__generated__/GetProject';
 import { GET_PROJECT_QUERY } from '../../../../queries/project';
-import { Project } from '../../../../util/types';
+import { EditProject, Project } from '../../../../util/types';
 import { TransformUtil } from '../../../../util/transform.util';
 import { ClickOnceButton } from '../../../common/components/click-once-button';
+import { getProjectService } from '../../../../services/project.service';
+import { getLogger } from '../../../../util/logger';
+import { SnackbarUtil } from '../../../../util/snackbar.util';
+import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
 
-interface EditProject {
-  title: string;
-  description: string;
-}
+const logger = getLogger();
 
 export const ProjectEdit = () => {
   const { address } = useParams<{ address: any }>();
   const [project, setProject] = useState<Maybe<Project>>(undefined);
   const [values, setValues] = useState<EditProject>({
+    address,
     title: "",
     description: ""
   });
   const containerRef = useRef(null);
   const editorRef = React.createRef<any>();
+  const context = useConnectedWeb3Context();
+  const projectService = getProjectService();
 
   const projectQuery = useQuery<GetProject, GetProjectVariables>(GET_PROJECT_QUERY, {
     variables: {
       address: address
     },
+    notifyOnNetworkStatusChange: true,
     fetchPolicy: 'network-only'
   });
 
@@ -42,17 +47,25 @@ export const ProjectEdit = () => {
     const p = projectQuery.data?.project;
     setProject(TransformUtil.toProject(p));
     setValues({
+      address,
       title: p?.title ?? "",
       description: p?.description ?? ""
     });
-  }, [projectQuery.data?.project]);
+  }, [address, projectQuery.data?.project]);
 
   const handleChange = (prop: keyof EditProject) => (event: React.ChangeEvent<HTMLInputElement>) => {
     setValues({ ...values, [prop]: event.target.value });
   };
 
   const saveAsync = async () => {
-    console.log(values);
+    try {
+      const markdown = editorRef?.current?.getInstance().getMarkdown();
+      await projectService.editAsync(context, values, markdown);
+      await projectQuery.refetch();
+    } catch (error) {
+      logger.error(error)();
+      SnackbarUtil.enqueueError(error);
+    }
   }
 
   if (error) {

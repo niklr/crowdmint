@@ -34,12 +34,19 @@ export type Project = {
   totalFunding: string;
 }
 
-export interface CreateProject {
-  type: string;
+export interface SaveProject {
   title: string;
   description: string;
+}
+
+export interface CreateProject extends SaveProject {
+  type: string;
   goal: string;
   expirationDate: Date | null;
+}
+
+export interface EditProject extends SaveProject {
+  address: string
 }
 
 export type Item = {
