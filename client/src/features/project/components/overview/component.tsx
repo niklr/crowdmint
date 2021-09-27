@@ -26,7 +26,8 @@ export const ProjectOverview = () => {
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [openContributeDialog, setOpenContributeDialog] = React.useState(false);
   const momentUtil = new MomentUtil();
-  const editorRef = useRef(null);
+  const containerRef = useRef(null);
+  const editorRef = React.createRef<any>();
 
   const projectQuery = useQuery<GetProject, GetProjectVariables>(GET_PROJECT_QUERY, {
     variables: {
@@ -100,9 +101,9 @@ export const ProjectOverview = () => {
               </Box>
             )}
           </Paper>
-          <Paper ref={editorRef} sx={{ maxHeight: "800px", minHeight: "600px", my: 2, overflow: "auto" }}>
+          <Paper ref={containerRef} sx={{ maxHeight: "800px", minHeight: "600px", my: 2, overflow: "auto" }}>
             {!loading && (
-              <Editor editorRef={editorRef} readOnly={true} markdownUrl={project?.url}></Editor>
+              <Editor containerRef={containerRef} editorRef={editorRef} readOnly={true} markdownUrl={project?.url}></Editor>
             )}
           </Paper>
         </Grid>

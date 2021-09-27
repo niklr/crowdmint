@@ -12,6 +12,13 @@ export interface GenericType {
   type: string;
 }
 
+export type IpfsResult = {
+  url: string;
+  path: string;
+  size: number;
+  cid: any;
+}
+
 export type Project = {
   address: string;
   category: string;

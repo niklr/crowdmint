@@ -12,6 +12,7 @@ import { getLogger } from '../../../../util/logger';
 import { Ensure } from '../../../../util/ensure';
 import { ClickOnceButton } from '../../../common/components/click-once-button';
 import { CommonUtil } from '../../../../util/common.util';
+import { getProjectService } from '../../../../services/project.service';
 
 interface CreateProject {
   type: string;
@@ -25,9 +26,12 @@ const logger = getLogger();
 
 export const ProjectCreate = () => {
   const history = useHistory();
-  const editorRef = useRef(null);
+  const containerRef = useRef(null);
+  const editorRef = React.createRef<any>();
   const momentUtil = new MomentUtil();
   const context = useConnectedWeb3Context();
+  const projectService = getProjectService();
+  const baseMarkdownUrl = 'https://raw.githubusercontent.com/nhn/tui.editor/master/apps/react-editor/README.md';
 
   const [values, setValues] = useState<CreateProject>({
     type: ProjectTypes[ProjectType.AON].type,
@@ -71,9 +75,12 @@ export const ProjectCreate = () => {
         throw new Error("Goal is not valid.");
       }
 
+      const markdown = editorRef?.current?.getInstance().getMarkdown();
+      const markdownUrl = await projectService.saveAsync(markdown);
+
       const id = CommonUtil.uuid();
       logger.info("Project id:", id)();
-      const tx = await context.datasource.createProjectAsync(id, values.type, values.title, "http://localhost:3000/#/", goal, BigNumber.from(deadline));
+      const tx = await context.datasource.createProjectAsync(id, values.type, values.title, markdownUrl, goal, BigNumber.from(deadline));
       logger.info(tx)();
       const projectIndex = await context.datasource.getProjectIndexAsync(id);
       const projectAddress = await context.datasource.getProjectAddressAsync(projectIndex);
@@ -108,8 +115,8 @@ export const ProjectCreate = () => {
               </FormControl>
             </Box>
           </Paper>
-          <Paper ref={editorRef} sx={{ maxHeight: "800px", minHeight: "600px", my: 2, overflow: "auto" }}>
-            <Editor editorRef={editorRef} readOnly={false} markdownUrl={'https://raw.githubusercontent.com/nhn/tui.editor/master/apps/react-editor/README.md'}></Editor>
+          <Paper ref={containerRef} sx={{ maxHeight: "800px", minHeight: "600px", my: 2, overflow: "auto" }}>
+            <Editor containerRef={containerRef} editorRef={editorRef} readOnly={false} markdownUrl={baseMarkdownUrl}></Editor>
           </Paper>
           <Paper>
             <Box sx={{ p: 2 }}>

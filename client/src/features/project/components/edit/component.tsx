@@ -24,7 +24,8 @@ export const ProjectEdit = () => {
     title: "",
     description: ""
   });
-  const editorRef = useRef(null);
+  const containerRef = useRef(null);
+  const editorRef = React.createRef<any>();
 
   const projectQuery = useQuery<GetProject, GetProjectVariables>(GET_PROJECT_QUERY, {
     variables: {
@@ -103,9 +104,9 @@ export const ProjectEdit = () => {
               )}
             </Box>
           </Paper>
-          <Paper ref={editorRef} sx={{ maxHeight: "800px", minHeight: "600px", my: 2, overflow: "auto" }}>
+          <Paper ref={containerRef} sx={{ maxHeight: "800px", minHeight: "600px", my: 2, overflow: "auto" }}>
             {!loading && (
-              <Editor editorRef={editorRef} readOnly={false} markdownUrl={project?.url}></Editor>
+              <Editor containerRef={containerRef} editorRef={editorRef} readOnly={false} markdownUrl={project?.url}></Editor>
             )}
           </Paper>
           <Paper>
