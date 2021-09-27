@@ -10,6 +10,7 @@ import { ProjectList } from '../list';
 
 export const LatestProjects = () => {
   const totalProjectsQuery = useQuery<GetTotalProjects>(GET_TOTAL_PROJECTS_QUERY, {
+    notifyOnNetworkStatusChange: true,
     fetchPolicy: 'network-only'
   });
 

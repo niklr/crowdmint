@@ -32,6 +32,7 @@ export const ProjectOverview = () => {
     variables: {
       address: address
     },
+    notifyOnNetworkStatusChange: true,
     fetchPolicy: 'network-only'
   });
 
@@ -44,12 +45,23 @@ export const ProjectOverview = () => {
     setProject(TransformUtil.toProject(p));
     setPercentage(CommonUtil.calculatePercentage(p?.totalFunding, p?.goal));
     setCanEdit(p?.creator === context.account);
+    return () => {
+      // TODO: destroy contract event listeners
+      console.log("cleaned up");
+    };
   }, [context.account, projectQuery.data?.project]);
 
   if (error) {
     return (
       <Alert message="Could not find the specified project." type="warning"></Alert>
     );
+  }
+
+  const handleContributeCallback = async (success: boolean) => {
+    if (success) {
+      await projectQuery.refetch();
+    }
+    setOpenContributeDialog(false);
   }
 
   return (
@@ -103,7 +115,7 @@ export const ProjectOverview = () => {
       </Grid>
       <ProjectContributeDialog
         open={openContributeDialog}
-        onClose={() => { setOpenContributeDialog(false) }}
+        onClose={handleContributeCallback}
         project={project}>
       </ProjectContributeDialog>
     </>

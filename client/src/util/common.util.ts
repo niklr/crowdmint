@@ -1,5 +1,6 @@
 import Big from 'big.js';
 import { BigNumber } from 'ethers';
+import { v4 as uuidv4 } from 'uuid';
 import { CommonConstants } from '../common/constants';
 
 export abstract class CommonUtil {
@@ -71,5 +72,9 @@ export abstract class CommonUtil {
     } catch (error) {
     }
     return 0;
+  }
+
+  static uuid(): string {
+    return uuidv4();
   }
 }

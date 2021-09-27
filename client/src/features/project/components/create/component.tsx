@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { useHistory } from 'react-router';
 import { DateTimePicker } from '@mui/lab';
 import { Box, FormControl, Grid, InputAdornment, InputLabel, MenuItem, OutlinedInput, Paper, Select, SelectChangeEvent, Slider, Stack, TextField, Typography } from '@mui/material';
 import { BigNumber } from 'ethers';
@@ -10,6 +11,7 @@ import { SnackbarUtil } from '../../../../util/snackbar.util';
 import { getLogger } from '../../../../util/logger';
 import { Ensure } from '../../../../util/ensure';
 import { ClickOnceButton } from '../../../common/components/click-once-button';
+import { CommonUtil } from '../../../../util/common.util';
 
 interface CreateProject {
   type: string;
@@ -22,6 +24,7 @@ interface CreateProject {
 const logger = getLogger();
 
 export const ProjectCreate = () => {
+  const history = useHistory();
   const editorRef = useRef(null);
   const momentUtil = new MomentUtil();
   const context = useConnectedWeb3Context();
@@ -63,14 +66,21 @@ export const ProjectCreate = () => {
       if (now >= deadline) {
         throw new Error("Expiration date is in the past.");
       }
-      const goal = BigNumber.from(values.goal);
+      const goal = CommonUtil.toCKBit(values.goal);
       if (goal.lte(0)) {
         throw new Error("Goal is not valid.");
       }
 
-      const id = now.toString();
+      const id = CommonUtil.uuid();
+      logger.info("Project id:", id)();
       const tx = await context.datasource.createProjectAsync(id, values.type, values.title, "http://localhost:3000/#/", goal, BigNumber.from(deadline));
-      console.log(tx);
+      logger.info(tx)();
+      const projectIndex = await context.datasource.getProjectIndexAsync(id);
+      const projectAddress = await context.datasource.getProjectAddressAsync(projectIndex);
+      if (CommonUtil.isNullOrWhitespace(projectAddress)) {
+        throw new Error("Project could not be created.");
+      }
+      history.push(`/projects/${projectAddress}`);
     } catch (error) {
       logger.error(error)();
       SnackbarUtil.enqueueError(error);

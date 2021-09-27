@@ -44,15 +44,20 @@ export class MockDataSource extends BaseDataSource {
     return BigNumber.from(0);
   }
 
-  async getProjectAddressAsync(index: BigNumber): Promise<Maybe<string>> {
+  async getProjectIndexAsync(_id: string): Promise<BigNumber> {
     await this.initAsync();
-    return this._projects[index.toNumber() - 1].address;
+    throw new Error("Method not implemented.");
   }
 
-  async getProjectAsync(address: string): Promise<Project> {
+  async getProjectAddressAsync(_index: BigNumber): Promise<string> {
+    await this.initAsync();
+    return this._projects[_index.toNumber() - 1].address;
+  }
+
+  async getProjectAsync(_address: string): Promise<Project> {
     await this.initAsync();
     await CommonUtil.timeout(CommonUtil.random(500, 3000));
-    const p = this._projects.find(e => e.address === address);
+    const p = this._projects.find(e => e.address === _address);
     if (!p) {
       throw new Error("Project not found.")
     }

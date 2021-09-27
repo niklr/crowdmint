@@ -12,7 +12,7 @@ interface ContributeProject {
 
 interface Props {
   open: boolean
-  onClose: () => void
+  onClose: (success: boolean) => void
   project?: Maybe<Project>
 }
 
@@ -24,8 +24,8 @@ export const ProjectContributeDialog: React.FC<Props> = (props: Props) => {
     amount: ""
   });
 
-  const handleClose = () => {
-    props.onClose();
+  const handleClose = (success: boolean) => {
+    props.onClose(success);
     setOpen(false);
   };
 
@@ -48,7 +48,7 @@ export const ProjectContributeDialog: React.FC<Props> = (props: Props) => {
         throw new Error("Invalid amount");
       }
       await context.datasource.contributeAsync(props.project.address, amount);
-      setOpen(false);
+      handleClose(true);
     } catch (error) {
       SnackbarUtil.enqueueError(error);
     }
@@ -74,7 +74,7 @@ export const ProjectContributeDialog: React.FC<Props> = (props: Props) => {
         </FormControl>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
+        <Button onClick={() => { handleClose(false) }}>Cancel</Button>
         <ClickOnceButton size="medium" color="primary" callbackFn={handleConfirmAsync}>
           Confirm
         </ClickOnceButton>
