@@ -42,10 +42,11 @@ export const ProjectOverview = () => {
 
   useEffect(() => {
     const p = projectQuery.data?.project;
-    logger.info("Creator:", p?.creator)();
+    const accountAddress = TransformUtil.toGodwoken(context.account);
+    logger.info("Creator:", p?.creator, "Account:", accountAddress)();
     setProject(TransformUtil.toProject(p));
     setPercentage(CommonUtil.calculatePercentage(p?.totalFunding, p?.goal));
-    setCanEdit(p?.creator === context.account);
+    setCanEdit(p?.creator?.toLowerCase() === accountAddress?.toLowerCase());
     return () => {
       // TODO: destroy contract event listeners
       console.log("cleaned up");

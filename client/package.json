@@ -20,6 +20,7 @@
     "graphql": "^15.6.0",
     "ipfs-http-client": "^53.0.0",
     "moment": "^2.29.1",
+    "nervos-godwoken-integration": "^0.0.10",
     "notistack": "1.0.6-next.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

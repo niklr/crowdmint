@@ -1,3 +1,4 @@
+import { AddressTranslator } from 'nervos-godwoken-integration';
 import { GetProject_project } from '../queries/__generated__/GetProject';
 import { Project } from './types';
 
@@ -20,5 +21,12 @@ export abstract class TransformUtil {
       totalFunding: source?.totalFunding,
       url: source?.url
     }
+  }
+
+  static toGodwoken(address: Maybe<string>): Maybe<string> {
+    if (!address) {
+      return;
+    }
+    return (new AddressTranslator()).ethAddressToGodwokenShortAddress(address);
   }
 }
