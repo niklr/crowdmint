@@ -2,8 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
-import { Box, Button, FormControl, Grid, InputLabel, OutlinedInput, Paper, Skeleton, Typography } from '@mui/material';
+import { Box, Button, FormControl, Grid, InputLabel, OutlinedInput, Paper, Skeleton, Stack, Typography } from '@mui/material';
 import { ProjectInfo } from '../info';
+import { ProjectInfoTitle } from '../info-title';
 import { Alert } from '../../../common/components/alert';
 import { Editor } from '../../../common/components/editor';
 import { GetProject, GetProjectVariables } from '../../../../queries/__generated__/GetProject';
@@ -84,25 +85,6 @@ export const ProjectEdit = () => {
                 </FormControl>
               )}
             </Box>
-            <Box sx={{ p: 2 }}>
-              {loading ? (
-                <Skeleton animation="wave" height={30} width="80%" />
-              ) : (
-                <FormControl fullWidth>
-                  <InputLabel htmlFor="description-input">Description</InputLabel>
-                  <OutlinedInput
-                    id="description-input"
-                    value={values.description}
-                    label="Description"
-                    autoComplete="off"
-                    multiline
-                    rows={2}
-                    size="small"
-                    onChange={handleChange('description')}
-                  />
-                </FormControl>
-              )}
-            </Box>
           </Paper>
           <Paper ref={containerRef} sx={{ maxHeight: "800px", minHeight: "600px", my: 2, overflow: "auto" }}>
             {!loading && (
@@ -121,7 +103,31 @@ export const ProjectEdit = () => {
           </Paper>
         </Grid>
         <Grid item md={4} xs={12}>
-          <ProjectInfo canEdit={false} isEdit={true} loading={loading} project={project}></ProjectInfo>
+          <Paper>
+            <ProjectInfoTitle canEdit={false} loading={loading} project={project}></ProjectInfoTitle>
+            <Box sx={{ px: 2, pt: 2 }}>
+              <Stack spacing={3}>
+                {loading ? (
+                  <Skeleton animation="wave" height={30} width="80%" />
+                ) : (
+                  <FormControl fullWidth>
+                    <InputLabel htmlFor="description-input">Description</InputLabel>
+                    <OutlinedInput
+                      id="description-input"
+                      value={values.description}
+                      label="Description"
+                      autoComplete="off"
+                      multiline
+                      rows={4}
+                      size="small"
+                      onChange={handleChange('description')}
+                    />
+                  </FormControl>
+                )}
+              </Stack>
+            </Box>
+            <ProjectInfo isEdit={true} loading={loading} project={project}></ProjectInfo>
+          </Paper>
         </Grid>
       </Grid>
     </>

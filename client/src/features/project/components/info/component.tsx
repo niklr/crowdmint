@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import { Box, Button, Paper, Skeleton, Typography } from '@mui/material';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { Box, Skeleton, Typography } from '@mui/material';
 import { MomentUtil } from '../../../../util/moment.util';
 import { GenericType, Project } from '../../../../util/types';
 import { CommonUtil } from '../../../../util/common.util';
 import { ProjectTypes } from '../../../../common/constants';
 
 interface Props {
-  canEdit: boolean;
   isEdit?: boolean;
   loading?: boolean;
   project?: Maybe<Project>;
@@ -29,25 +26,7 @@ export const ProjectInfo = (props: Props) => {
   }
 
   return (
-    <Paper>
-      <Box sx={{ display: 'flex', p: 2, bgcolor: "secondary.main" }}>
-        <Box sx={{ flexGrow: 1 }}>
-          <Box sx={{
-            display: "flex",
-            alignItems: "center"
-          }}>
-            <InfoOutlinedIcon sx={{ mr: 1 }} />
-            <Typography variant="h5">Project information</Typography>
-          </Box>
-        </Box>
-        <Box>
-          {!props.loading && props.canEdit && (
-            <Button variant="contained" color="primary" sx={{ ml: 2 }} component={RouterLink} to={'/projects/' + props.project?.address + '/edit'}>
-              Edit
-            </Button>
-          )}
-        </Box>
-      </Box>
+    <>
       <Box sx={{ px: 2, pt: 2, display: props.isEdit ? "none" : "block" }}>
         <Typography fontWeight="bold">Description</Typography>
         {props.loading || !category ? (
@@ -124,6 +103,6 @@ export const ProjectInfo = (props: Props) => {
           <Typography fontSize={13} noWrap>{props.project?.address}</Typography>
         )}
       </Box>
-    </Paper>
+    </>
   );
 }

@@ -4,6 +4,7 @@ import { useQuery } from '@apollo/client';
 import { Box, Button, Chip, Grid, LinearProgress, Paper, Skeleton, Typography } from '@mui/material';
 import { ProjectContributeDialog } from '../contribute-dialog';
 import { ProjectInfo } from '../info';
+import { ProjectInfoTitle } from '../info-title';
 import { Alert } from '../../../common/components/alert';
 import { MomentUtil } from '../../../../util/moment.util';
 import { Editor } from '../../../common/components/editor';
@@ -109,7 +110,10 @@ export const ProjectOverview = () => {
           </Paper>
         </Grid>
         <Grid item md={4} xs={12}>
-          <ProjectInfo canEdit={canEdit} loading={loading} project={project}></ProjectInfo>
+          <Paper>
+            <ProjectInfoTitle canEdit={canEdit} loading={loading} project={project}></ProjectInfoTitle>
+            <ProjectInfo loading={loading} project={project}></ProjectInfo>
+          </Paper>
         </Grid>
         <Grid item xs={12}>
           <ProjectContributorList></ProjectContributorList>

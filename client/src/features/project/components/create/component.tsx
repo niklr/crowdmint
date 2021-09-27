@@ -87,6 +87,7 @@ export const ProjectCreate = () => {
       if (CommonUtil.isNullOrWhitespace(projectAddress)) {
         throw new Error("Project could not be created.");
       }
+      // TODO: pin with pinata
       history.push(`/projects/${projectAddress}`);
     } catch (error) {
       logger.error(error)();
