@@ -14,7 +14,7 @@ contract ProjectManager {
     mapping(string => uint256) public indexes;
     mapping(uint256 => address) public projects;
 
-    event ProjectCreated(uint256 indexed index, string category, string title, address addr, address creator);
+    event ProjectCreated(uint256 indexed index, address indexed creator, string category, string title, address addr);
 
     modifier onlyOwner() {
         require(owner == msg.sender, "Only owner.");
@@ -54,7 +54,7 @@ contract ProjectManager {
         indexes[_id] = index;
         projects[index] = addr;
 
-        emit ProjectCreated(index, _category, _title, addr, msg.sender);
+        emit ProjectCreated(index, msg.sender, _category, _title, addr);
 
         totalProjects++;
 

@@ -68,10 +68,10 @@ class ProjectManagerTest extends BaseTest {
     assertEquals(actualOwner.toLowerCase(), deployerPolyjuiceAddress.value.toLowerCase(), "owner");
     assertEquals(0, (await contract.totalProjects()).toNumber(), "Total projects mismatch");
 
-    //contract.interface.events["ProjectCreated(uint256,string,string,address,address)"];
+    //contract.interface.events["ProjectCreated(uint256,address,string,string,address)"];
 
-    contract.on("ProjectCreated", (index: number, category: string, title: string, addr: string, sender: string) => {
-      console.log("ProjectCreated", index, category, title, addr, sender);
+    contract.on("ProjectCreated", (index: number, sender: string, category: string, title: string, addr: string) => {
+      console.log("ProjectCreated", index, sender, category, title, addr);
     });
 
     const expectedProjectIndex = BigNumber.from(1);

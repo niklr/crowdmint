@@ -22,6 +22,7 @@ contract Project {
 
     struct Contribution {
         address payable contributor;
+        uint256 created;
         uint256 amount;
     }
 
@@ -41,9 +42,9 @@ contract Project {
     ProjectInfo public info;
 
     event InfoUpdated(address indexed project, string title, string url);
-    event ContributionReceived(address indexed project, address contributor, uint256 amount);
-    event RefundRequested(address indexed project, address requestor, uint256 amount);
-    event PayoutRequested(address indexed project, address requestor, uint256 amount);
+    event ContributionReceived(address indexed project, address indexed contributor, uint256 amount);
+    event RefundRequested(address indexed project, address indexed requestor, uint256 amount);
+    event PayoutRequested(address indexed project, address indexed requestor, uint256 amount);
 
     modifier onlyCreator() {
         require(info.creator == msg.sender, "Only creator.");
@@ -120,9 +121,9 @@ contract Project {
         );
     }
 
-    function getContribution(uint256 _index) public view returns (address, uint256) {
+    function getContribution(uint256 _index) public view returns (Contribution memory) {
         Contribution memory c = contributions[_index];
-        return (c.contributor, c.amount);
+        return (c);
     }
 
     /**
@@ -157,6 +158,7 @@ contract Project {
         // Add contribution to map
         Contribution memory c = contributions[totalContributions];
         c.contributor = _contributor;
+        c.created = block.timestamp;
         c.amount = msg.value;
 
         // Update balance of contributor
