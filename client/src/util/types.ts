@@ -49,6 +49,12 @@ export interface EditProject extends SaveProject {
   address: string
 }
 
+export type Contribution = {
+  contributor: string;
+  createdTimestamp: string;
+  amount: string;
+}
+
 export type Item = {
   id: string;
   createdDate: string;

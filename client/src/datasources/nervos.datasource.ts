@@ -1,17 +1,21 @@
 import { BigNumber, Overrides } from "ethers";
 import { BaseDataSource } from ".";
 import { getNervosClient, NervosClient } from "../clients/nervos.client";
+import { Project as TypechainProject, ProjectManager as TypechainProjectManager } from "../typechain";
 import { getLogger } from "../util/logger";
-import { Project } from "../util/types";
+import { Contribution, Project } from "../util/types";
 
 const logger = getLogger();
 
 export class NervosDataSource extends BaseDataSource {
   private readonly _client: NervosClient;
+  private readonly _projectContracts: Map<string, TypechainProject>;
+  private _projectManagerContract?: TypechainProjectManager;
 
   constructor() {
     super();
     this._client = getNervosClient();
+    this._projectContracts = new Map<string, TypechainProject>();
   }
 
   private getOverrideOptions(): Overrides {
@@ -21,22 +25,50 @@ export class NervosDataSource extends BaseDataSource {
     };
   }
 
+  private async getTypechainProjectAsync(_address: string): Promise<TypechainProject> {
+    const existing = this._projectContracts.get(_address);
+    if (existing) {
+      return existing;
+    }
+    const project = await this._client.getProjectAsync(_address, undefined);
+    this._projectContracts.set(_address, project);
+    return project;
+  }
+
+  private async getTypechainProjectManagerAsync(): Promise<TypechainProjectManager> {
+    if (this._projectManagerContract) {
+      return this._projectManagerContract;
+    }
+    this._projectManagerContract = await this._client.getProjectManagerAsync(undefined);
+    return this._projectManagerContract;
+  }
+
   async getBalanceAsync(_address: string): Promise<BigNumber> {
     return this._client.rpcProvider.getBalance(_address);
   }
 
+  async getContributionAsync(_address: string, _index: BigNumber): Promise<Contribution> {
+    const project = await this.getTypechainProjectAsync(_address);
+    const c = await project.getContribution(_index);
+    return {
+      contributor: c.contributor,
+      createdTimestamp: c.created.toString(),
+      amount: c.amount.toString()
+    };
+  }
+
   async getProjectIndexAsync(_id: string): Promise<BigNumber> {
-    const manager = await this._client.getProjectManagerAsync(undefined);
+    const manager = await this.getTypechainProjectManagerAsync();
     return manager.indexes(_id);
   }
 
   async getProjectAddressAsync(_index: BigNumber): Promise<string> {
-    const manager = await this._client.getProjectManagerAsync(undefined);
+    const manager = await this.getTypechainProjectManagerAsync();
     return manager.projects(_index);
   }
 
   async getProjectAsync(_address: string): Promise<Project> {
-    const project = await this._client.getProjectAsync(_address, undefined);
+    const project = await this.getTypechainProjectAsync(_address);
     const info = await project.getInfo();
     return {
       address: _address,
@@ -55,12 +87,12 @@ export class NervosDataSource extends BaseDataSource {
   }
 
   async getTimestampAsync(): Promise<BigNumber> {
-    const manager = await this._client.getProjectManagerAsync(undefined);
+    const manager = await this.getTypechainProjectManagerAsync();
     return manager.getTimestamp();
   }
 
   async getTotalProjectsAsync(): Promise<BigNumber> {
-    const manager = await this._client.getProjectManagerAsync(undefined);
+    const manager = await this.getTypechainProjectManagerAsync();
     return manager.totalProjects();
   }
 
