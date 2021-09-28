@@ -35,7 +35,7 @@ export const GET_PROJECT_QUERY = gql`
   }
 `;
 
-export const GET_PROJECT_CONTRIBUTION = gql`
+export const GET_PROJECT_CONTRIBUTION_QUERY = gql`
   query GetProjectContribution($address: String, $index: String!) {
     projectContribution(address: $address, index: $index) @client {
       contributor

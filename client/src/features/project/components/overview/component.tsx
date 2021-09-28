@@ -127,7 +127,7 @@ export const ProjectOverview = () => {
           </Paper>
         </Grid>
         <Grid item xs={12}>
-          <ProjectContributionList total={BigNumber.from(project?.totalContributions ?? 0)}></ProjectContributionList>
+          <ProjectContributionList address={project?.address} total={BigNumber.from(project?.totalContributions ?? 0)}></ProjectContributionList>
         </Grid>
       </Grid>
       <ProjectContributeDialog

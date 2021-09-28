@@ -4,15 +4,17 @@ import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow
 import { ProjectContributionListItem } from '../contribution-list-item';
 
 interface Props {
+  address: Maybe<string>;
   total: BigNumber;
 }
 
 export const ProjectContributionList: React.FC<Props> = (props: Props) => {
   const total = props.total.toNumber();
   const indexes: number[] = [];
-  for (let index = total; indexes.length < 5 && indexes.length < total; index--) {
+  for (let index = total - 1; indexes.length < 5 && indexes.length < total; index--) {
     indexes.push(index);
   }
+  console.log("ProjectContributionList indexes", indexes);
 
   return (
     <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
@@ -36,7 +38,7 @@ export const ProjectContributionList: React.FC<Props> = (props: Props) => {
               key={index.toString()}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
-              <ProjectContributionListItem index={BigNumber.from(index)}>
+              <ProjectContributionListItem address={props.address} index={BigNumber.from(index)}>
               </ProjectContributionListItem>
             </TableRow>
           ))}
