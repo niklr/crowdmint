@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { BigNumber } from 'ethers';
 import { useQuery } from '@apollo/client';
 import { Box, Button, Chip, Grid, LinearProgress, Paper, Skeleton, Tooltip, Typography } from '@mui/material';
 import { ProjectContributeDialog } from '../contribute-dialog';
@@ -9,7 +10,7 @@ import { Alert } from '../../../common/components/alert';
 import { MomentUtil } from '../../../../util/moment.util';
 import { Editor } from '../../../common/components/editor';
 import { CommonUtil } from '../../../../util/common.util';
-import { ProjectContributorList } from '../contributor-list';
+import { ProjectContributionList } from '../contribution-list';
 import { GET_PROJECT_QUERY } from '../../../../queries/project';
 import { GetProject, GetProjectVariables } from '../../../../queries/__generated__/GetProject';
 import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
@@ -101,7 +102,7 @@ export const ProjectOverview = () => {
                 alignItems: "center",
                 justifyContent: "space-between"
               }}>
-                <Tooltip title={toCKByteString(project?.totalFunding) + ' / ' + toCKByteString(project?.goal)} placement="top" arrow>
+                <Tooltip title={toCKByteString(project?.totalFunding) + ' / ' + toCKByteString(project?.goal)} placement="bottom" arrow>
                   <Typography color="GrayText" noWrap>{toCKByte(project?.totalFunding)} / {toCKByte(project?.goal)} CKB</Typography>
                 </Tooltip>
                 {momentUtil.isExpired(project?.expirationTimestamp) ? (
@@ -126,7 +127,7 @@ export const ProjectOverview = () => {
           </Paper>
         </Grid>
         <Grid item xs={12}>
-          <ProjectContributorList></ProjectContributorList>
+          <ProjectContributionList total={BigNumber.from(project?.totalContributions ?? 0)}></ProjectContributionList>
         </Grid>
       </Grid>
       <ProjectContributeDialog

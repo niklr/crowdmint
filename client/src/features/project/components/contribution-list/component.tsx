@@ -1,25 +1,17 @@
 import React from 'react';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { MomentUtil } from '../../../../util/moment.util';
+import { BigNumber } from 'ethers';
+import { ProjectContributionListItem } from '../contribution-list-item';
 
-function createData(
-  index: string,
-  name: string,
-  date: string,
-  amount: string
-) {
-  return { index, name, date, amount };
+interface Props {
+  total: BigNumber;
 }
 
-const rows = [
-  createData('1', '...', '1632462812', '...'),
-];
-
-export const ProjectContributorList = () => {
-  const momentUtil = new MomentUtil();
-
-  const formatTimestamp = (timestamp: any) => {
-    return momentUtil.getLocalReverseFormatted(momentUtil.getFromUnix(timestamp));
+export const ProjectContributionList: React.FC<Props> = (props: Props) => {
+  const total = props.total.toNumber();
+  const indexes: number[] = [];
+  for (let index = total; indexes.length < 5 && indexes.length < total; index--) {
+    indexes.push(index);
   }
 
   return (
@@ -39,20 +31,13 @@ export const ProjectContributorList = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {indexes.map((index: number) => (
             <TableRow
-              key={row.index}
+              key={index.toString()}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
-              <TableCell component="th" scope="row">
-                {row.name}
-              </TableCell>
-              <TableCell align="left">
-                {formatTimestamp(row.date)}
-              </TableCell>
-              <TableCell align="right">
-                {row.amount} CKB
-              </TableCell>
+              <ProjectContributionListItem index={BigNumber.from(index)}>
+              </ProjectContributionListItem>
             </TableRow>
           ))}
         </TableBody>
