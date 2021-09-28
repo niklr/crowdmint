@@ -47,6 +47,7 @@ export const ProjectCreate = () => {
     try {
       const markdown = editorRef?.current?.getInstance().getMarkdown();
       const projectAddress = await projectService.createAsync(context, values, markdown);
+      SnackbarUtil.enqueueMessage("Project created!");
       history.push(`/projects/${projectAddress}`);
     } catch (error) {
       logger.error(error)();

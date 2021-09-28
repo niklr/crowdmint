@@ -17,6 +17,7 @@ import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
 import { getLogger } from '../../../../util/logger';
 import { Project } from '../../../../util/types';
 import { TransformUtil } from '../../../../util/transform.util';
+import { SnackbarUtil } from '../../../../util/snackbar.util';
 
 const logger = getLogger();
 
@@ -63,6 +64,7 @@ export const ProjectOverview = () => {
 
   const handleContributeCallback = async (success: boolean) => {
     if (success) {
+      SnackbarUtil.enqueueMessage("Success!");
       await projectQuery.refetch();
     }
     setOpenContributeDialog(false);
