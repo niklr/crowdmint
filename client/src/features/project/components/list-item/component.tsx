@@ -26,6 +26,7 @@ import { GetProjectAddress, GetProjectAddressVariables } from '../../../../queri
 import { GetProject, GetProjectVariables } from '../../../../queries/__generated__/GetProject';
 import { Alert } from '../../../common/components/alert';
 import { FormatUtil } from '../../../../util/format.util';
+import { TransformUtil } from '../../../../util/transform.util';
 
 interface Props {
   index: BigNumber;
@@ -68,6 +69,14 @@ export const ListItem: React.FC<Props> = (props: Props) => {
 
   const formatTimestamp = (timestamp: any) => {
     return momentUtil.getLocalReverseFormatted(momentUtil.getFromUnix(timestamp));
+  }
+
+  const toCKByte = (amount: Maybe<string>) => {
+    return TransformUtil.toCKByte(amount).toString();
+  }
+
+  const toCKByteString = (amount: Maybe<string>) => {
+    return TransformUtil.toCKByteString(amount);
   }
 
   if (error) {
@@ -163,7 +172,9 @@ export const ListItem: React.FC<Props> = (props: Props) => {
               </Box>
               <Box component="div" style={{ width: "100%", whiteSpace: "nowrap" }}>
                 <Box component="div" textOverflow="ellipsis" overflow="hidden">
-                  <Typography variant="body2" align="center">{project?.totalFunding} / {project?.goal} CKB</Typography>
+                  <Tooltip title={toCKByteString(project?.totalFunding) + ' / ' + toCKByteString(project?.goal)} placement="bottom" arrow>
+                    <Typography variant="body2" align="center">{toCKByte(project?.totalFunding)} / {toCKByte(project?.goal)} CKB</Typography>
+                  </Tooltip>
                 </Box>
               </Box>
               <Card sx={{ height: "100px", overflow: "auto" }} variant="outlined">

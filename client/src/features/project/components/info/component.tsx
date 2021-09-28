@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Skeleton, Typography } from '@mui/material';
+import { Box, Skeleton, Tooltip, Typography } from '@mui/material';
 import { MomentUtil } from '../../../../util/moment.util';
 import { GenericType, Project } from '../../../../util/types';
 import { CommonUtil } from '../../../../util/common.util';
@@ -28,6 +28,10 @@ export const ProjectInfo = (props: Props) => {
 
   const toCKByte = (amount: Maybe<string>) => {
     return TransformUtil.toCKByte(amount).toString();
+  }
+
+  const toCKByteString = (amount: Maybe<string>) => {
+    return TransformUtil.toCKByteString(amount);
   }
 
   return (
@@ -65,7 +69,9 @@ export const ProjectInfo = (props: Props) => {
         {props.loading ? (
           <Skeleton animation="wave" height={15} width="40%" />
         ) : (
-          <Typography fontSize={13} noWrap>{toCKByte(props.project?.goal)} CKB</Typography>
+          <Tooltip title={toCKByteString(props.project?.goal)} placement="left" arrow>
+            <Typography fontSize={13} noWrap>{toCKByte(props.project?.goal)} CKB</Typography>
+          </Tooltip>
         )}
       </Box>
       <Box sx={{ px: 2, pt: 2 }} >
@@ -73,7 +79,9 @@ export const ProjectInfo = (props: Props) => {
         {props.loading ? (
           <Skeleton animation="wave" height={15} width="40%" />
         ) : (
-          <Typography fontSize={13} noWrap>{toCKByte(props.project?.totalFunding)} CKB ({percentage}%)</Typography>
+          <Tooltip title={toCKByteString(props.project?.totalFunding)} placement="left" arrow>
+            <Typography fontSize={13} noWrap>{toCKByte(props.project?.totalFunding)} CKB ({percentage}%)</Typography>
+          </Tooltip>
         )}
       </Box>
       <Box sx={{ px: 2, pt: 2 }} >

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
-import { Box, Button, Chip, Grid, LinearProgress, Paper, Skeleton, Typography } from '@mui/material';
+import { Box, Button, Chip, Grid, LinearProgress, Paper, Skeleton, Tooltip, Typography } from '@mui/material';
 import { ProjectContributeDialog } from '../contribute-dialog';
 import { ProjectInfo } from '../info';
 import { ProjectInfoTitle } from '../info-title';
@@ -71,6 +71,10 @@ export const ProjectOverview = () => {
     return TransformUtil.toCKByte(amount).toString();
   }
 
+  const toCKByteString = (amount: Maybe<string>) => {
+    return TransformUtil.toCKByteString(amount);
+  }
+
   return (
     <>
       <Grid sx={{ pt: 4 }} container spacing={2}>
@@ -97,7 +101,9 @@ export const ProjectOverview = () => {
                 alignItems: "center",
                 justifyContent: "space-between"
               }}>
-                <Typography color="GrayText" noWrap>{toCKByte(project?.totalFunding)} / {toCKByte(project?.goal)} CKB</Typography>
+                <Tooltip title={toCKByteString(project?.totalFunding) + ' / ' + toCKByteString(project?.goal)} placement="top" arrow>
+                  <Typography color="GrayText" noWrap>{toCKByte(project?.totalFunding)} / {toCKByte(project?.goal)} CKB</Typography>
+                </Tooltip>
                 {momentUtil.isExpired(project?.expirationTimestamp) ? (
                   <Chip label="Expired" size="small" />
                 ) : (

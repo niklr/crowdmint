@@ -44,6 +44,13 @@ export abstract class TransformUtil {
     if (!amount) {
       return BigNumber.from(0);
     }
-    return BigNumber.from(Big(amount).div(Big(10).pow(CommonConstants.CKB_DECIMALS)).toString());
+    return BigNumber.from(Big(amount).div(Big(10).pow(CommonConstants.CKB_DECIMALS)).toFixed(0, 0));
+  }
+
+  static toCKByteString(amount: Maybe<string>): string {
+    if (!amount) {
+      return "0";
+    }
+    return Big(amount).div(Big(10).pow(CommonConstants.CKB_DECIMALS)).toFixed();
   }
 }
