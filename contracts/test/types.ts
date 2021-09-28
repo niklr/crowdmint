@@ -37,6 +37,7 @@ export interface CreateProject {
   id: string;
   category: string;
   title: string;
+  description: string;
   url: string;
   goal: BigNumber;
   deadline: BigNumber;
@@ -45,8 +46,10 @@ export interface CreateProject {
 export interface ProjectInfo {
   category: string;
   title: string;
+  description: string;
   url: string;
   goal: BigNumber;
+  created: BigNumber;
   deadline: BigNumber;
   creator: string;
   totalContributions: BigNumber;

@@ -119,6 +119,8 @@ class ProjectManagerTest extends BaseTest {
 
     const projectContract = await this.getProjectContract(projectAddress, this.deployer.privateKey);
     let projectInfo = this.toProjectInfo(await projectContract.getInfo());
+    assertEquals(expectedProject.title, projectInfo.title);
+    assertEquals(expectedProject.description, projectInfo.description);
     assertEquals(0, projectInfo.totalContributions.toNumber());
     assertEquals(0, projectInfo.totalContributors.toNumber());
     assertEquals(0, projectInfo.totalFunding.toNumber());
@@ -205,6 +207,7 @@ class ProjectManagerTest extends BaseTest {
     const tx = factory.getDeployTransaction(
       ProjectCategory.KIA,
       "title 1234",
+      "desc 4321",
       "http://localhost/1234",
       BigNumber.from(1234),
       BigNumber.from(Math.floor(Date.now() / 1000) + 3),
@@ -258,6 +261,7 @@ class ProjectManagerTest extends BaseTest {
         projectAddress,
         projectInfo.category,
         projectInfo.title,
+        projectInfo.description,
         projectInfo.url,
         projectInfo.goal,
         newDeadlne,
@@ -304,6 +308,7 @@ class ProjectManagerTest extends BaseTest {
     id: string = uuidv4(),
     category: string = ProjectCategory.KIA,
     title: string = "title 1234",
+    description: string = "desc 4321",
     url: string = "http://localhost/1234",
     goal: BigNumber = BigNumber.from(1234),
     deadline: BigNumber = BigNumber.from(Math.floor(Date.now() / 1000) + 3),
@@ -312,6 +317,7 @@ class ProjectManagerTest extends BaseTest {
       id,
       category,
       title,
+      description,
       url,
       goal,
       deadline,
@@ -319,25 +325,51 @@ class ProjectManagerTest extends BaseTest {
   }
 
   private toProjectInfo(
-    projectInfo: [string, string, string, BigNumber, BigNumber, string, BigNumber, BigNumber, BigNumber, string],
+    projectInfo: [
+      [
+        string,
+        string,
+        string,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        string
+      ] & {
+        category: string;
+        title: string;
+        description: string;
+        url: string;
+        goal: BigNumber;
+        created: BigNumber;
+        deadline: BigNumber;
+        creator: string;
+      },
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      string
+    ],
   ): ProjectInfo {
     return {
-      category: projectInfo[0],
-      title: projectInfo[1],
-      url: projectInfo[2],
-      goal: projectInfo[3],
-      deadline: projectInfo[4],
-      creator: projectInfo[5],
-      totalContributions: projectInfo[6],
-      totalContributors: projectInfo[7],
-      totalFunding: projectInfo[8],
-      manager: projectInfo[9],
+      category: projectInfo[0][0],
+      title: projectInfo[0][1],
+      description: projectInfo[0][2],
+      url: projectInfo[0][3],
+      goal: projectInfo[0][4],
+      created: projectInfo[0][5],
+      deadline: projectInfo[0][6],
+      creator: projectInfo[0][7],
+      totalContributions: projectInfo[1],
+      totalContributors: projectInfo[2],
+      totalFunding: projectInfo[3],
+      manager: projectInfo[4],
     };
   }
 
   private async submitProject(contract: ProjectManager, project: CreateProject) {
     return await this.submitTransaction(() => {
-      return contract.create(project.id, project.category, project.title, project.url, project.goal, project.deadline, {
+      return contract.create(project.id, project.category, project.title, project.description, project.url, project.goal, project.deadline, {
         ...getOverrideOptions(this.nervosProviderUrl),
       });
     });
@@ -347,7 +379,8 @@ class ProjectManagerTest extends BaseTest {
 (async () => {
   const test = new ProjectManagerTest();
   await test.initAsync();
-  //await test.deploy();
-  await test.contribute("0x5B635aA13AE9c1907517087FD7C0a845F1aDb582", "0x817b7D90D74539D359aD68Cc14E1129802aF1615");
+  //await test.deployContract();
+  await test.deploy();
+  //await test.contribute("0x5B635aA13AE9c1907517087FD7C0a845F1aDb582", "0x817b7D90D74539D359aD68Cc14E1129802aF1615");
   process.exit(0);
 })();
