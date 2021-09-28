@@ -198,7 +198,11 @@ export class Project extends BaseContract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [string, BigNumber] & { contributor: string; amount: BigNumber }
+      [string, BigNumber, BigNumber] & {
+        contributor: string;
+        created: BigNumber;
+        amount: BigNumber;
+      }
     >;
 
     contributors(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
@@ -206,7 +210,15 @@ export class Project extends BaseContract {
     getContribution(
       _index: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[string, BigNumber]>;
+    ): Promise<
+      [
+        [string, BigNumber, BigNumber] & {
+          contributor: string;
+          created: BigNumber;
+          amount: BigNumber;
+        }
+      ]
+    >;
 
     getInfo(
       overrides?: CallOverrides
@@ -297,14 +309,26 @@ export class Project extends BaseContract {
   contributions(
     arg0: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<[string, BigNumber] & { contributor: string; amount: BigNumber }>;
+  ): Promise<
+    [string, BigNumber, BigNumber] & {
+      contributor: string;
+      created: BigNumber;
+      amount: BigNumber;
+    }
+  >;
 
   contributors(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
   getContribution(
     _index: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<[string, BigNumber]>;
+  ): Promise<
+    [string, BigNumber, BigNumber] & {
+      contributor: string;
+      created: BigNumber;
+      amount: BigNumber;
+    }
+  >;
 
   getInfo(
     overrides?: CallOverrides
@@ -393,7 +417,11 @@ export class Project extends BaseContract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [string, BigNumber] & { contributor: string; amount: BigNumber }
+      [string, BigNumber, BigNumber] & {
+        contributor: string;
+        created: BigNumber;
+        amount: BigNumber;
+      }
     >;
 
     contributors(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
@@ -401,7 +429,13 @@ export class Project extends BaseContract {
     getContribution(
       _index: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[string, BigNumber]>;
+    ): Promise<
+      [string, BigNumber, BigNumber] & {
+        contributor: string;
+        created: BigNumber;
+        amount: BigNumber;
+      }
+    >;
 
     getInfo(
       overrides?: CallOverrides
@@ -483,7 +517,7 @@ export class Project extends BaseContract {
   filters: {
     "ContributionReceived(address,address,uint256)"(
       project?: string | null,
-      contributor?: null,
+      contributor?: string | null,
       amount?: null
     ): TypedEventFilter<
       [string, string, BigNumber],
@@ -492,7 +526,7 @@ export class Project extends BaseContract {
 
     ContributionReceived(
       project?: string | null,
-      contributor?: null,
+      contributor?: string | null,
       amount?: null
     ): TypedEventFilter<
       [string, string, BigNumber],
@@ -519,7 +553,7 @@ export class Project extends BaseContract {
 
     "PayoutRequested(address,address,uint256)"(
       project?: string | null,
-      requestor?: null,
+      requestor?: string | null,
       amount?: null
     ): TypedEventFilter<
       [string, string, BigNumber],
@@ -528,7 +562,7 @@ export class Project extends BaseContract {
 
     PayoutRequested(
       project?: string | null,
-      requestor?: null,
+      requestor?: string | null,
       amount?: null
     ): TypedEventFilter<
       [string, string, BigNumber],
@@ -537,7 +571,7 @@ export class Project extends BaseContract {
 
     "RefundRequested(address,address,uint256)"(
       project?: string | null,
-      requestor?: null,
+      requestor?: string | null,
       amount?: null
     ): TypedEventFilter<
       [string, string, BigNumber],
@@ -546,7 +580,7 @@ export class Project extends BaseContract {
 
     RefundRequested(
       project?: string | null,
-      requestor?: null,
+      requestor?: string | null,
       amount?: null
     ): TypedEventFilter<
       [string, string, BigNumber],

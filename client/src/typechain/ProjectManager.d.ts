@@ -72,7 +72,7 @@ interface ProjectManagerInterface extends ethers.utils.Interface {
   ): Result;
 
   events: {
-    "ProjectCreated(uint256,string,string,address,address)": EventFragment;
+    "ProjectCreated(uint256,address,string,string,address)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "ProjectCreated"): EventFragment;
@@ -81,10 +81,10 @@ interface ProjectManagerInterface extends ethers.utils.Interface {
 export type ProjectCreatedEvent = TypedEvent<
   [BigNumber, string, string, string, string] & {
     index: BigNumber;
+    creator: string;
     category: string;
     title: string;
     addr: string;
-    creator: string;
   }
 >;
 
@@ -247,37 +247,37 @@ export class ProjectManager extends BaseContract {
   };
 
   filters: {
-    "ProjectCreated(uint256,string,string,address,address)"(
+    "ProjectCreated(uint256,address,string,string,address)"(
       index?: BigNumberish | null,
+      creator?: string | null,
       category?: null,
       title?: null,
-      addr?: null,
-      creator?: null
+      addr?: null
     ): TypedEventFilter<
       [BigNumber, string, string, string, string],
       {
         index: BigNumber;
+        creator: string;
         category: string;
         title: string;
         addr: string;
-        creator: string;
       }
     >;
 
     ProjectCreated(
       index?: BigNumberish | null,
+      creator?: string | null,
       category?: null,
       title?: null,
-      addr?: null,
-      creator?: null
+      addr?: null
     ): TypedEventFilter<
       [BigNumber, string, string, string, string],
       {
         index: BigNumber;
+        creator: string;
         category: string;
         title: string;
         addr: string;
-        creator: string;
       }
     >;
   };

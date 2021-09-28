@@ -26,17 +26,17 @@ export class NervosDataSource extends BaseDataSource {
   }
 
   async getProjectIndexAsync(_id: string): Promise<BigNumber> {
-    const manager = await this._client.getProjectManagerAsync(super.getAccount());
+    const manager = await this._client.getProjectManagerAsync(undefined);
     return manager.indexes(_id);
   }
 
   async getProjectAddressAsync(_index: BigNumber): Promise<string> {
-    const manager = await this._client.getProjectManagerAsync(super.getAccount());
+    const manager = await this._client.getProjectManagerAsync(undefined);
     return manager.projects(_index);
   }
 
   async getProjectAsync(_address: string): Promise<Project> {
-    const project = await this._client.getProjectAsync(_address, super.getAccount());
+    const project = await this._client.getProjectAsync(_address, undefined);
     const info = await project.getInfo();
     return {
       address: _address,
@@ -55,12 +55,12 @@ export class NervosDataSource extends BaseDataSource {
   }
 
   async getTimestampAsync(): Promise<BigNumber> {
-    const manager = await this._client.getProjectManagerAsync(super.getAccount());
+    const manager = await this._client.getProjectManagerAsync(undefined);
     return manager.getTimestamp();
   }
 
   async getTotalProjectsAsync(): Promise<BigNumber> {
-    const manager = await this._client.getProjectManagerAsync(super.getAccount());
+    const manager = await this._client.getProjectManagerAsync(undefined);
     return manager.totalProjects();
   }
 

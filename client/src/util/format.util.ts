@@ -2,6 +2,7 @@ import { CommonUtil } from './common.util';
 
 export abstract class FormatUtil {
   static formatMessage(data: any): string {
+    const defaultMessage = "Something went wrong. Probably your account does not exist on Nervos Layer 2 (Godwoken) or has insufficient balance."
     if (data) {
       console.log(data)
       let message: string
@@ -12,9 +13,16 @@ export abstract class FormatUtil {
         else if (data.error?.message) {
           message = data.error.message
         } else if (data.graphQLErrors) {
-          message = data.graphQLErrors[0].message;
+          if (data.graphQLErrors.length > 0) {
+            message = data.graphQLErrors[0].message
+          } else {
+            message = defaultMessage
+          }
         } else {
           message = JSON.stringify(data)
+          if (message === "{}") {
+            message = defaultMessage
+          }
         }
       } else {
         message = data
@@ -24,6 +32,6 @@ export abstract class FormatUtil {
       }
       return message
     }
-    return "Something went wrong."
+    return defaultMessage
   }
 }
