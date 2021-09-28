@@ -23,6 +23,12 @@ type Project {
   totalFunding: String!
 }
 
+type Contribution {
+  contributor: String!
+  createdTimestamp: String!
+  amount: String!
+}
+
 type Profile {
   id: ID!
   createdDate: String!
@@ -39,5 +45,6 @@ extend type Query {
   totalProjects: String!
   projectAddress(index: String!): String
   project(address: String): Project
+  projectContribution(address: String, index: String!): Contribution
   profile: Profile
 }

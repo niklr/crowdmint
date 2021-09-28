@@ -1,7 +1,7 @@
 import React from 'react';
+import { BigNumber } from 'ethers';
 import { TableCell } from '@mui/material';
 import { MomentUtil } from '../../../../util/moment.util';
-import { BigNumber } from 'ethers';
 
 interface Props {
   index: BigNumber;

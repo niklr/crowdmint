@@ -47,16 +47,6 @@ export class NervosDataSource extends BaseDataSource {
     return this._client.rpcProvider.getBalance(_address);
   }
 
-  async getContributionAsync(_address: string, _index: BigNumber): Promise<Contribution> {
-    const project = await this.getTypechainProjectAsync(_address);
-    const c = await project.getContribution(_index);
-    return {
-      contributor: c.contributor,
-      createdTimestamp: c.created.toString(),
-      amount: c.amount.toString()
-    };
-  }
-
   async getProjectIndexAsync(_id: string): Promise<BigNumber> {
     const manager = await this.getTypechainProjectManagerAsync();
     return manager.indexes(_id);
@@ -84,6 +74,16 @@ export class NervosDataSource extends BaseDataSource {
       totalContributors: info[2].toString(),
       totalFunding: info[3].toString()
     }
+  }
+
+  async getProjectContributionAsync(_address: string, _index: BigNumber): Promise<Contribution> {
+    const project = await this.getTypechainProjectAsync(_address);
+    const c = await project.getContribution(_index);
+    return {
+      contributor: c.contributor,
+      createdTimestamp: c.created.toString(),
+      amount: c.amount.toString()
+    };
   }
 
   async getTimestampAsync(): Promise<BigNumber> {

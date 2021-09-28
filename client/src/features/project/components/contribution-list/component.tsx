@@ -1,6 +1,6 @@
 import React from 'react';
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { BigNumber } from 'ethers';
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { ProjectContributionListItem } from '../contribution-list-item';
 
 interface Props {

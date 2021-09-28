@@ -2,7 +2,7 @@ import { BigNumber } from "ethers";
 import { BaseDataSource } from ".";
 import { CommonUtil } from "../util/common.util";
 import { BrowserFileUtil, FileUtil } from "../util/file.util";
-import { Project } from "../util/types";
+import { Contribution, Project } from "../util/types";
 
 export class MockDataSource extends BaseDataSource {
   private readonly _fileUtil: FileUtil;
@@ -62,6 +62,14 @@ export class MockDataSource extends BaseDataSource {
       throw new Error("Project not found.")
     }
     return p;
+  }
+
+  async getProjectContributionAsync(_address: string, _index: BigNumber): Promise<Contribution> {
+    return {
+      contributor: '...',
+      createdTimestamp: '...',
+      amount: '...'
+    };
   }
 
   async getTimestampAsync(): Promise<BigNumber> {
