@@ -12,6 +12,13 @@ export interface GenericType {
   type: string;
 }
 
+export type IpfsResult = {
+  url: string;
+  path: string;
+  size: number;
+  cid: any;
+}
+
 export type Project = {
   address: string;
   category: string;
@@ -25,6 +32,21 @@ export type Project = {
   totalContributions: string;
   totalContributors: string;
   totalFunding: string;
+}
+
+export interface SaveProject {
+  title: string;
+  description: string;
+}
+
+export interface CreateProject extends SaveProject {
+  type: string;
+  goal: string;
+  expirationDate: Date | null;
+}
+
+export interface EditProject extends SaveProject {
+  address: string
 }
 
 export type Item = {

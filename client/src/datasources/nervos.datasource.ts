@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers";
+import { BigNumber, Overrides } from "ethers";
 import { BaseDataSource } from ".";
 import { getNervosClient, NervosClient } from "../clients/nervos.client";
 import { getLogger } from "../util/logger";
@@ -14,20 +14,32 @@ export class NervosDataSource extends BaseDataSource {
     this._client = getNervosClient();
   }
 
-  async getBalanceAsync(address: string): Promise<BigNumber> {
-    return this._client.rpcProvider.getBalance(address);
+  private getOverrideOptions(): Overrides {
+    return {
+      gasPrice: 0,
+      gasLimit: 1_000_000
+    };
   }
 
-  async getProjectAddressAsync(index: BigNumber): Promise<Maybe<string>> {
+  async getBalanceAsync(_address: string): Promise<BigNumber> {
+    return this._client.rpcProvider.getBalance(_address);
+  }
+
+  async getProjectIndexAsync(_id: string): Promise<BigNumber> {
     const manager = await this._client.getProjectManagerAsync(super.getAccount());
-    return manager.projects(index);
+    return manager.indexes(_id);
   }
 
-  async getProjectAsync(address: string): Promise<Project> {
-    const project = await this._client.getProjectAsync(address, super.getAccount());
+  async getProjectAddressAsync(_index: BigNumber): Promise<string> {
+    const manager = await this._client.getProjectManagerAsync(super.getAccount());
+    return manager.projects(_index);
+  }
+
+  async getProjectAsync(_address: string): Promise<Project> {
+    const project = await this._client.getProjectAsync(_address, super.getAccount());
     const info = await project.getInfo();
     return {
-      address,
+      address: _address,
       category: info[0],
       title: info[1],
       description: "",
@@ -66,10 +78,25 @@ export class NervosDataSource extends BaseDataSource {
     return tx.hash;
   }
 
+  async editProjectAsync(
+    _address: string,
+    _category: string,
+    _title: string,
+    _url: string,
+    _goal: BigNumber,
+    _deadline: BigNumber
+  ): Promise<string> {
+    const project = await this._client.getProjectAsync(_address, super.getAccount());
+    const tx = await project.setInfo(_category, _title, _url, _goal, _deadline);
+    logger.info(tx)();
+    return tx.hash;
+  }
+
   async contributeAsync(_address: string, _amount: BigNumber): Promise<string> {
     const manager = await this._client.getProjectManagerAsync(super.getAccount());
     const tx = await manager.contribute(_address, {
-      value: _amount
+      value: _amount,
+      ...this.getOverrideOptions()
     });
     logger.info(tx)();
     return tx.hash;

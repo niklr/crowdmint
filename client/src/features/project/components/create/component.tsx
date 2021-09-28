@@ -1,30 +1,27 @@
 import React, { useRef, useState } from 'react';
+import { useHistory } from 'react-router';
 import { DateTimePicker } from '@mui/lab';
 import { Box, FormControl, Grid, InputAdornment, InputLabel, MenuItem, OutlinedInput, Paper, Select, SelectChangeEvent, Slider, Stack, TextField, Typography } from '@mui/material';
-import { BigNumber } from 'ethers';
 import { Editor } from '../../../common/components/editor';
 import { MomentUtil } from '../../../../util/moment.util';
 import { ProjectType, ProjectTypes } from '../../../../common/constants';
 import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
 import { SnackbarUtil } from '../../../../util/snackbar.util';
 import { getLogger } from '../../../../util/logger';
-import { Ensure } from '../../../../util/ensure';
 import { ClickOnceButton } from '../../../common/components/click-once-button';
-
-interface CreateProject {
-  type: string;
-  title: string;
-  description: string;
-  goal: string;
-  expirationDate: Date | null;
-}
+import { getProjectService } from '../../../../services/project.service';
+import { CreateProject } from '../../../../util/types';
 
 const logger = getLogger();
 
 export const ProjectCreate = () => {
-  const editorRef = useRef(null);
+  const history = useHistory();
+  const containerRef = useRef(null);
+  const editorRef = React.createRef<any>();
   const momentUtil = new MomentUtil();
   const context = useConnectedWeb3Context();
+  const projectService = getProjectService();
+  const baseMarkdownUrl = 'https://raw.githubusercontent.com/nhn/tui.editor/master/apps/react-editor/README.md';
 
   const [values, setValues] = useState<CreateProject>({
     type: ProjectTypes[ProjectType.AON].type,
@@ -48,29 +45,9 @@ export const ProjectCreate = () => {
 
   const createProjectAsync = async () => {
     try {
-      Ensure.notNullOrWhiteSpace(context.account, "context.account", "Please connect your wallet first.");
-      Ensure.notNullOrWhiteSpace(values.title, "title", "Please enter a title.");
-      Ensure.notNullOrWhiteSpace(values.description, "description", "Please enter a description.");
-      Ensure.notNullOrWhiteSpace(values.type, "type", "Please specify a valid project type.");
-      Ensure.notNullOrWhiteSpace(values.goal, "goal", "Please specify a valid goal.");
-      Ensure.notNull(values.expirationDate, "expirationDate", "Please specify a valid expiration date.");
-      if (values.title?.length > 48) {
-        throw new Error("Title is too long.")
-      }
-      const now = Math.floor(Date.now() / 1000);
-      const expirationDate = values.expirationDate as Date;
-      const deadline = Math.floor(expirationDate.getTime() / 1000);
-      if (now >= deadline) {
-        throw new Error("Expiration date is in the past.");
-      }
-      const goal = BigNumber.from(values.goal);
-      if (goal.lte(0)) {
-        throw new Error("Goal is not valid.");
-      }
-
-      const id = now.toString();
-      const tx = await context.datasource.createProjectAsync(id, values.type, values.title, "http://localhost:3000/#/", goal, BigNumber.from(deadline));
-      console.log(tx);
+      const markdown = editorRef?.current?.getInstance().getMarkdown();
+      const projectAddress = await projectService.createAsync(context, values, markdown);
+      history.push(`/projects/${projectAddress}`);
     } catch (error) {
       logger.error(error)();
       SnackbarUtil.enqueueError(error);
@@ -98,8 +75,8 @@ export const ProjectCreate = () => {
               </FormControl>
             </Box>
           </Paper>
-          <Paper ref={editorRef} sx={{ maxHeight: "800px", minHeight: "600px", my: 2, overflow: "auto" }}>
-            <Editor editorRef={editorRef} readOnly={false} markdownUrl={'https://raw.githubusercontent.com/nhn/tui.editor/master/apps/react-editor/README.md'}></Editor>
+          <Paper ref={containerRef} sx={{ maxHeight: "800px", minHeight: "600px", my: 2, overflow: "auto" }}>
+            <Editor containerRef={containerRef} editorRef={editorRef} readOnly={false} markdownUrl={baseMarkdownUrl}></Editor>
           </Paper>
           <Paper>
             <Box sx={{ p: 2 }}>

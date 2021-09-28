@@ -11,15 +11,17 @@ const logger = getLogger();
 interface Props {
   readOnly?: boolean,
   markdownUrl?: string,
+  containerRef: React.RefObject<any>,
   editorRef: React.RefObject<any>
 }
 
 export const Editor = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [content, setContent] = useState('');
+  const [markdownUrl, setMarkdownUrl] = useState('');
   let height = "400px";
-  if (props.editorRef?.current?.clientHeight) {
-    height = props.editorRef?.current?.clientHeight + "px";
+  if (props.containerRef?.current?.clientHeight) {
+    height = props.containerRef?.current?.clientHeight + "px";
   }
 
   useEffect(() => {
@@ -30,6 +32,7 @@ export const Editor = (props: Props) => {
           setIsLoading(true);
           const response = await fileUtil.readFileAsync(props.markdownUrl);
           setContent(response);
+          setMarkdownUrl(props.markdownUrl);
         }
       } catch (error) {
         logger.error(error)();
@@ -37,8 +40,10 @@ export const Editor = (props: Props) => {
         setIsLoading(false);
       }
     }
-    downloadAsync();
-  }, [props.markdownUrl])
+    if (props.markdownUrl !== markdownUrl) {
+      downloadAsync();
+    }
+  }, [markdownUrl, props.markdownUrl])
 
   if (isLoading) {
     return (
@@ -64,6 +69,8 @@ export const Editor = (props: Props) => {
           previewStyle="tab"
           initialEditType="markdown"
           height={height}
+          usageStatistics={false}
+          ref={props.editorRef}
         />
       )}
     </>

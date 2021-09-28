@@ -5,12 +5,21 @@ import { Project } from "../util/types";
 
 export interface IDataSource {
   getBalanceAsync(_address: string): Promise<BigNumber>;
-  getProjectAddressAsync(index: BigNumber): Promise<Maybe<string>>;
-  getProjectAsync(address: string): Promise<Project>
+  getProjectIndexAsync(_id: string): Promise<BigNumber>
+  getProjectAddressAsync(_index: BigNumber): Promise<string>;
+  getProjectAsync(_address: string): Promise<Project>
   getTimestampAsync(): Promise<BigNumber>;
   getTotalProjectsAsync(): Promise<BigNumber>;
   createProjectAsync(
     _id: string,
+    _category: string,
+    _title: string,
+    _url: string,
+    _goal: BigNumber,
+    _deadline: BigNumber
+  ): Promise<string>;
+  editProjectAsync(
+    _address: string,
     _category: string,
     _title: string,
     _url: string,
@@ -32,12 +41,21 @@ export abstract class BaseDataSource implements IDataSource {
   }
 
   abstract getBalanceAsync(_address: string): Promise<BigNumber>;
-  abstract getProjectAddressAsync(index: BigNumber): Promise<Maybe<string>>;
-  abstract getProjectAsync(address: string): Promise<Project>;
+  abstract getProjectIndexAsync(_id: string): Promise<BigNumber>;
+  abstract getProjectAddressAsync(_index: BigNumber): Promise<string>;
+  abstract getProjectAsync(_address: string): Promise<Project>;
   abstract getTimestampAsync(): Promise<BigNumber>;
   abstract getTotalProjectsAsync(): Promise<BigNumber>;
   abstract createProjectAsync(
     _id: string,
+    _category: string,
+    _title: string,
+    _url: string,
+    _goal: BigNumber,
+    _deadline: BigNumber
+  ): Promise<string>;
+  abstract editProjectAsync(
+    _address: string,
     _category: string,
     _title: string,
     _url: string,

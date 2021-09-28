@@ -4,6 +4,7 @@ import { useQuery } from '@apollo/client';
 import { Box, Button, Chip, Grid, LinearProgress, Paper, Skeleton, Typography } from '@mui/material';
 import { ProjectContributeDialog } from '../contribute-dialog';
 import { ProjectInfo } from '../info';
+import { ProjectInfoTitle } from '../info-title';
 import { Alert } from '../../../common/components/alert';
 import { MomentUtil } from '../../../../util/moment.util';
 import { Editor } from '../../../common/components/editor';
@@ -26,12 +27,14 @@ export const ProjectOverview = () => {
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [openContributeDialog, setOpenContributeDialog] = React.useState(false);
   const momentUtil = new MomentUtil();
-  const editorRef = useRef(null);
+  const containerRef = useRef(null);
+  const editorRef = React.createRef<any>();
 
   const projectQuery = useQuery<GetProject, GetProjectVariables>(GET_PROJECT_QUERY, {
     variables: {
       address: address
     },
+    notifyOnNetworkStatusChange: true,
     fetchPolicy: 'network-only'
   });
 
@@ -40,16 +43,28 @@ export const ProjectOverview = () => {
 
   useEffect(() => {
     const p = projectQuery.data?.project;
-    logger.info("Creator:", p?.creator)();
+    const accountAddress = TransformUtil.toGodwoken(context.account);
+    logger.info("Creator:", p?.creator, "Account:", accountAddress)();
     setProject(TransformUtil.toProject(p));
     setPercentage(CommonUtil.calculatePercentage(p?.totalFunding, p?.goal));
-    setCanEdit(p?.creator === context.account);
+    setCanEdit(p?.creator?.toLowerCase() === accountAddress?.toLowerCase());
+    return () => {
+      // TODO: destroy contract event listeners
+      console.log("cleaned up");
+    };
   }, [context.account, projectQuery.data?.project]);
 
   if (error) {
     return (
       <Alert message="Could not find the specified project." type="warning"></Alert>
     );
+  }
+
+  const handleContributeCallback = async (success: boolean) => {
+    if (success) {
+      await projectQuery.refetch();
+    }
+    setOpenContributeDialog(false);
   }
 
   return (
@@ -88,14 +103,17 @@ export const ProjectOverview = () => {
               </Box>
             )}
           </Paper>
-          <Paper ref={editorRef} sx={{ maxHeight: "800px", minHeight: "600px", my: 2, overflow: "auto" }}>
+          <Paper ref={containerRef} sx={{ maxHeight: "800px", minHeight: "600px", my: 2, overflow: "auto" }}>
             {!loading && (
-              <Editor editorRef={editorRef} readOnly={true} markdownUrl={project?.url}></Editor>
+              <Editor containerRef={containerRef} editorRef={editorRef} readOnly={true} markdownUrl={project?.url}></Editor>
             )}
           </Paper>
         </Grid>
         <Grid item md={4} xs={12}>
-          <ProjectInfo canEdit={canEdit} loading={loading} project={project}></ProjectInfo>
+          <Paper>
+            <ProjectInfoTitle canEdit={canEdit} loading={loading} project={project}></ProjectInfoTitle>
+            <ProjectInfo loading={loading} project={project}></ProjectInfo>
+          </Paper>
         </Grid>
         <Grid item xs={12}>
           <ProjectContributorList></ProjectContributorList>
@@ -103,7 +121,7 @@ export const ProjectOverview = () => {
       </Grid>
       <ProjectContributeDialog
         open={openContributeDialog}
-        onClose={() => { setOpenContributeDialog(false) }}
+        onClose={handleContributeCallback}
         project={project}>
       </ProjectContributeDialog>
     </>
