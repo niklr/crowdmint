@@ -37,6 +37,7 @@ contract ProjectManager {
         string memory _id,
         string memory _category,
         string memory _title,
+        string memory _description,
         string memory _url,
         uint256 _goal,
         uint256 _deadline
@@ -45,7 +46,7 @@ contract ProjectManager {
         require(_goal > 0, "Funding goal must be greater than 0.");
         require(_deadline > block.timestamp, "Deadline must be greater than current timestamp.");
 
-        Project project = new Project(_category, _title, _url, _goal, _deadline, msg.sender);
+        Project project = new Project(_category, _title, _description, _url, _goal, _deadline, msg.sender);
         address addr = address(project);
         require(addr != address(0), "Project deployment failed.");
 
@@ -79,6 +80,7 @@ contract ProjectManager {
         address payable _projectAddress,
         string memory _category,
         string memory _title,
+        string memory _description,
         string memory _url,
         uint256 _goal,
         uint256 _deadline
@@ -86,7 +88,7 @@ contract ProjectManager {
         Project project = Project(_projectAddress);
         require(project.manager() == address(this), "Invalid project.");
 
-        project.setInfo(_category, _title, _url, _goal, _deadline);
+        project.setInfo(_category, _title, _description, _url, _goal, _deadline);
     }
 
     /**

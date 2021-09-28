@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.7.0;
+pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import { Utils } from "./Utils.sol";
@@ -11,8 +12,10 @@ contract Project {
     struct ProjectInfo {
         string category;
         string title;
+        string description;
         string url;
         uint256 goal;
+        uint256 created;
         uint256 deadline;
         address payable creator;
     }
@@ -65,6 +68,7 @@ contract Project {
     constructor(
         string memory _category,
         string memory _title,
+        string memory _description,
         string memory _url,
         uint256 _goal,
         uint256 _deadline,
@@ -83,8 +87,10 @@ contract Project {
         info = ProjectInfo({
             category: _category,
             title: _title,
+            description: _description,
             url: _url,
             goal: _goal,
+            created: block.timestamp,
             deadline: _deadline,
             creator: _creator
         });
@@ -98,12 +104,7 @@ contract Project {
         public
         view
         returns (
-            string memory, // category
-            string memory, // title
-            string memory, // url
-            uint256, // goal
-            uint256, // deadline
-            address payable, // creator
+            ProjectInfo memory,
             uint256, // totalContributions
             uint256, // totalContributors
             uint256, // totalFunding
@@ -111,12 +112,7 @@ contract Project {
         )
     {
         return (
-            info.category,
-            info.title,
-            info.url,
-            info.goal,
-            info.deadline,
-            info.creator,
+            info,
             totalContributions,
             totalContributors,
             totalFunding,
@@ -135,11 +131,13 @@ contract Project {
     function setInfo(
         string memory _category,
         string memory _title,
+        string memory _description,
         string memory _url,
         uint256 _goal,
         uint256 _deadline
     ) public onlyManagerOrCreator {
         info.title = _title;
+        info.description = _description;
         info.url = _url;
         if (manager == msg.sender) {
             info.category = _category;
