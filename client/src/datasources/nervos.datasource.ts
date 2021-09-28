@@ -40,17 +40,17 @@ export class NervosDataSource extends BaseDataSource {
     const info = await project.getInfo();
     return {
       address: _address,
-      category: info[0],
-      title: info[1],
-      description: "",
-      url: info[2],
-      goal: info[3].toString(),
-      createdTimestamp: "0",
-      expirationTimestamp: info[4].toString(),
-      creator: info[5],
-      totalContributions: info[6].toString(),
-      totalContributors: info[7].toString(),
-      totalFunding: info[8].toString()
+      category: info[0][0],
+      title: info[0][1],
+      description: info[0][2],
+      url: info[0][3],
+      goal: info[0][4].toString(),
+      createdTimestamp: info[0][5].toString(),
+      expirationTimestamp: info[0][6].toString(),
+      creator: info[0][7],
+      totalContributions: info[1].toString(),
+      totalContributors: info[2].toString(),
+      totalFunding: info[3].toString()
     }
   }
 
@@ -68,12 +68,13 @@ export class NervosDataSource extends BaseDataSource {
     _id: string,
     _category: string,
     _title: string,
+    _description: string,
     _url: string,
     _goal: BigNumber,
     _deadline: BigNumber
   ): Promise<string> {
     const manager = await this._client.getProjectManagerAsync(super.getAccount());
-    const tx = await manager.create(_id, _category, _title, _url, _goal, _deadline);
+    const tx = await manager.create(_id, _category, _title, _description, _url, _goal, _deadline);
     logger.info(tx)();
     return tx.hash;
   }
@@ -82,12 +83,13 @@ export class NervosDataSource extends BaseDataSource {
     _address: string,
     _category: string,
     _title: string,
+    _description: string,
     _url: string,
     _goal: BigNumber,
     _deadline: BigNumber
   ): Promise<string> {
     const project = await this._client.getProjectAsync(_address, super.getAccount());
-    const tx = await project.setInfo(_category, _title, _url, _goal, _deadline);
+    const tx = await project.setInfo(_category, _title, _description, _url, _goal, _deadline);
     logger.info(tx)();
     return tx.hash;
   }

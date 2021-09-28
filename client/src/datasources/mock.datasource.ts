@@ -75,12 +75,12 @@ export class MockDataSource extends BaseDataSource {
     return BigNumber.from(this._projects.length);
   }
 
-  async createProjectAsync(_id: string, _category: string, _title: string, _url: string, _goal: BigNumber, _deadline: BigNumber): Promise<string> {
+  async createProjectAsync(_id: string, _category: string, _title: string, _description: string, _url: string, _goal: BigNumber, _deadline: BigNumber): Promise<string> {
     await this.initAsync();
     throw new Error("Method not implemented.");
   }
 
-  async editProjectAsync(_address: string, _category: string, _title: string, _url: string, _goal: BigNumber, _deadline: BigNumber): Promise<string> {
+  async editProjectAsync(_address: string, _category: string, _title: string, _description: string, _url: string, _goal: BigNumber, _deadline: BigNumber): Promise<string> {
     await this.initAsync();
     throw new Error("Method not implemented.");
   }

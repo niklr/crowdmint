@@ -57,7 +57,7 @@ class ProjectService {
 
     const id = CommonUtil.uuid();
     logger.info("Project id:", id)();
-    const tx = await context.datasource.createProjectAsync(id, values.type, values.title, ipfsResult.url, goal, BigNumber.from(deadline));
+    const tx = await context.datasource.createProjectAsync(id, values.type, values.title, values.description, ipfsResult.url, goal, BigNumber.from(deadline));
     logger.info(tx)();
     const projectIndex = await context.datasource.getProjectIndexAsync(id);
     const projectAddress = await context.datasource.getProjectAddressAsync(projectIndex);
@@ -80,7 +80,7 @@ class ProjectService {
       deadline: BigNumber.from(0)
     }
 
-    const tx = await context.datasource.editProjectAsync(values.address, empty.category, values.title, ipfsResult.url, empty.goal, empty.deadline);
+    const tx = await context.datasource.editProjectAsync(values.address, empty.category, values.title, values.description, ipfsResult.url, empty.goal, empty.deadline);
     logger.info(tx)();
   }
 }

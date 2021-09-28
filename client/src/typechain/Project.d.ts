@@ -31,7 +31,7 @@ interface ProjectInterface extends ethers.utils.Interface {
     "manager()": FunctionFragment;
     "payout()": FunctionFragment;
     "refund()": FunctionFragment;
-    "setInfo(string,string,string,uint256,uint256)": FunctionFragment;
+    "setInfo(string,string,string,string,uint256,uint256)": FunctionFragment;
     "totalContributions()": FunctionFragment;
     "totalContributors()": FunctionFragment;
     "totalFunding()": FunctionFragment;
@@ -57,7 +57,7 @@ interface ProjectInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "refund", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "setInfo",
-    values: [string, string, string, BigNumberish, BigNumberish]
+    values: [string, string, string, string, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "totalContributions",
@@ -212,12 +212,25 @@ export class Project extends BaseContract {
       overrides?: CallOverrides
     ): Promise<
       [
-        string,
-        string,
-        string,
-        BigNumber,
-        BigNumber,
-        string,
+        [
+          string,
+          string,
+          string,
+          string,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          string
+        ] & {
+          category: string;
+          title: string;
+          description: string;
+          url: string;
+          goal: BigNumber;
+          created: BigNumber;
+          deadline: BigNumber;
+          creator: string;
+        },
         BigNumber,
         BigNumber,
         BigNumber,
@@ -228,11 +241,22 @@ export class Project extends BaseContract {
     info(
       overrides?: CallOverrides
     ): Promise<
-      [string, string, string, BigNumber, BigNumber, string] & {
+      [
+        string,
+        string,
+        string,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        string
+      ] & {
         category: string;
         title: string;
+        description: string;
         url: string;
         goal: BigNumber;
+        created: BigNumber;
         deadline: BigNumber;
         creator: string;
       }
@@ -251,6 +275,7 @@ export class Project extends BaseContract {
     setInfo(
       _category: string,
       _title: string,
+      _description: string,
       _url: string,
       _goal: BigNumberish,
       _deadline: BigNumberish,
@@ -285,12 +310,25 @@ export class Project extends BaseContract {
     overrides?: CallOverrides
   ): Promise<
     [
-      string,
-      string,
-      string,
-      BigNumber,
-      BigNumber,
-      string,
+      [
+        string,
+        string,
+        string,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        string
+      ] & {
+        category: string;
+        title: string;
+        description: string;
+        url: string;
+        goal: BigNumber;
+        created: BigNumber;
+        deadline: BigNumber;
+        creator: string;
+      },
       BigNumber,
       BigNumber,
       BigNumber,
@@ -301,11 +339,22 @@ export class Project extends BaseContract {
   info(
     overrides?: CallOverrides
   ): Promise<
-    [string, string, string, BigNumber, BigNumber, string] & {
+    [
+      string,
+      string,
+      string,
+      string,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      string
+    ] & {
       category: string;
       title: string;
+      description: string;
       url: string;
       goal: BigNumber;
+      created: BigNumber;
       deadline: BigNumber;
       creator: string;
     }
@@ -324,6 +373,7 @@ export class Project extends BaseContract {
   setInfo(
     _category: string,
     _title: string,
+    _description: string,
     _url: string,
     _goal: BigNumberish,
     _deadline: BigNumberish,
@@ -357,12 +407,25 @@ export class Project extends BaseContract {
       overrides?: CallOverrides
     ): Promise<
       [
-        string,
-        string,
-        string,
-        BigNumber,
-        BigNumber,
-        string,
+        [
+          string,
+          string,
+          string,
+          string,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          string
+        ] & {
+          category: string;
+          title: string;
+          description: string;
+          url: string;
+          goal: BigNumber;
+          created: BigNumber;
+          deadline: BigNumber;
+          creator: string;
+        },
         BigNumber,
         BigNumber,
         BigNumber,
@@ -373,11 +436,22 @@ export class Project extends BaseContract {
     info(
       overrides?: CallOverrides
     ): Promise<
-      [string, string, string, BigNumber, BigNumber, string] & {
+      [
+        string,
+        string,
+        string,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        string
+      ] & {
         category: string;
         title: string;
+        description: string;
         url: string;
         goal: BigNumber;
+        created: BigNumber;
         deadline: BigNumber;
         creator: string;
       }
@@ -392,6 +466,7 @@ export class Project extends BaseContract {
     setInfo(
       _category: string,
       _title: string,
+      _description: string,
       _url: string,
       _goal: BigNumberish,
       _deadline: BigNumberish,
@@ -514,6 +589,7 @@ export class Project extends BaseContract {
     setInfo(
       _category: string,
       _title: string,
+      _description: string,
       _url: string,
       _goal: BigNumberish,
       _deadline: BigNumberish,
@@ -565,6 +641,7 @@ export class Project extends BaseContract {
     setInfo(
       _category: string,
       _title: string,
+      _description: string,
       _url: string,
       _goal: BigNumberish,
       _deadline: BigNumberish,

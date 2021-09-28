@@ -14,6 +14,7 @@ export interface IDataSource {
     _id: string,
     _category: string,
     _title: string,
+    _description: string,
     _url: string,
     _goal: BigNumber,
     _deadline: BigNumber
@@ -22,6 +23,7 @@ export interface IDataSource {
     _address: string,
     _category: string,
     _title: string,
+    _description: string,
     _url: string,
     _goal: BigNumber,
     _deadline: BigNumber
@@ -50,6 +52,7 @@ export abstract class BaseDataSource implements IDataSource {
     _id: string,
     _category: string,
     _title: string,
+    _description: string,
     _url: string,
     _goal: BigNumber,
     _deadline: BigNumber
@@ -58,6 +61,7 @@ export abstract class BaseDataSource implements IDataSource {
     _address: string,
     _category: string,
     _title: string,
+    _description: string,
     _url: string,
     _goal: BigNumber,
     _deadline: BigNumber

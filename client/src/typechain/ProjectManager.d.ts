@@ -23,19 +23,19 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface ProjectManagerInterface extends ethers.utils.Interface {
   functions: {
     "contribute(address)": FunctionFragment;
-    "create(string,string,string,string,uint256,uint256)": FunctionFragment;
+    "create(string,string,string,string,string,uint256,uint256)": FunctionFragment;
     "getTimestamp()": FunctionFragment;
     "indexes(string)": FunctionFragment;
     "owner()": FunctionFragment;
     "projects(uint256)": FunctionFragment;
-    "setInfo(address,string,string,string,uint256,uint256)": FunctionFragment;
+    "setInfo(address,string,string,string,string,uint256,uint256)": FunctionFragment;
     "totalProjects()": FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: "contribute", values: [string]): string;
   encodeFunctionData(
     functionFragment: "create",
-    values: [string, string, string, string, BigNumberish, BigNumberish]
+    values: [string, string, string, string, string, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getTimestamp",
@@ -49,7 +49,7 @@ interface ProjectManagerInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "setInfo",
-    values: [string, string, string, string, BigNumberish, BigNumberish]
+    values: [string, string, string, string, string, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "totalProjects",
@@ -141,6 +141,7 @@ export class ProjectManager extends BaseContract {
       _id: string,
       _category: string,
       _title: string,
+      _description: string,
       _url: string,
       _goal: BigNumberish,
       _deadline: BigNumberish,
@@ -159,6 +160,7 @@ export class ProjectManager extends BaseContract {
       _projectAddress: string,
       _category: string,
       _title: string,
+      _description: string,
       _url: string,
       _goal: BigNumberish,
       _deadline: BigNumberish,
@@ -177,6 +179,7 @@ export class ProjectManager extends BaseContract {
     _id: string,
     _category: string,
     _title: string,
+    _description: string,
     _url: string,
     _goal: BigNumberish,
     _deadline: BigNumberish,
@@ -195,6 +198,7 @@ export class ProjectManager extends BaseContract {
     _projectAddress: string,
     _category: string,
     _title: string,
+    _description: string,
     _url: string,
     _goal: BigNumberish,
     _deadline: BigNumberish,
@@ -213,6 +217,7 @@ export class ProjectManager extends BaseContract {
       _id: string,
       _category: string,
       _title: string,
+      _description: string,
       _url: string,
       _goal: BigNumberish,
       _deadline: BigNumberish,
@@ -231,6 +236,7 @@ export class ProjectManager extends BaseContract {
       _projectAddress: string,
       _category: string,
       _title: string,
+      _description: string,
       _url: string,
       _goal: BigNumberish,
       _deadline: BigNumberish,
@@ -286,6 +292,7 @@ export class ProjectManager extends BaseContract {
       _id: string,
       _category: string,
       _title: string,
+      _description: string,
       _url: string,
       _goal: BigNumberish,
       _deadline: BigNumberish,
@@ -304,6 +311,7 @@ export class ProjectManager extends BaseContract {
       _projectAddress: string,
       _category: string,
       _title: string,
+      _description: string,
       _url: string,
       _goal: BigNumberish,
       _deadline: BigNumberish,
@@ -323,6 +331,7 @@ export class ProjectManager extends BaseContract {
       _id: string,
       _category: string,
       _title: string,
+      _description: string,
       _url: string,
       _goal: BigNumberish,
       _deadline: BigNumberish,
@@ -347,6 +356,7 @@ export class ProjectManager extends BaseContract {
       _projectAddress: string,
       _category: string,
       _title: string,
+      _description: string,
       _url: string,
       _goal: BigNumberish,
       _deadline: BigNumberish,
