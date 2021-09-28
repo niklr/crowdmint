@@ -156,7 +156,7 @@ contract Project {
         require(info.deadline >= block.timestamp, "Project has expired.");
 
         // Add contribution to map
-        Contribution memory c = contributions[totalContributions];
+        Contribution storage c = contributions[totalContributions];
         c.contributor = _contributor;
         c.created = block.timestamp;
         c.amount = msg.value;

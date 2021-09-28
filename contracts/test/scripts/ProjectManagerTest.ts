@@ -138,6 +138,11 @@ class ProjectManagerTest extends BaseTest {
     assertEquals(1, projectInfo.totalContributors.toNumber());
     assertEquals(100, projectInfo.totalFunding.toNumber());
 
+    const contribution0 = await projectContract.getContribution(BigNumber.from(0));
+    assertEquals(deployerPolyjuiceAddress.value.toLowerCase(), contribution0.contributor.toLowerCase());
+    assertEquals(100, contribution0.amount.toNumber());
+    assertCondition(contribution0.created.gt(timestamp), "Invalid contribution created timestamp");
+
     txResult = await this.submitTransaction(() => {
       return contract.contribute(projectAddress, {
         value: BigNumber.from(100),
