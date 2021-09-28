@@ -4,6 +4,7 @@ import { MomentUtil } from '../../../../util/moment.util';
 import { GenericType, Project } from '../../../../util/types';
 import { CommonUtil } from '../../../../util/common.util';
 import { ProjectTypes } from '../../../../common/constants';
+import { TransformUtil } from '../../../../util/transform.util';
 
 interface Props {
   isEdit?: boolean;
@@ -23,6 +24,10 @@ export const ProjectInfo = (props: Props) => {
 
   const formatTimestamp = (timestamp: any) => {
     return momentUtil.getLocalReverseFormatted(momentUtil.getFromUnix(timestamp));
+  }
+
+  const toCKByte = (amount: Maybe<string>) => {
+    return TransformUtil.toCKByte(amount).toString();
   }
 
   return (
@@ -60,7 +65,7 @@ export const ProjectInfo = (props: Props) => {
         {props.loading ? (
           <Skeleton animation="wave" height={15} width="40%" />
         ) : (
-          <Typography fontSize={13} noWrap>{props.project?.goal} CKB</Typography>
+          <Typography fontSize={13} noWrap>{toCKByte(props.project?.goal)} CKB</Typography>
         )}
       </Box>
       <Box sx={{ px: 2, pt: 2 }} >
@@ -68,7 +73,7 @@ export const ProjectInfo = (props: Props) => {
         {props.loading ? (
           <Skeleton animation="wave" height={15} width="40%" />
         ) : (
-          <Typography fontSize={13} noWrap>{props.project?.totalFunding} CKB ({percentage}%)</Typography>
+          <Typography fontSize={13} noWrap>{toCKByte(props.project?.totalFunding)} CKB ({percentage}%)</Typography>
         )}
       </Box>
       <Box sx={{ px: 2, pt: 2 }} >

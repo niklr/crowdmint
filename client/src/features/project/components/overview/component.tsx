@@ -43,7 +43,7 @@ export const ProjectOverview = () => {
 
   useEffect(() => {
     const p = projectQuery.data?.project;
-    const accountAddress = TransformUtil.toGodwoken(context.account);
+    const accountAddress = TransformUtil.toGodwokenAddress(context.account);
     logger.info("Creator:", p?.creator, "Account:", accountAddress)();
     setProject(TransformUtil.toProject(p));
     setPercentage(CommonUtil.calculatePercentage(p?.totalFunding, p?.goal));
@@ -65,6 +65,10 @@ export const ProjectOverview = () => {
       await projectQuery.refetch();
     }
     setOpenContributeDialog(false);
+  }
+
+  const toCKByte = (amount: Maybe<string>) => {
+    return TransformUtil.toCKByte(amount).toString();
   }
 
   return (
@@ -93,7 +97,7 @@ export const ProjectOverview = () => {
                 alignItems: "center",
                 justifyContent: "space-between"
               }}>
-                <Typography color="GrayText" noWrap>{project?.totalFunding} / {project?.goal} CKB</Typography>
+                <Typography color="GrayText" noWrap>{toCKByte(project?.totalFunding)} / {toCKByte(project?.goal)} CKB</Typography>
                 {momentUtil.isExpired(project?.expirationTimestamp) ? (
                   <Chip label="Expired" size="small" />
                 ) : (

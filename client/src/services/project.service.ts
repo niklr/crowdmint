@@ -7,6 +7,7 @@ import { ConnectedWeb3Context } from '../contexts/connectedWeb3';
 import { CommonUtil } from '../util/common.util';
 import { Ensure } from '../util/ensure';
 import { getLogger } from '../util/logger';
+import { TransformUtil } from '../util/transform.util';
 import { CreateProject, EditProject, SaveProject } from '../util/types';
 
 const logger = getLogger();
@@ -48,7 +49,7 @@ class ProjectService {
     if (now >= deadline) {
       throw new Error("Expiration date is in the past.");
     }
-    const goal = CommonUtil.toCKBit(values.goal);
+    const goal = TransformUtil.toCKBit(values.goal);
     if (goal.lte(0)) {
       throw new Error("Goal is not valid.");
     }

@@ -1,7 +1,5 @@
 import Big from 'big.js';
-import { BigNumber } from 'ethers';
 import { v4 as uuidv4 } from 'uuid';
-import { CommonConstants } from '../common/constants';
 
 export abstract class CommonUtil {
   static isString(value: any): boolean {
@@ -54,14 +52,6 @@ export abstract class CommonUtil {
 
   static random(min: number, max: number) {
     return Math.floor(Math.random() * (max - min + 1) + min);
-  }
-
-  static toCKBit(amount: string): BigNumber {
-    return BigNumber.from(Big(amount).mul(Big(10).pow(CommonConstants.CKB_DECIMALS)).toString());
-  }
-
-  static toCKByte(amount: string): BigNumber {
-    return BigNumber.from(Big(amount).div(Big(10).pow(CommonConstants.CKB_DECIMALS)).toString());
   }
 
   static calculatePercentage(current: Maybe<string>, goal: Maybe<string>): number {

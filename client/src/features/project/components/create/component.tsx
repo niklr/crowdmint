@@ -21,7 +21,7 @@ export const ProjectCreate = () => {
   const momentUtil = new MomentUtil();
   const context = useConnectedWeb3Context();
   const projectService = getProjectService();
-  const baseMarkdownUrl = 'https://raw.githubusercontent.com/nhn/tui.editor/master/apps/react-editor/README.md';
+  const baseMarkdownUrl = 'https://raw.githubusercontent.com/niklr/hopr-network-graph/main/README.md';
 
   const [values, setValues] = useState<CreateProject>({
     type: ProjectTypes[ProjectType.AON].type,

@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, FormControl, InputLabel, Input, InputAdornment } from '@mui/material';
 import { Project } from '../../../../util/types';
 import { ClickOnceButton } from '../../../common/components/click-once-button';
-import { CommonUtil } from '../../../../util/common.util';
 import { SnackbarUtil } from '../../../../util/snackbar.util';
 import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
+import { TransformUtil } from '../../../../util/transform.util';
 
 interface ContributeProject {
   amount: string
@@ -42,8 +42,8 @@ export const ProjectContributeDialog: React.FC<Props> = (props: Props) => {
       if (!props.project) {
         throw new Error("Project could not be loaded.");
       }
-      const amount = CommonUtil.toCKBit(values.amount);
-      // console.log(amount.toString(), CommonUtil.toCKByte(amount.toString()).toString())
+      const amount = TransformUtil.toCKBit(values.amount);
+      // console.log(amount.toString(), TransformUtil.toCKByte(amount.toString()).toString())
       if (amount.lt(1)) {
         throw new Error("Invalid amount");
       }

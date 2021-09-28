@@ -1,5 +1,6 @@
 import { Grid } from '@mui/material';
 import { BigNumber } from 'ethers';
+import { Alert } from '../../../common/components/alert';
 import { ListItem } from '../list-item';
 
 interface Props {
@@ -13,6 +14,15 @@ export const ProjectList: React.FC<Props> = (props: Props) => {
     indexes.push(index);
   }
   console.log("ProjectList indexes", indexes);
+
+  if (indexes.length <= 0) {
+    return (
+      <Grid item key='1' xs={12} md={6}>
+        <Alert message="No projects found." type="default"></Alert>
+      </Grid>
+    );
+  }
+
   return (
     <>
       {indexes.map((index: number) => (
