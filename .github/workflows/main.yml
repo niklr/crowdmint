@@ -1,0 +1,31 @@
+name: crowdmint worker
+
+# Controls when the action will run. 
+on:
+  schedule:
+    - cron: "0 * * * *"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch: 
+
+concurrency: 
+  group: run-crowdmint-worker
+  cancel-in-progress: false
+
+jobs:
+  run-crowdmint-worker:
+    name: run-crowdmint-worker
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+      run: yarn install
+      run: npm install -g typescript
+    - name: change directory
+      run: cd ./cmd
+    - name: compile
+      run: tsc ./cmd/main.ts --esModuleInterop
+    - name: run
+      run: node ./cmd/main.js
