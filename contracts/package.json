@@ -1,9 +1,9 @@
 {
-    "name": "contracts",
+    "name": "crowdmint-contracts",
     "description": "",
     "license": "MIT",
-    "author": "",
-    "homepage": "",
+    "author": "niklr",
+    "homepage": "https://github.com/niklr",
     "version": "0.0.1",
     "files": [
         "/src"

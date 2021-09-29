@@ -1,18 +1,17 @@
-import { PolyjuiceWallet, PolyjuiceJsonRpcProvider } from "@polyjuice-provider/ethers";
 import { Godwoker, PolyjuiceConfig } from "@polyjuice-provider/base";
+import { PolyjuiceJsonRpcProvider, PolyjuiceWallet } from "@polyjuice-provider/ethers";
 import { PolyjuiceHttpProvider, PolyjuiceWebsocketProvider } from "@polyjuice-provider/web3";
 import { config as dotenvConfig } from "dotenv";
 import { ContractTransaction } from "ethers";
 import { resolve } from "path";
-import { getAccounts } from "../utils";
-import { Accounts, TransactionResult } from "../types";
 import Web3 from "web3";
+import { Accounts, TransactionResult } from "../types";
+import { getAccounts } from "../utils";
 
 dotenvConfig({ path: resolve(__dirname, "../../.env") });
 
 export abstract class BaseTest {
   protected nervosProviderUrl: string;
-  protected nervosWsProviderUrl: string;
   protected privateKey: string;
   protected mnemonic: string;
   protected nervosProviderConfig: PolyjuiceConfig;
@@ -30,12 +29,6 @@ export abstract class BaseTest {
       throw new Error("Please set your NERVOS_PROVIDER_URL in a .env file");
     }
     this.nervosProviderUrl = String(_nervosProviderUrl);
-
-    const _nervosWsProviderUrl = process.env.NERVOS_WS_PROVIDER_URL;
-    if (!_nervosWsProviderUrl) {
-      throw new Error("Please set your NERVOS_WS_PROVIDER_URL in a .env file");
-    }
-    this.nervosWsProviderUrl = String(_nervosWsProviderUrl);
 
     const _privateKey = process.env.PRIVATE_KEY;
     if (!_privateKey) {
@@ -56,10 +49,6 @@ export abstract class BaseTest {
 
   public async initAsync(): Promise<void> {
     this.rpcProvider = new PolyjuiceJsonRpcProvider(this.nervosProviderConfig, this.nervosProviderConfig.web3Url);
-    //this.httpProvider = new PolyjuiceHttpProvider(this.nervosProviderUrl, this.nervosProviderConfig);
-    //this.wsProvider = new PolyjuiceWebsocketProvider(this.nervosWsProviderUrl, this.nervosProviderConfig)
-    //this.web3 = new Web3(this.wsProvider as any);
-    //this.web3 = new Web3(this.httpProvider);
     this.deployer = new PolyjuiceWallet(this.privateKey, this.nervosProviderConfig, this.rpcProvider);
     this.accounts = getAccounts(this.mnemonic);
     this.godwoker = new Godwoker(this.nervosProviderUrl);

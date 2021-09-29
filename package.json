@@ -4,6 +4,7 @@
   "scripts": {
     "install-contracts": "yarn install --cwd contracts",
     "install-client": "yarn install --cwd client",
-    "install-all": "yarn install-contracts && yarn install-client"
+    "install-workers": "yarn install --cwd workers",
+    "install-all": "yarn install-contracts && yarn install-client && yarn install-workers"
   }
 }

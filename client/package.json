@@ -1,7 +1,9 @@
 {
-  "name": "nrv-client",
-  "version": "0.1.0",
-  "private": true,
+  "name": "crowdmint-client",
+  "license": "MIT",
+  "author": "niklr",
+  "homepage": "https://github.com/niklr",
+  "version": "0.0.1",
   "dependencies": {
     "@apollo/client": "^3.4.13",
     "@date-io/moment": "^2.11.0",
