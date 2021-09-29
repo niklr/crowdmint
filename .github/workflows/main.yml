@@ -24,8 +24,8 @@ jobs:
     - run: yarn install
     - run: npm install -g typescript
     - name: change directory
-      run: cd ./cmd
+      run: cd ./workers/cmd
     - name: compile
-      run: tsc ./cmd/main.ts --esModuleInterop
+      run: tsc ./workers/cmd/main.ts --esModuleInterop
     - name: run
-      run: node ./cmd/main.js
+      run: node ./workers/cmd/main.js
