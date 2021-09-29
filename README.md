@@ -69,8 +69,7 @@ Alpha release on Nervos Layer 2 Godwoken Testnet with the focus on functionaliti
 Implement [ERC-721](https://ethereum.org/en/developers/docs/standards/tokens/erc-721/) Non-Fungible Token standard.
 
 - Enable project creators to leverage NFTs to incentivize funders
-- Mint project NFTs as an individual
-- Collect NFT rewards as an individual
+- Mint project NFTs and collect NFT rewards as an individual
 - Beta release on Nervos Layer 2 Godwoken Testnet
 
 ### 2022.Q2
@@ -81,7 +80,7 @@ Public release on Nervos Layer 2 Godwoken Mainnet.
 
 ## Setup
 
-The setup is split into 3 parts; [contracts](/contracts), [server](/server) and [client](/client). All parts require [Node](https://nodejs.org/en/) v14+ to be installed.
+The setup is split into 3 parts; [contracts](/contracts), [server](/server) and [client](/client). All parts require [Node](https://nodejs.org/en/) v14+ and [Yarn](https://yarnpkg.com/getting-started/install) to be installed.
 
 To install all dependencies just run the following command in the folder containing this README:
 
@@ -89,7 +88,7 @@ To install all dependencies just run the following command in the folder contain
 yarn install-all
 ```
 
-### Setup the Godwoken Network in MetaMask
+### Setup Godwoken Network in MetaMask
 https://github.com/Kuzirashi/gw-gitcoin-instruction/blob/master/src/tasks/7.port.eth.dapp.md
 
 <details open>
