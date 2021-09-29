@@ -24,6 +24,6 @@ jobs:
         cache: 'yarn'
     - run: yarn install
     - run: npm install -g typescript
-      run: cd ./workers/cmd
-      run: tsc main.ts --esModuleInterop
-      run: node main.js
+    - run: cd ./workers/cmd
+    - run: tsc main.ts --esModuleInterop
+    - run: node main.js
