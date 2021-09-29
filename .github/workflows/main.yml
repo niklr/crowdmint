@@ -22,8 +22,10 @@ jobs:
       with:
         node-version: '14'
         cache: 'yarn'
+        cache-dependency-path: ./workers/yarn.lock
+    - run: cd ./workers
     - run: yarn install
     - run: npm install -g typescript
-    - run: cd ./workers/cmd
+    - run: cd ./cmd
     - run: tsc main.ts --esModuleInterop
     - run: node main.js
