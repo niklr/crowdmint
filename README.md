@@ -31,13 +31,23 @@ Both funders A and B not only contributed to make this crowdfunding project a su
 
 A decentralized crowdfunding solution such as CrowdMINT could have an exponential impact on the community leading to a higher number of successful projects started on Nervos.
 
-## Demo
+#### Table of Content:
+* [Demo](#demo)
+* [Architecture](#architecture)
+* [Roadmap](#roadmap)
+* [Setup](#setup)
+
+## Demo <a name="demo"></a>
 
 Video Walkthrough: [...](...)
 
 Live Demo: [https://www.crowdmint.fi/](https://www.crowdmint.fi/)
 
-## Architecture
+Before accessing the live demo, please make sure to complete the following steps:
+- [Setup Godwoken Network in MetaMask](#metamask)
+- [Create a Godwoken Account by Making a Layer 2 Deposit](#deposit)
+
+## Architecture <a name="architecture"></a>
 
 <h1 align="center">
 	<img src="assets/architecture.png" alt="CrowdMINT architecture">
@@ -56,7 +66,7 @@ For design & layout purposes the [Material UI](https://mui.com/) framework has b
 
 All components are using [Polyjuice Provider](https://github.com/nervosnetwork/polyjuice-provider) to interact with Nervos Layer 2 (Godwoken).
 
-## Roadmap
+## Roadmap <a name="roadmap"></a>
 
 ### 2021.Q4
 Alpha release on Nervos Layer 2 Godwoken Testnet with the focus on functionalities for a minimum viable product.
@@ -78,7 +88,7 @@ Public release on Nervos Layer 2 Godwoken Mainnet.
 - Security audit of smart contracts
 - Automatized social media promotion covering trending projects
 
-## Setup
+## Setup <a name="setup"></a>
 
 The setup is split into 3 parts; [contracts](/contracts), [server](/server) and [client](/client). All parts require [Node](https://nodejs.org/en/) v14+ and [Yarn](https://yarnpkg.com/getting-started/install) to be installed.
 
@@ -88,7 +98,7 @@ To install all dependencies just run the following command in the folder contain
 yarn install-all
 ```
 
-### Setup Godwoken Network in MetaMask
+### Setup Godwoken Network in MetaMask <a name="metamask"></a>
 https://github.com/Kuzirashi/gw-gitcoin-instruction/blob/master/src/tasks/7.port.eth.dapp.md
 
 <details open>
@@ -113,3 +123,5 @@ Block Explorer URL: &lt;Leave Empty&gt;
 </pre>
 </details>
 
+### Create a Godwoken Account by Making a Layer 2 Deposit <a name="deposit"></a>
+https://github.com/Kuzirashi/gw-gitcoin-instruction/blob/master/src/component-tutorials/4.layer2.deposit.md
