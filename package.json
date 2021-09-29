@@ -1,5 +1,5 @@
 {
-  "name": "nervos-hackathon",
+  "name": "crowdmint",
   "version": "0.0.1",
   "scripts": {
     "install-contracts": "yarn install --cwd contracts",

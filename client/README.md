@@ -9,3 +9,8 @@ Object is of type 'unknown'.  TS2571
 ```
 
 Replace local yarn.lock with version from https://github.com/RetricSu/polyjuice-provider-example
+
+
+- inactive placeholder to purchase NFT's
+- metamask instructions
+- address top right (eth + polyjuice)

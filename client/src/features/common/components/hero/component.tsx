@@ -36,8 +36,8 @@ export const Hero = () => {
       <HeroContent>
         <Container maxWidth="sm">
           <Typography variant="h5" align="center" color="textSecondary" paragraph>
-            De-centralized crowdfunding on <Link href="https://www.nervos.org/" target="_blank" underline="none">Nervos Network</Link>.<br></br>
-            CROWDMINT is a blockchain based solution leveraging NFT's to crowdfund projects.
+            Decentralized crowdfunding on <Link href="https://www.nervos.org/" target="_blank" underline="none">Nervos Network</Link>.<br></br>
+            CROWDMINT is a blockchain based solution leveraging NFTs to crowdfund community projects.
           </Typography>
         </Container>
       </HeroContent>
