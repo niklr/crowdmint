@@ -21,8 +21,8 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: '14'
-      run: yarn install
-      run: npm install -g typescript
+    - run: yarn install
+    - run: npm install -g typescript
     - name: change directory
       run: cd ./cmd
     - name: compile
