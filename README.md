@@ -56,6 +56,29 @@ For design & layout purposes the [Material UI](https://mui.com/) framework has b
 
 All components are using [Polyjuice Provider](https://github.com/nervosnetwork/polyjuice-provider) to interact with Nervos Layer 2 (Godwoken).
 
+## Roadmap
+
+### 2021.Q4
+Alpha release on Nervos Layer 2 Godwoken Testnet with the focus on functionalities for a minimum viable product.
+
+- Start new projects as a creator
+- Contribute to projects as an individual
+- Withdraw as a creator or individual
+
+### 2022.Q1
+Implement [ERC-721](https://ethereum.org/en/developers/docs/standards/tokens/erc-721/) Non-Fungible Token standard.
+
+- Enable project creators to leverage NFTs to incentivize funders
+- Mint project NFTs as an individual
+- Collect NFT rewards as an individual
+- Beta release on Nervos Layer 2 Godwoken Testnet
+
+### 2022.Q2
+Public release on Nervos Layer 2 Godwoken Mainnet.
+
+- Security audit of smart contracts
+- Automatized social media promotion covering trending projects
+
 ## Setup
 
 The setup is split into 3 parts; [contracts](/contracts), [server](/server) and [client](/client). All parts require [Node](https://nodejs.org/en/) v14+ to be installed.
@@ -75,8 +98,8 @@ https://github.com/Kuzirashi/gw-gitcoin-instruction/blob/master/src/tasks/7.port
 Network Name: Godwoken Testnet
 RPC URL: https://godwoken-testnet-web3-rpc.ckbapp.dev
 Chain ID: 71393
-Currency Symbol: <Leave Empty>
-Block Explorer URL: <Leave Empty>
+Currency Symbol: &lt;Leave Empty&gt;
+Block Explorer URL: &lt;Leave Empty&gt;
 </pre>
 </details>
 
@@ -86,8 +109,8 @@ Block Explorer URL: <Leave Empty>
 Network Name: Godwoken Devnet
 RPC URL: http://localhost:8024
 Chain ID: 1024777
-Currency Symbol: <Leave Empty>
-Block Explorer URL: <Leave Empty>
+Currency Symbol: &lt;Leave Empty&gt;
+Block Explorer URL: &lt;Leave Empty&gt;
 </pre>
 </details>
 
