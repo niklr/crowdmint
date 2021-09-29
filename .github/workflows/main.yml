@@ -8,10 +8,6 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch: 
 
-concurrency: 
-  group: run-crowdmint-worker
-  cancel-in-progress: false
-
 jobs:
   run-crowdmint-worker:
     name: run-crowdmint-worker
@@ -23,9 +19,11 @@ jobs:
         node-version: '14'
         cache: 'yarn'
         cache-dependency-path: ./workers/yarn.lock
-    - run: cd ./workers
-    - run: yarn install
-    - run: npm install -g typescript
-    - run: cd ./cmd
-    - run: tsc main.ts --esModuleInterop
-    - run: node main.js
+    - name: setup
+      working-directory: ./workers
+      run: yarn install
+    - name: compile and run
+      working-directory: ./workers/cmd
+      run: |
+        tsc main.ts --esModuleInterop
+        node main.js
