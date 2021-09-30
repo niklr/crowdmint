@@ -72,20 +72,25 @@ interface ProjectManagerInterface extends ethers.utils.Interface {
   ): Result;
 
   events: {
-    "ProjectCreated(uint256,address,string,string,address)": EventFragment;
+    "ProjectCreated(uint256,address,string,address)": EventFragment;
+    "ProjectUpdated(address,string)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "ProjectCreated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ProjectUpdated"): EventFragment;
 }
 
 export type ProjectCreatedEvent = TypedEvent<
-  [BigNumber, string, string, string, string] & {
+  [BigNumber, string, string, string] & {
     index: BigNumber;
     creator: string;
-    category: string;
-    title: string;
+    url: string;
     addr: string;
   }
+>;
+
+export type ProjectUpdatedEvent = TypedEvent<
+  [string, string] & { addr: string; url: string }
 >;
 
 export class ProjectManager extends BaseContract {
@@ -247,39 +252,35 @@ export class ProjectManager extends BaseContract {
   };
 
   filters: {
-    "ProjectCreated(uint256,address,string,string,address)"(
+    "ProjectCreated(uint256,address,string,address)"(
       index?: BigNumberish | null,
       creator?: string | null,
-      category?: null,
-      title?: null,
+      url?: null,
       addr?: null
     ): TypedEventFilter<
-      [BigNumber, string, string, string, string],
-      {
-        index: BigNumber;
-        creator: string;
-        category: string;
-        title: string;
-        addr: string;
-      }
+      [BigNumber, string, string, string],
+      { index: BigNumber; creator: string; url: string; addr: string }
     >;
 
     ProjectCreated(
       index?: BigNumberish | null,
       creator?: string | null,
-      category?: null,
-      title?: null,
+      url?: null,
       addr?: null
     ): TypedEventFilter<
-      [BigNumber, string, string, string, string],
-      {
-        index: BigNumber;
-        creator: string;
-        category: string;
-        title: string;
-        addr: string;
-      }
+      [BigNumber, string, string, string],
+      { index: BigNumber; creator: string; url: string; addr: string }
     >;
+
+    "ProjectUpdated(address,string)"(
+      addr?: string | null,
+      url?: null
+    ): TypedEventFilter<[string, string], { addr: string; url: string }>;
+
+    ProjectUpdated(
+      addr?: string | null,
+      url?: null
+    ): TypedEventFilter<[string, string], { addr: string; url: string }>;
   };
 
   estimateGas: {

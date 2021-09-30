@@ -26,6 +26,7 @@ interface ProjectInterface extends ethers.utils.Interface {
     "contributions(uint256)": FunctionFragment;
     "contributors(address)": FunctionFragment;
     "getContribution(uint256)": FunctionFragment;
+    "getExtendedInfo()": FunctionFragment;
     "getInfo()": FunctionFragment;
     "info()": FunctionFragment;
     "manager()": FunctionFragment;
@@ -49,6 +50,10 @@ interface ProjectInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "getContribution",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getExtendedInfo",
+    values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "getInfo", values?: undefined): string;
   encodeFunctionData(functionFragment: "info", values?: undefined): string;
@@ -85,6 +90,10 @@ interface ProjectInterface extends ethers.utils.Interface {
     functionFragment: "getContribution",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "getExtendedInfo",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "getInfo", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "info", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "manager", data: BytesLike): Result;
@@ -106,13 +115,11 @@ interface ProjectInterface extends ethers.utils.Interface {
 
   events: {
     "ContributionReceived(address,address,uint256)": EventFragment;
-    "InfoUpdated(address,string,string)": EventFragment;
     "PayoutRequested(address,address,uint256)": EventFragment;
     "RefundRequested(address,address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "ContributionReceived"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "InfoUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PayoutRequested"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RefundRequested"): EventFragment;
 }
@@ -123,10 +130,6 @@ export type ContributionReceivedEvent = TypedEvent<
     contributor: string;
     amount: BigNumber;
   }
->;
-
-export type InfoUpdatedEvent = TypedEvent<
-  [string, string, string] & { project: string; title: string; url: string }
 >;
 
 export type PayoutRequestedEvent = TypedEvent<
@@ -220,7 +223,7 @@ export class Project extends BaseContract {
       ]
     >;
 
-    getInfo(
+    getExtendedInfo(
       overrides?: CallOverrides
     ): Promise<
       [
@@ -247,6 +250,32 @@ export class Project extends BaseContract {
         BigNumber,
         BigNumber,
         string
+      ]
+    >;
+
+    getInfo(
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        [
+          string,
+          string,
+          string,
+          string,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          string
+        ] & {
+          category: string;
+          title: string;
+          description: string;
+          url: string;
+          goal: BigNumber;
+          created: BigNumber;
+          deadline: BigNumber;
+          creator: string;
+        }
       ]
     >;
 
@@ -330,7 +359,7 @@ export class Project extends BaseContract {
     }
   >;
 
-  getInfo(
+  getExtendedInfo(
     overrides?: CallOverrides
   ): Promise<
     [
@@ -358,6 +387,30 @@ export class Project extends BaseContract {
       BigNumber,
       string
     ]
+  >;
+
+  getInfo(
+    overrides?: CallOverrides
+  ): Promise<
+    [
+      string,
+      string,
+      string,
+      string,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      string
+    ] & {
+      category: string;
+      title: string;
+      description: string;
+      url: string;
+      goal: BigNumber;
+      created: BigNumber;
+      deadline: BigNumber;
+      creator: string;
+    }
   >;
 
   info(
@@ -437,7 +490,7 @@ export class Project extends BaseContract {
       }
     >;
 
-    getInfo(
+    getExtendedInfo(
       overrides?: CallOverrides
     ): Promise<
       [
@@ -465,6 +518,30 @@ export class Project extends BaseContract {
         BigNumber,
         string
       ]
+    >;
+
+    getInfo(
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        string,
+        string,
+        string,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        string
+      ] & {
+        category: string;
+        title: string;
+        description: string;
+        url: string;
+        goal: BigNumber;
+        created: BigNumber;
+        deadline: BigNumber;
+        creator: string;
+      }
     >;
 
     info(
@@ -533,24 +610,6 @@ export class Project extends BaseContract {
       { project: string; contributor: string; amount: BigNumber }
     >;
 
-    "InfoUpdated(address,string,string)"(
-      project?: string | null,
-      title?: null,
-      url?: null
-    ): TypedEventFilter<
-      [string, string, string],
-      { project: string; title: string; url: string }
-    >;
-
-    InfoUpdated(
-      project?: string | null,
-      title?: null,
-      url?: null
-    ): TypedEventFilter<
-      [string, string, string],
-      { project: string; title: string; url: string }
-    >;
-
     "PayoutRequested(address,address,uint256)"(
       project?: string | null,
       requestor?: string | null,
@@ -606,6 +665,8 @@ export class Project extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getExtendedInfo(overrides?: CallOverrides): Promise<BigNumber>;
+
     getInfo(overrides?: CallOverrides): Promise<BigNumber>;
 
     info(overrides?: CallOverrides): Promise<BigNumber>;
@@ -657,6 +718,8 @@ export class Project extends BaseContract {
       _index: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    getExtendedInfo(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getInfo(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

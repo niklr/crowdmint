@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.7.0;
+pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./Project.sol";
@@ -14,12 +15,8 @@ contract ProjectManager {
     mapping(string => uint256) public indexes;
     mapping(uint256 => address) public projects;
 
-    event ProjectCreated(uint256 indexed index, address indexed creator, string category, string title, address addr);
-
-    modifier onlyOwner() {
-        require(owner == msg.sender, "Only owner.");
-        _;
-    }
+    event ProjectCreated(uint256 indexed index, address indexed creator, string url, address addr);
+    event ProjectUpdated(address indexed addr, string url);
 
     constructor() {
         owner = msg.sender;
@@ -54,7 +51,7 @@ contract ProjectManager {
         indexes[_id] = index;
         projects[index] = addr;
 
-        emit ProjectCreated(index, msg.sender, _category, _title, addr);
+        emit ProjectCreated(index, msg.sender, _url, addr);
 
         totalProjects++;
 
@@ -84,11 +81,19 @@ contract ProjectManager {
         string memory _url,
         uint256 _goal,
         uint256 _deadline
-    ) public onlyOwner {
+    ) public {
         Project project = Project(_projectAddress);
         require(project.manager() == address(this), "Invalid project.");
+        Project.ProjectInfo memory info = project.getInfo();
+        require(msg.sender == owner || msg.sender == info.creator, "Must be owner or creator.");
 
-        project.setInfo(_category, _title, _description, _url, _goal, _deadline);
+        if (msg.sender == owner) {
+            project.setInfo(_category, _title, _description, _url, _goal, _deadline);
+        } else {
+            project.setInfo(info.category, _title, _description, _url, info.goal, info.deadline);
+        }
+
+        emit ProjectUpdated(_projectAddress, _url);
     }
 
     /**

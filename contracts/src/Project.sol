@@ -41,7 +41,6 @@ contract Project {
 
     ProjectInfo public info;
 
-    event InfoUpdated(address indexed project, string title, string url);
     event ContributionReceived(address indexed project, address indexed contributor, uint256 amount);
     event RefundRequested(address indexed project, address indexed requestor, uint256 amount);
     event PayoutRequested(address indexed project, address indexed requestor, uint256 amount);
@@ -101,7 +100,11 @@ contract Project {
         totalFunding = 0;
     }
 
-    function getInfo()
+    function getInfo() public view returns (ProjectInfo memory) {
+        return (info);
+    }
+
+    function getExtendedInfo()
         public
         view
         returns (
@@ -112,13 +115,7 @@ contract Project {
             address // manager
         )
     {
-        return (
-            info,
-            totalContributions,
-            totalContributors,
-            totalFunding,
-            manager
-        );
+        return (info, totalContributions, totalContributors, totalFunding, manager);
     }
 
     function getContribution(uint256 _index) public view returns (Contribution memory) {
@@ -136,16 +133,13 @@ contract Project {
         string memory _url,
         uint256 _goal,
         uint256 _deadline
-    ) public onlyManagerOrCreator {
+    ) public onlyManager {
+        info.category = _category;
         info.title = _title;
         info.description = _description;
         info.url = _url;
-        if (manager == msg.sender) {
-            info.category = _category;
-            info.goal = _goal;
-            info.deadline = _deadline;
-        }
-        emit InfoUpdated(address(this), info.title, info.url);
+        info.goal = _goal;
+        info.deadline = _deadline;
     }
 
     /**

@@ -118,7 +118,7 @@ class ProjectManagerTest extends BaseTest {
     assertEquals(1, (await contract.totalProjects()).toNumber(), "Invalid deadline");
 
     const projectContract = await this.getProjectContract(projectAddress, this.deployer.privateKey);
-    let projectInfo = this.toProjectInfo(await projectContract.getInfo());
+    let projectInfo = this.toProjectInfo(await projectContract.getExtendedInfo());
     assertEquals(expectedProject.title, projectInfo.title);
     assertEquals(expectedProject.description, projectInfo.description);
     assertEquals(0, projectInfo.totalContributions.toNumber());
@@ -133,7 +133,7 @@ class ProjectManagerTest extends BaseTest {
     });
     assertEquals(true, txResult.success);
 
-    projectInfo = this.toProjectInfo(await projectContract.getInfo());
+    projectInfo = this.toProjectInfo(await projectContract.getExtendedInfo());
     assertEquals(1, projectInfo.totalContributions.toNumber());
     assertEquals(1, projectInfo.totalContributors.toNumber());
     assertEquals(100, projectInfo.totalFunding.toNumber());
@@ -151,7 +151,7 @@ class ProjectManagerTest extends BaseTest {
     });
     assertEquals(true, txResult.success);
 
-    projectInfo = this.toProjectInfo(await projectContract.getInfo());
+    projectInfo = this.toProjectInfo(await projectContract.getExtendedInfo());
     assertEquals(2, projectInfo.totalContributions.toNumber());
     assertEquals(1, projectInfo.totalContributors.toNumber());
     assertEquals(200, projectInfo.totalFunding.toNumber());
@@ -166,7 +166,7 @@ class ProjectManagerTest extends BaseTest {
     assertEquals(false, txResult.success);
     assertEquals(null, await this.rpcProvider.getTransaction(failedPayoutTxHash));
 
-    projectInfo = this.toProjectInfo(await projectContract.getInfo());
+    projectInfo = this.toProjectInfo(await projectContract.getExtendedInfo());
     assertEquals(deployerPolyjuiceAddress.value.toLowerCase(), projectInfo.creator.toLowerCase());
     assertEquals(200, projectInfo.totalFunding.toNumber());
 
@@ -184,7 +184,7 @@ class ProjectManagerTest extends BaseTest {
 
     assertEquals(null, await this.rpcProvider.getTransaction(failedPayoutTxHash));
 
-    projectInfo = this.toProjectInfo(await projectContract.getInfo());
+    projectInfo = this.toProjectInfo(await projectContract.getExtendedInfo());
     // By now the project should be mined (ProjectCreated event received)
     // -> may reset the state of unmined transactions such as contributions
     assertEquals(0, projectInfo.totalFunding.toNumber());
@@ -228,13 +228,13 @@ class ProjectManagerTest extends BaseTest {
 
     console.log(`Project deployed at: ${contract.address}`);
 
-    let projectInfo = this.toProjectInfo(await contract.getInfo());
+    let projectInfo = this.toProjectInfo(await contract.getExtendedInfo());
     assertEquals(0, projectInfo.totalFunding.toNumber());
     assertEquals(ProjectCategory.KIA, projectInfo.category);
 
     await waitForBlocks(this.rpcProvider, 1);
 
-    projectInfo = this.toProjectInfo(await contract.getInfo());
+    projectInfo = this.toProjectInfo(await contract.getExtendedInfo());
     assertEquals(0, projectInfo.totalFunding.toNumber());
     assertEquals(ProjectCategory.KIA, projectInfo.category);
   }
@@ -255,7 +255,7 @@ class ProjectManagerTest extends BaseTest {
     const projectBalanceBefore = await this.rpcProvider.getBalance(project.address);
 
     let timestamp = await manager.getTimestamp();
-    let projectInfo = this.toProjectInfo(await project.getInfo());
+    let projectInfo = this.toProjectInfo(await project.getExtendedInfo());
     if (timestamp.gt(projectInfo.deadline)) {
       const newDeadlne = timestamp.add(86400);
       project.on("InfoUpdated", (addr: string, title: string, url: string) => {
@@ -277,7 +277,7 @@ class ProjectManagerTest extends BaseTest {
       await waitForEvent("InfoUpdated", project);
     }
     timestamp = await manager.getTimestamp();
-    projectInfo = this.toProjectInfo(await project.getInfo());
+    projectInfo = this.toProjectInfo(await project.getExtendedInfo());
     assertCondition(timestamp.lt(projectInfo.deadline), "Project deadline");
 
     const initialFunding = await project.totalFunding();
@@ -298,7 +298,7 @@ class ProjectManagerTest extends BaseTest {
 
     await waitForEvent("ContributionReceived", project);
 
-    projectInfo = this.toProjectInfo(await project.getInfo());
+    projectInfo = this.toProjectInfo(await project.getExtendedInfo());
     assertEquals(initialFunding.add(contribution).toString(), projectInfo.totalFunding.toString());
 
     const projectBalanceAfter = await this.rpcProvider.getBalance(project.address);
