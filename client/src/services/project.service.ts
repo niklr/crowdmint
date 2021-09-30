@@ -8,7 +8,7 @@ import { CommonUtil } from '../util/common.util';
 import { Ensure } from '../util/ensure';
 import { getLogger } from '../util/logger';
 import { TransformUtil } from '../util/transform.util';
-import { CreateProject, EditProject, SaveProject } from '../util/types';
+import { SaveProject } from '../util/types';
 
 const logger = getLogger();
 
@@ -37,16 +37,15 @@ class ProjectService {
     }
   }
 
-  async createAsync(context: ConnectedWeb3Context, values: CreateProject, markdown: any): Promise<string> {
+  async createAsync(context: ConnectedWeb3Context, values: SaveProject, markdown: any): Promise<string> {
     this.validate(context, values, markdown);
-    Ensure.notNullOrWhiteSpace(values.type, "type", "Please specify a valid project type.");
+    Ensure.notNullOrWhiteSpace(values.category, "category", "Please specify a valid project category.");
     Ensure.notNullOrWhiteSpace(values.goal, "goal", "Please specify a valid goal.");
-    Ensure.notNull(values.expirationDate, "expirationDate", "Please specify a valid expiration date.");
+    Ensure.notNull(values.expirationTimestamp, "expirationTimestamp", "Please specify a valid expiration date.");
 
-    const now = Math.floor(Date.now() / 1000);
-    const expirationDate = values.expirationDate as Date;
-    const deadline = Math.floor(expirationDate.getTime() / 1000);
-    if (now >= deadline) {
+    const now = BigNumber.from(TransformUtil.toTimestamp(new Date()));
+    const deadline = BigNumber.from(values.expirationTimestamp);
+    if (now.gte(deadline)) {
       throw new Error("Expiration date is in the past.");
     }
     const goal = TransformUtil.toCKBit(values.goal);
@@ -58,7 +57,7 @@ class ProjectService {
 
     const id = CommonUtil.uuid();
     logger.info("Project id:", id)();
-    const tx = await context.datasource.createProjectAsync(id, values.type, values.title, values.description, ipfsResult.url, goal, BigNumber.from(deadline));
+    const tx = await context.datasource.createProjectAsync(id, values.category, values.title, values.description, ipfsResult.url, goal, deadline);
     logger.info(tx)();
     const projectIndex = await context.datasource.getProjectIndexAsync(id);
     const projectAddress = await context.datasource.getProjectAddressAsync(projectIndex);
@@ -68,19 +67,14 @@ class ProjectService {
     return projectAddress;
   }
 
-  async editAsync(context: ConnectedWeb3Context, values: EditProject, markdown: any): Promise<void> {
+  async editAsync(context: ConnectedWeb3Context, address: string, values: SaveProject, markdown: any): Promise<void> {
     this.validate(context, values, markdown);
-    Ensure.notNullOrWhiteSpace(values.address, "address", "Project address is empty.");
+    Ensure.notNullOrWhiteSpace(address, "address", "Project address is empty.");
 
     const ipfsResult = await this._ipfs.uploadAsync(markdown);
 
-    const empty = {
-      category: "",
-      goal: BigNumber.from(0),
-      deadline: BigNumber.from(0)
-    }
-
-    const tx = await context.datasource.editProjectAsync(values.address, empty.category, values.title, values.description, ipfsResult.url, empty.goal, empty.deadline);
+    const tx = await context.datasource.editProjectAsync(
+      address, values.category, values.title, values.description, ipfsResult.url, BigNumber.from(values.goal), BigNumber.from(values.expirationTimestamp));
     logger.info(tx)();
   }
 }

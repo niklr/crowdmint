@@ -10,7 +10,8 @@ import { SnackbarUtil } from '../../../../util/snackbar.util';
 import { getLogger } from '../../../../util/logger';
 import { ClickOnceButton } from '../../../common/components/click-once-button';
 import { getProjectService } from '../../../../services/project.service';
-import { CreateProject } from '../../../../util/types';
+import { SaveProject } from '../../../../util/types';
+import { TransformUtil } from '../../../../util/transform.util';
 
 const logger = getLogger();
 
@@ -23,23 +24,27 @@ export const ProjectCreate = () => {
   const projectService = getProjectService();
   const baseMarkdownUrl = 'https://raw.githubusercontent.com/niklr/hopr-network-graph/main/README.md';
 
-  const [values, setValues] = useState<CreateProject>({
-    type: ProjectTypes[ProjectType.AON].type,
+  const [values, setValues] = useState<SaveProject>({
+    category: ProjectTypes[ProjectType.AON].type,
     title: "",
     description: "",
     goal: "",
-    expirationDate: momentUtil.get().add(1, "days").toDate()
+    expirationTimestamp: TransformUtil.toTimestamp(momentUtil.get().add(1, "days").toDate())
   });
 
-  const handleTypeChange = (event: SelectChangeEvent) => {
-    setValues({ ...values, type: event.target.value });
+  const getDate = (timestamp: any) => {
+    return momentUtil.getFromUnix(timestamp).toDate();
+  }
+
+  const handleCategoryChange = (event: SelectChangeEvent) => {
+    setValues({ ...values, category: event.target.value });
   };
 
   const handleExpirationDateChange = (newValue: Date | null) => {
-    setValues({ ...values, expirationDate: newValue });
+    setValues({ ...values, expirationTimestamp: TransformUtil.toTimestamp(new Date(newValue?.toString() ?? 0)) });
   };
 
-  const handleChange = (prop: keyof CreateProject) => (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (prop: keyof SaveProject) => (event: React.ChangeEvent<HTMLInputElement>) => {
     setValues({ ...values, [prop]: event.target.value });
   };
 
@@ -110,14 +115,14 @@ export const ProjectCreate = () => {
                   />
                 </FormControl>
                 <FormControl fullWidth>
-                  <InputLabel id="project-type-select-label">Type</InputLabel>
+                  <InputLabel id="project-category-select-label">Category</InputLabel>
                   <Select
-                    labelId="project-type-select-label"
-                    id="project-type-select"
-                    value={values.type}
-                    label="Type"
+                    labelId="project-category-select-label"
+                    id="project-category-select"
+                    value={values.category}
+                    label="Category"
                     autoComplete="off"
-                    onChange={handleTypeChange}
+                    onChange={handleCategoryChange}
                   >
                     <MenuItem value={ProjectTypes[ProjectType.AON].type}>{ProjectTypes[ProjectType.AON].name}</MenuItem>
                     <MenuItem value={ProjectTypes[ProjectType.KIA].type}>{ProjectTypes[ProjectType.KIA].name}</MenuItem>
@@ -135,7 +140,7 @@ export const ProjectCreate = () => {
                   />
                 </FormControl>
                 <DateTimePicker
-                  value={values.expirationDate}
+                  value={getDate(values.expirationTimestamp)}
                   label="Expiration date"
                   onChange={handleExpirationDateChange}
                   renderInput={(params) => <TextField {...params} />}

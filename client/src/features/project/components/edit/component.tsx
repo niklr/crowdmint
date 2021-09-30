@@ -9,7 +9,7 @@ import { Alert } from '../../../common/components/alert';
 import { Editor } from '../../../common/components/editor';
 import { GetProject, GetProjectVariables } from '../../../../queries/__generated__/GetProject';
 import { GET_PROJECT_QUERY } from '../../../../queries/project';
-import { EditProject, Project } from '../../../../util/types';
+import { SaveProject, Project } from '../../../../util/types';
 import { TransformUtil } from '../../../../util/transform.util';
 import { ClickOnceButton } from '../../../common/components/click-once-button';
 import { getProjectService } from '../../../../services/project.service';
@@ -22,10 +22,12 @@ const logger = getLogger();
 export const ProjectEdit = () => {
   const { address } = useParams<{ address: any }>();
   const [project, setProject] = useState<Maybe<Project>>(undefined);
-  const [values, setValues] = useState<EditProject>({
-    address,
+  const [values, setValues] = useState<SaveProject>({
+    category: "",
     title: "",
-    description: ""
+    description: "",
+    goal: "",
+    expirationTimestamp: ""
   });
   const containerRef = useRef(null);
   const editorRef = React.createRef<any>();
@@ -47,20 +49,23 @@ export const ProjectEdit = () => {
     const p = projectQuery.data?.project;
     setProject(TransformUtil.toProject(p));
     setValues({
-      address,
+      category: p?.category ?? "",
       title: p?.title ?? "",
-      description: p?.description ?? ""
+      description: p?.description ?? "",
+      goal: p?.goal ?? "",
+      expirationTimestamp: p?.expirationTimestamp ?? ""
     });
   }, [address, projectQuery.data?.project]);
 
-  const handleChange = (prop: keyof EditProject) => (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (prop: keyof SaveProject) => (event: React.ChangeEvent<HTMLInputElement>) => {
     setValues({ ...values, [prop]: event.target.value });
   };
 
   const saveAsync = async () => {
     try {
       const markdown = editorRef?.current?.getInstance().getMarkdown();
-      await projectService.editAsync(context, values, markdown);
+      await projectService.editAsync(context, address, values, markdown);
+      SnackbarUtil.enqueueMessage("Project updated!");
       await projectQuery.refetch();
     } catch (error) {
       logger.error(error)();

@@ -35,18 +35,11 @@ export type Project = {
 }
 
 export interface SaveProject {
+  category: string;
   title: string;
   description: string;
-}
-
-export interface CreateProject extends SaveProject {
-  type: string;
   goal: string;
-  expirationDate: Date | null;
-}
-
-export interface EditProject extends SaveProject {
-  address: string
+  expirationTimestamp: string;
 }
 
 export type Contribution = {

@@ -30,6 +30,7 @@ export abstract class TransformUtil {
     if (!address) {
       return;
     }
+    // TODO: pass RPC url (Godwoken short address (aka Polyjuice address) depends on deployed scripts addresses, therefore it is different on devnet, testnet and mainnet)
     return (new AddressTranslator()).ethAddressToGodwokenShortAddress(address);
   }
 
@@ -52,5 +53,12 @@ export abstract class TransformUtil {
       return "0";
     }
     return Big(amount).div(Big(10).pow(CommonConstants.CKB_DECIMALS)).toFixed();
+  }
+
+  static toTimestamp(date: Maybe<Date>): string {
+    if (date) {
+      return Math.floor(date.getTime() / 1000).toString();
+    }
+    return "0";
   }
 }

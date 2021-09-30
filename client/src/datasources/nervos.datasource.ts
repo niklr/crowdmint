@@ -106,7 +106,9 @@ export class NervosDataSource extends BaseDataSource {
     _deadline: BigNumber
   ): Promise<string> {
     const manager = await this._client.getProjectManagerAsync(super.getAccount());
-    const tx = await manager.create(_id, _category, _title, _description, _url, _goal, _deadline);
+    const tx = await manager.create(_id, _category, _title, _description, _url, _goal, _deadline, {
+      ...this.getOverrideOptions()
+    });
     logger.info(tx)();
     return tx.hash;
   }
@@ -121,7 +123,9 @@ export class NervosDataSource extends BaseDataSource {
     _deadline: BigNumber
   ): Promise<string> {
     const manager = await this._client.getProjectManagerAsync(super.getAccount());
-    const tx = await manager.setInfo(_address, _category, _title, _description, _url, _goal, _deadline);
+    const tx = await manager.setInfo(_address, _category, _title, _description, _url, _goal, _deadline, {
+      ...this.getOverrideOptions()
+    });
     logger.info(tx)();
     return tx.hash;
   }
