@@ -98,6 +98,23 @@ class ProjectManagerTest extends BaseTest {
     const projectAddress = await contract.projects(actualProjectIndex);
     assertCondition(projectAddress !== EmptyAddress, "Expected project after creation");
 
+    const managerAsOwner = await this.getProjectManagerContract(contract.address, this.deployer.privateKey);
+    txResult = await this.submitTransaction(() => {
+      return managerAsOwner.setInfo(
+        projectAddress,
+        expectedProject.category,
+        expectedProject.title,
+        expectedProject.description,
+        expectedProject.url,
+        expectedProject.goal,
+        expectedProject.deadline,
+        {
+          ...getOverrideOptions(this.nervosProviderUrl),
+        },
+      );
+    });
+    assertEquals(true, txResult.success);
+
     // Test duplicate identifier
     txResult = await this.submitProject(contract, expectedProject);
     assertEquals(false, txResult.success);
