@@ -88,6 +88,13 @@ Public release on Nervos Layer 2 Godwoken Mainnet.
 - Security audit of smart contracts
 - Automatized social media promotion covering trending projects
 
+### 2022.Q3
+Airdrop governance token which allows token holders to help shape the future of CrowdMINT.
+
+Establish DAO to decentralize the decision-making process:
+- Approve new projects and vote-based promotion on start page
+- Flag misconducting users to be suspended or banned 
+
 ## Setup <a name="setup"></a>
 
 The setup is split into 3 parts; [contracts](/contracts), [workers](/workers) and [client](/client). All parts require [Node](https://nodejs.org/en/) v14+ and [Yarn](https://yarnpkg.com/getting-started/install) to be installed.
