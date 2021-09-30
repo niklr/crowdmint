@@ -120,8 +120,8 @@ export class NervosDataSource extends BaseDataSource {
     _goal: BigNumber,
     _deadline: BigNumber
   ): Promise<string> {
-    const project = await this._client.getProjectAsync(_address, super.getAccount());
-    const tx = await project.setInfo(_category, _title, _description, _url, _goal, _deadline);
+    const manager = await this._client.getProjectManagerAsync(super.getAccount());
+    const tx = await manager.setInfo(_address, _category, _title, _description, _url, _goal, _deadline);
     logger.info(tx)();
     return tx.hash;
   }
