@@ -8,9 +8,9 @@
 - yarn compile
 
 ```bash
-yarn tsc ./cmd/main.ts --esModuleInterop
+yarn tsc ./src/main.ts --esModuleInterop
 ```
 
 ```bash
-npx ts-node -P tsconfig.commonjs.json ./cmd/main.ts
+npx ts-node -P tsconfig.commonjs.json ./src/main.ts
 ```

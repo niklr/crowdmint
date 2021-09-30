@@ -5,7 +5,7 @@
   "version": "0.0.1",
   "scripts": {
     "tsc": "tsc",
-    "compile": "tsc ./cmd/main.ts --esModuleInterop"
+    "compile": "tsc ./src/main.ts --esModuleInterop"
   },
   "dependencies": {
     "dotenv": "^10.0.0",

@@ -1,4 +1,4 @@
-import { CommonUtil } from "../utils/common.util";
+import { CommonUtil } from "./utils/common.util";
 
 const runAsync = async () => {
   console.log('worker started')

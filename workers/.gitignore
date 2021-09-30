@@ -1,2 +1,1 @@
-/cmd/*.js
-/utils/*.js
+/src/**/*.js

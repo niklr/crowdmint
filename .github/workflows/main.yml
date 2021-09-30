@@ -23,7 +23,7 @@ jobs:
       working-directory: ./workers
       run: yarn install
     - name: compile and run
-      working-directory: ./workers/cmd
+      working-directory: ./workers/src
       run: |
         tsc main.ts --esModuleInterop
         node main.js
