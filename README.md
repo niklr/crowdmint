@@ -1,6 +1,6 @@
 # CrowdMINT
 
-Decentralized crowdfunding on Nervos Network.
+Decentralized crowdfunding on [Nervos Network](https://www.nervos.org/).
 
 <p align="center">
 	<img src="assets/logo_text.png" alt="CrowdMINT logo">
@@ -56,12 +56,12 @@ Before accessing the live demo, please make sure to complete the following steps
 The contracts can be found in the [contracts](/contracts) folder.
 They are built using [Solidity](https://docs.soliditylang.org/en/v0.7.6/) in combination with [Hardhat](https://hardhat.org/).
 
-The backend can be found in the [server](/server) folder. 
-It is built using [GraphQL](https://graphql.org/) and [Express](https://expressjs.com) in combination with [TypeScript](https://www.typescriptlang.org/).
+The workers can be found in the [workers](/workers) folder. 
+They are built using [TypeScript](https://www.typescriptlang.org/) and run as part of [GitHub Actions](https://github.com/features/actions).
 [Pinata](https://www.pinata.cloud/) was selected in order to pin data hosted on [IPFS](https://ipfs.io/).
 
 The frontend can be found in the [client](/client) folder. 
-It is built using [React](https://reactjs.org/) in combination with [TypeScript](https://www.typescriptlang.org/). 
+It is built using [React](https://reactjs.org/) and [GraphQL](https://graphql.org/) in combination with [TypeScript](https://www.typescriptlang.org/). 
 For design & layout purposes the [Material UI](https://mui.com/) framework has been chosen.
 
 All components are using [Polyjuice Provider](https://github.com/nervosnetwork/polyjuice-provider) to interact with Nervos Layer 2 (Godwoken).
@@ -90,7 +90,7 @@ Public release on Nervos Layer 2 Godwoken Mainnet.
 
 ## Setup <a name="setup"></a>
 
-The setup is split into 3 parts; [contracts](/contracts), [server](/server) and [client](/client). All parts require [Node](https://nodejs.org/en/) v14+ and [Yarn](https://yarnpkg.com/getting-started/install) to be installed.
+The setup is split into 3 parts; [contracts](/contracts), [workers](/workers) and [client](/client). All parts require [Node](https://nodejs.org/en/) v14+ and [Yarn](https://yarnpkg.com/getting-started/install) to be installed.
 
 To install all dependencies just run the following command in the folder containing this README:
 

@@ -65,7 +65,6 @@ class ProjectService {
     if (CommonUtil.isNullOrWhitespace(projectAddress)) {
       throw new Error("Project could not be created.");
     }
-    // TODO: pin with pinata
     return projectAddress;
   }
 

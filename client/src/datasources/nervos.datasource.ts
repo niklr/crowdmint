@@ -59,7 +59,7 @@ export class NervosDataSource extends BaseDataSource {
 
   async getProjectAsync(_address: string): Promise<Project> {
     const project = await this.getTypechainProjectAsync(_address);
-    const info = await project.getInfo();
+    const info = await project.getExtendedInfo();
     return {
       address: _address,
       category: info[0][0],
