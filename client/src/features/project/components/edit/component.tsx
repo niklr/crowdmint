@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { Box, Button, FormControl, Grid, InputLabel, OutlinedInput, Paper, Skeleton, Stack, Typography } from '@mui/material';
@@ -29,6 +29,7 @@ export const ProjectEdit = () => {
     goal: "",
     expirationTimestamp: ""
   });
+  const history = useHistory();
   const containerRef = useRef(null);
   const editorRef = React.createRef<any>();
   const context = useConnectedWeb3Context();
@@ -66,7 +67,7 @@ export const ProjectEdit = () => {
       const markdown = editorRef?.current?.getInstance().getMarkdown();
       await projectService.editAsync(context, address, values, markdown);
       SnackbarUtil.enqueueMessage("Project updated!");
-      await projectQuery.refetch();
+      history.push(`/projects/${address}`);
     } catch (error) {
       logger.error(error)();
       SnackbarUtil.enqueueError(error);
