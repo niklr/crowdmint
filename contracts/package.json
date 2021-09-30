@@ -18,7 +18,9 @@
         "test:simple": "yarn typechain && ts-node test/scripts/SimpleStorageTest.ts",
         "test:manager": "yarn typechain && ts-node test/scripts/ProjectManagerTest.ts",
         "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain && yarn typechain:replace",
-        "typechain:replace": "rm -rf ../client/src/typechain && cp -r ./typechain ../client/src/"
+        "typechain:replace": "yarn typechain:replace:client && yarn typechain:replace:workers",
+        "typechain:replace:client": "rm -rf ../client/src/typechain && cp -r ./typechain ../client/src/",
+        "typechain:replace:workers": "rm -rf ../workers/src/typechain && cp -r ./typechain ../workers/src/"
     },
     "dependencies": {
         "@openzeppelin/contracts": "^3.4.1-solc-0.7-2"
