@@ -81,7 +81,7 @@ export const ProjectCreate = () => {
               </FormControl>
             </Box>
           </Paper>
-          <Paper ref={containerRef} sx={{ maxHeight: "800px", minHeight: "600px", my: 2, overflow: "auto" }}>
+          <Paper ref={containerRef} sx={{ maxHeight: "725px", minHeight: "725px", my: 2, overflow: "auto" }}>
             <Editor containerRef={containerRef} editorRef={editorRef} readOnly={false} markdownUrl={baseMarkdownUrl}></Editor>
           </Paper>
           <Paper>

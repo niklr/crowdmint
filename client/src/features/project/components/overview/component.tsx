@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { BigNumber } from 'ethers';
 import { useQuery } from '@apollo/client';
-import { Box, Button, Chip, Grid, LinearProgress, Paper, Skeleton, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Chip, Grid, LinearProgress, Paper, Skeleton, TextField, Tooltip, Typography } from '@mui/material';
 import { ProjectContributeDialog } from '../contribute-dialog';
 import { ProjectInfo } from '../info';
 import { ProjectInfoTitle } from '../info-title';
@@ -116,7 +116,7 @@ export const ProjectOverview = () => {
               </Box>
             )}
           </Paper>
-          <Paper ref={containerRef} sx={{ maxHeight: "800px", minHeight: "600px", my: 2, overflow: "auto" }}>
+          <Paper ref={containerRef} sx={{ maxHeight: "725px", minHeight: "725px", my: 2, overflow: "auto" }}>
             {!loading && (
               <Editor containerRef={containerRef} editorRef={editorRef} readOnly={true} markdownUrl={project?.url}></Editor>
             )}
@@ -126,6 +126,35 @@ export const ProjectOverview = () => {
           <Paper>
             <ProjectInfoTitle canEdit={canEdit} loading={loading} project={project}></ProjectInfoTitle>
             <ProjectInfo loading={loading} project={project}></ProjectInfo>
+          </Paper>
+          <Paper sx={{ mt: 4 }}>
+            <Box sx={{ display: 'flex', p: 2, bgcolor: "secondary.main" }}>
+              <Box sx={{ flexGrow: 1 }}>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <Typography variant="h5">Limited NFT shares</Typography>
+                </Box>
+              </Box>
+            </Box>
+            <Box sx={{ px: 2, pt: 2 }} >
+              <Box sx={{ pb: 1 }}>
+                <Chip label="0" size="small" variant="outlined" /> of <Chip label="1000" size="small" /> available
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', py: 2 }}>
+                <TextField
+                  label="NFT amount"
+                  id="nft-amount"
+                  defaultValue="0"
+                  size="small"
+                  type="number"
+                  fullWidth
+                  disabled
+                />
+                <Button sx={{ ml: 1 }} variant="outlined" disabled>Mint</Button>
+              </Box>
+              <Box sx={{ pb: 1 }}>
+                <b>50%</b> of the overfunded amount will be distributed among NFT holders
+              </Box>
+            </Box>
           </Paper>
         </Grid>
         <Grid item xs={12}>
