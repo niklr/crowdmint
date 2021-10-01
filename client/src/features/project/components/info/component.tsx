@@ -57,31 +57,21 @@ export const ProjectInfo = (props: Props) => {
         )}
       </Box>
       <Box sx={{ px: 2, pt: 2 }} >
+        <Typography fontWeight="bold">Goal</Typography>
+        {props.loading ? (
+          <Skeleton animation="wave" height={15} width="40%" />
+        ) : (
+          <Tooltip title={toCKByteString(props.project?.totalFunding) + ' / ' + toCKByteString(props.project?.goal)} placement="left" arrow>
+            <Typography fontSize={13} noWrap>{toCKByte(props.project?.totalFunding)} / {toCKByte(props.project?.goal)} CKB ({percentage}%)</Typography>
+          </Tooltip>
+        )}
+      </Box>
+      <Box sx={{ px: 2, pt: 2 }} >
         <Typography fontWeight="bold">Creation date</Typography>
         {props.loading ? (
           <Skeleton animation="wave" height={15} width="40%" />
         ) : (
           <Typography fontSize={13} noWrap>{formatTimestamp(props.project?.createdTimestamp)}</Typography>
-        )}
-      </Box>
-      <Box sx={{ px: 2, pt: 2 }} >
-        <Typography fontWeight="bold">Goal</Typography>
-        {props.loading ? (
-          <Skeleton animation="wave" height={15} width="40%" />
-        ) : (
-          <Tooltip title={toCKByteString(props.project?.goal)} placement="left" arrow>
-            <Typography fontSize={13} noWrap>{toCKByte(props.project?.goal)} CKB</Typography>
-          </Tooltip>
-        )}
-      </Box>
-      <Box sx={{ px: 2, pt: 2 }} >
-        <Typography fontWeight="bold">Reached</Typography>
-        {props.loading ? (
-          <Skeleton animation="wave" height={15} width="40%" />
-        ) : (
-          <Tooltip title={toCKByteString(props.project?.totalFunding)} placement="left" arrow>
-            <Typography fontSize={13} noWrap>{toCKByte(props.project?.totalFunding)} CKB ({percentage}%)</Typography>
-          </Tooltip>
         )}
       </Box>
       <Box sx={{ px: 2, pt: 2 }} >

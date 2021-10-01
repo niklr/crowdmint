@@ -116,7 +116,7 @@ export const ProjectOverview = () => {
               </Box>
             )}
           </Paper>
-          <Paper ref={containerRef} sx={{ maxHeight: "725px", minHeight: "725px", my: 2, overflow: "auto" }}>
+          <Paper ref={containerRef} sx={{ maxHeight: "800px", minHeight: "670px", my: 2, overflow: "auto" }}>
             {!loading && (
               <Editor containerRef={containerRef} editorRef={editorRef} readOnly={true} markdownUrl={project?.url}></Editor>
             )}
