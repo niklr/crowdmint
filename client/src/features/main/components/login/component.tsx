@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 import { useEffect } from 'react';
-import { Avatar, Dialog, DialogTitle, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
+import { Avatar, Dialog, DialogContent, DialogContentText, DialogTitle, Link, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { styled } from '@mui/system';
 import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
@@ -57,18 +57,24 @@ export const LoginDialog: React.FC<Props> = (props: Props) => {
   }, [account, open, onClose])
 
   return (
-    <Dialog onClose={handleClose} open={open}>
+    <Dialog onClose={handleClose} open={open} maxWidth="xs">
       <DialogTitle>Connect Wallet</DialogTitle>
-      <List sx={{ pt: 0 }}>
-        <ListItem autoFocus button onClick={() => handleClickAsync(WalletType.MetaMask)}>
-          <ListItemAvatar>
-            <Avatar sx={{ bgcolor: grey[200] }}>
-              <IconMetaMask />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary="Metamask" />
-        </ListItem>
-      </List>
+      <DialogContent>
+        <DialogContentText>
+          Please install the MetaMask browser plugin and add the Godwoken Testnet as described&nbsp;
+          <Link href="https://github.com/niklr/crowdmint#setup-godwoken-network-in-metamask-" target="_blank">here</Link >.
+        </DialogContentText>
+        <List sx={{ pt: 2 }}>
+          <ListItem autoFocus button onClick={() => handleClickAsync(WalletType.MetaMask)}>
+            <ListItemAvatar>
+              <Avatar sx={{ bgcolor: grey[200] }}>
+                <IconMetaMask />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText primary="Metamask" />
+          </ListItem>
+        </List>
+      </DialogContent>
     </Dialog>
   )
 }
