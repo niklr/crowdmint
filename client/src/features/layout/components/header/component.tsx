@@ -1,9 +1,12 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { AppBar, Button, Link, styled, Toolbar, Typography } from '@mui/material';
+import { AppBar, Button, Chip, Link, styled, Toolbar, Tooltip, Typography } from '@mui/material';
+import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
 import { CommonConstants } from '../../../../common/constants';
 import { LoginDialog } from '../../../main/components/login';
 import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
+import { CommonUtil } from '../../../../util/common.util';
+import { TransformUtil } from '../../../../util/transform.util';
 
 const Root = styled('div')(
   ({ theme }) => `
@@ -32,6 +35,10 @@ export const Header: React.FC = (props: any) => {
     setLoginOpen(false);
   };
 
+  const truncateAddress = (address?: string) => {
+    return CommonUtil.truncateStringInTheMiddle(address, 10, 5)
+  }
+
   return (
     <Root>
       <AppBar position="static" color="secondary">
@@ -43,9 +50,19 @@ export const Header: React.FC = (props: any) => {
             </Link>
           </TitleTypography>
           {context.account ? (
-            <Button color="inherit" onClick={handleClickLogout}>
-              Logout
-            </Button>
+            <>
+              <Tooltip title={
+                <React.Fragment>
+                  <p>Ethereum address: {context.account}</p>
+                  <p>Polyjuice address: {TransformUtil.toGodwokenAddress(context.account)}</p>
+                </React.Fragment>
+              } placement="bottom" arrow>
+                <Chip icon={<AccountCircleTwoToneIcon />} label={truncateAddress(context.account)} variant="outlined" />
+              </Tooltip>
+              <Button color="inherit" onClick={handleClickLogout}>
+                Logout
+              </Button>
+            </>
           ) : (
             <Button color="inherit" onClick={handleClickLogin}>
               Login
