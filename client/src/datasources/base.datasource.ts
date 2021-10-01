@@ -1,6 +1,7 @@
 
 import { BigNumber } from "ethers";
 import { AccountStorage, getAccountStorage } from "../storage";
+import { Ensure } from "../util/ensure";
 import { Contribution, Project } from "../util/types";
 
 export interface IDataSource {
@@ -40,6 +41,7 @@ export abstract class BaseDataSource implements IDataSource {
   }
 
   getAccount(): Maybe<string> {
+    Ensure.notNullOrWhiteSpace(this._accountStorage.account, "account", "Please connect your wallet first.");
     return this._accountStorage.account;
   }
 

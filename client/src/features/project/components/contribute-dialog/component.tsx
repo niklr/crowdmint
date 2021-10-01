@@ -55,7 +55,7 @@ export const ProjectContributeDialog: React.FC<Props> = (props: Props) => {
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
+    <Dialog open={open} onClose={() => { handleClose(false) }} maxWidth="xs" fullWidth>
       <DialogTitle>Contribute</DialogTitle>
       <DialogContent>
         <DialogContentText>

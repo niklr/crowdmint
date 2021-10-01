@@ -52,7 +52,11 @@ export abstract class TransformUtil {
     if (!amount) {
       return "0";
     }
-    return Big(amount).div(Big(10).pow(CommonConstants.CKB_DECIMALS)).toFixed();
+    try {
+      return Big(amount).div(Big(10).pow(CommonConstants.CKB_DECIMALS)).toFixed();
+    } catch (error) {
+      return "0";
+    }
   }
 
   static toTimestamp(date: Maybe<Date>): string {
