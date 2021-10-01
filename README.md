@@ -8,7 +8,7 @@ Decentralized crowdfunding on [Nervos Network](https://www.nervos.org/).
 
 CrowdMINT is a blockchain based solution leveraging NFTs to crowdfund community projects.
 
-The developed smart contract supports both the fixed AON (All-Or-Nothing) and the flexible KIA (Keep-It-All) [crowdfunding models](https://www.researchgate.net/publication/272306935_Crowdfunding_Models_Keep-it-All_vs_All-or-Nothing).
+The developed smart contracts support both the fixed AON (All-Or-Nothing) and the flexible KIA (Keep-It-All) [crowdfunding models](https://www.researchgate.net/publication/272306935_Crowdfunding_Models_Keep-it-All_vs_All-or-Nothing).
 A big advantage of smart contracts is most of the fees known from conventional crowdfunding platforms are eliminated.
 However, possible business uses cases could involve a small fee when creating projects or after successful campaigns, directly programmed into the smart contract.
 
@@ -134,3 +134,17 @@ Block Explorer URL: &lt;Leave Empty&gt;
 
 ### Create a Godwoken Account by Making a Layer 2 Deposit <a name="deposit"></a>
 https://github.com/Kuzirashi/gw-gitcoin-instruction/blob/master/src/component-tutorials/4.layer2.deposit.md
+
+## Impressions
+
+<p align="center">
+	<img src="assets/impression_1.png" alt="CrowdMINT impression 1">
+</p>
+
+<p align="center">
+	<img src="assets/impression_2.png" alt="CrowdMINT impression 2">
+</p>
+
+<p align="center">
+	<img src="assets/impression_3.png" alt="CrowdMINT impression 3">
+</p>
