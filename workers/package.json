@@ -8,8 +8,13 @@
     "compile": "tsc ./src/main.ts --esModuleInterop"
   },
   "dependencies": {
+    "@pinata/sdk": "^1.1.23",
+    "@polyjuice-provider/ethers": "^0.0.1-rc11",
+    "@polyjuice-provider/web3": "^0.0.1-rc11",
     "dotenv": "^10.0.0",
-    "tslib": "^2.3.0"
+    "ethers": "^5.4.7",
+    "tslib": "^2.3.0",
+    "web3": "^1.4.0"
   },
   "devDependencies": {
     "@types/node": "^14.14.33",

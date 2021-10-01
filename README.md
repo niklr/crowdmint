@@ -29,7 +29,7 @@ Both funders A and B not only contributed to make this crowdfunding project a su
 - Funder A gets 2% of 200'000 CKB = 4'000 CKB (2'000 CKB profit)
 - Funder B gets 10% of 200'000 CKB = 20'000 CKB (10'000 CKB profit)
 
-A decentralized crowdfunding solution such as CrowdMINT could have an exponential impact on the community leading to a higher number of successful projects started on Nervos.
+A decentralized crowdfunding solution such as CrowdMINT could have a great impact on the community leading to a higher number of successful projects started on Nervos.
 
 #### Table of Content:
 * [Demo](#demo)
@@ -59,6 +59,7 @@ They are built using [Solidity](https://docs.soliditylang.org/en/v0.7.6/) in com
 The workers can be found in the [workers](/workers) folder. 
 They are built using [TypeScript](https://www.typescriptlang.org/) and run as part of [GitHub Actions](https://github.com/features/actions).
 [Pinata](https://www.pinata.cloud/) was selected in order to pin data hosted on [IPFS](https://ipfs.io/).
+Whenever a project gets created or updated, the worker will detect and handle the events initiated by the smart contract.
 
 The frontend can be found in the [client](/client) folder. 
 It is built using [React](https://reactjs.org/) and [GraphQL](https://graphql.org/) in combination with [TypeScript](https://www.typescriptlang.org/). 

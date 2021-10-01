@@ -23,7 +23,11 @@ jobs:
       working-directory: ./workers
       run: yarn install
     - name: compile and run
-      working-directory: ./workers/src
-      run: |
-        tsc main.ts --esModuleInterop
-        node main.js
+      working-directory: ./workers
+      run: npx ts-node -P tsconfig.commonjs.json ./src/main.ts
+      env:
+        PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}  
+        PINATA_API_SECRET: ${{ secrets.PINATA_API_SECRET }}      
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: 'workers: update data'
