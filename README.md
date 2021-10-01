@@ -87,6 +87,7 @@ Implement [ERC-721](https://ethereum.org/en/developers/docs/standards/tokens/erc
 Public release on Nervos Layer 2 Godwoken Mainnet.
 
 - Security audit of smart contracts
+- Integrate [The Graph](https://thegraph.com/en/) to improve querying performance
 - Automatized social media promotion covering trending projects
 
 ### 2022.Q3

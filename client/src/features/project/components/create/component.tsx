@@ -22,7 +22,7 @@ export const ProjectCreate = () => {
   const momentUtil = new MomentUtil();
   const context = useConnectedWeb3Context();
   const projectService = getProjectService();
-  const baseMarkdownUrl = 'https://raw.githubusercontent.com/niklr/hopr-network-graph/main/README.md';
+  const baseMarkdownUrl = 'https://raw.githubusercontent.com/blake256/templates/main/crowdmint/template.md';
 
   const [values, setValues] = useState<SaveProject>({
     category: ProjectTypes[ProjectType.AON].type,
