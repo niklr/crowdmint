@@ -23,6 +23,12 @@ yarn compile
 yarn test:manager
 ```
 
+### Deploy
+
+```bash
+yarn deploy:manager
+```
+
 ### Convert between Ethereum adress and Polyjuice address:
 https://github.com/Kuzirashi/gw-gitcoin-instruction/blob/master/src/component-tutorials/3.setup.and.use.account.cli.md
 

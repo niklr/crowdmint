@@ -17,6 +17,7 @@
         "test": "hardhat test",
         "test:simple": "yarn typechain && ts-node scripts/tests/SimpleStorageTest.ts",
         "test:manager": "yarn typechain && ts-node scripts/tests/ProjectManagerTest.ts",
+        "deploy:manager": "yarn typechain && ts-node scripts/deploy/DeployProjectManager.ts",
         "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain && yarn typechain:replace",
         "typechain:replace": "yarn typechain:replace:client && yarn typechain:replace:workers",
         "typechain:replace:client": "rm -rf ../client/src/typechain && cp -r ./typechain ../client/src/",
