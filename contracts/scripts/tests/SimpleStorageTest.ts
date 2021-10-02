@@ -1,78 +1,17 @@
 import { PolyjuiceWallet } from "@polyjuice-provider/ethers";
 import { BigNumber } from "ethers";
-import { SimpleManager__factory, SimpleStorage__factory, Utils__factory } from "../../typechain";
+import { SimpleStorage__factory } from "../../typechain";
 import { EmptyAddress } from "../constants";
+import { Context } from "../context";
 import { assertCondition, assertEquals, getOverrideOptions, timeout, waitForBlocks } from "../utils";
-import { BaseTest } from "./BaseTest";
 
-class SimpleStorageTest extends BaseTest {
+class SimpleStorageTest extends Context {
   constructor() {
     super();
   }
 
-  public async deployUtils() {
-    const factory = new Utils__factory(this.deployer);
-    const tx = factory.getDeployTransaction();
-    const receipt = await (
-      await this.deployer.sendTransaction({
-        ...tx,
-        ...getOverrideOptions(this.nervosProviderUrl),
-      })
-    ).wait();
-    const contract = Utils__factory.connect(receipt.contractAddress, this.deployer);
-    return contract;
-  }
-
-  public async deploySimpleStorageContract() {
-    console.log("Deploying SimpleStorage...");
-
-    const utils = await this.deployUtils();
-    const factory = new SimpleStorage__factory(
-      {
-        "src/Utils.sol:Utils": utils.address,
-      },
-      this.deployer,
-    );
-    const tx = factory.getDeployTransaction();
-    const receipt = await (
-      await this.deployer.sendTransaction({
-        ...tx,
-        ...getOverrideOptions(this.nervosProviderUrl),
-      })
-    ).wait();
-    const storage = SimpleStorage__factory.connect(receipt.contractAddress, this.deployer);
-
-    console.log(`SimpleStorage deployed at: ${storage.address}`);
-
-    return storage;
-  }
-
-  public async deployManagerContract() {
-    console.log("Deploying SimpleManager...");
-
-    const utils = await this.deployUtils();
-    const factory = new SimpleManager__factory(
-      {
-        "src/Utils.sol:Utils": utils.address,
-      },
-      this.deployer,
-    );
-    const tx = factory.getDeployTransaction();
-    const receipt = await (
-      await this.deployer.sendTransaction({
-        ...tx,
-        ...getOverrideOptions(this.nervosProviderUrl),
-      })
-    ).wait();
-    const storage = SimpleManager__factory.connect(receipt.contractAddress, this.deployer);
-
-    console.log(`SimpleManager deployed at: ${storage.address}`);
-
-    return storage;
-  }
-
   public async deployManager() {
-    const manager = await this.deployManagerContract();
+    const manager = await this.deploySimpleManagerContract();
     assertCondition(EmptyAddress === (await manager.storageAddress()));
     await manager.create();
     assertCondition(EmptyAddress !== (await manager.storageAddress()));

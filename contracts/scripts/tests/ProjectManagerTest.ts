@@ -1,66 +1,18 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { PolyjuiceWallet } from "@polyjuice-provider/ethers";
 import { v4 as uuidv4 } from "uuid";
-import { ProjectManager, ProjectManager__factory, Project__factory, Utils__factory } from "../../typechain";
+import { ProjectManager, Project__factory } from "../../typechain";
 import { EmptyAddress, ProjectCategory } from "../constants";
+import { Context } from "../context";
 import { CreateProject, ProjectInfo } from "../types";
 import { assertCondition, assertEquals, getOverrideOptions, timeout, waitForBlocks, waitForEvent } from "../utils";
-import { BaseTest } from "./BaseTest";
 
-class ProjectManagerTest extends BaseTest {
+class ProjectManagerTest extends Context {
   constructor() {
     super();
   }
 
-  public async deployUtils() {
-    const factory = new Utils__factory(this.deployer);
-    const tx = factory.getDeployTransaction();
-    const receipt = await (
-      await this.deployer.sendTransaction({
-        ...tx,
-        ...getOverrideOptions(this.nervosProviderUrl),
-      })
-    ).wait();
-    const contract = ProjectManager__factory.connect(receipt.contractAddress, this.deployer);
-    return contract;
-  }
-
-  public async deployContract() {
-    console.log("Deploying ProjectManager...");
-
-    const utils = await this.deployUtils();
-    const factory = new ProjectManager__factory(
-      {
-        "src/Utils.sol:Utils": utils.address,
-      },
-      this.deployer,
-    );
-    const tx = factory.getDeployTransaction();
-    const receipt = await (
-      await this.deployer.sendTransaction({
-        ...tx,
-        ...getOverrideOptions(this.nervosProviderUrl),
-      })
-    ).wait();
-    const contract = ProjectManager__factory.connect(receipt.contractAddress, this.deployer);
-
-    console.log(`ProjectManager deployed at: ${contract.address}`);
-
-    return contract;
-  }
-
-  public async getProjectManagerContract(address: string, pk: string) {
-    const account = new PolyjuiceWallet(pk, this.nervosProviderConfig, this.rpcProvider);
-    return ProjectManager__factory.connect(address, account);
-  }
-
-  public async getProjectContract(address: string, pk: string) {
-    const account = new PolyjuiceWallet(pk, this.nervosProviderConfig, this.rpcProvider);
-    return Project__factory.connect(address, account);
-  }
-
   public async deploy() {
-    const contract = await this.deployContract();
+    const contract = await this.deployProjectManager();
     const actualOwner = await contract.owner();
     //const contractPolyjuiceAddress = await this.godwoker.getShortAddressByAllTypeEthAddress(contract.address);
     const deployerPolyjuiceAddress = await this.godwoker.getShortAddressByAllTypeEthAddress(this.deployer.address);
