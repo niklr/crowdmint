@@ -39,7 +39,7 @@ A decentralized crowdfunding solution such as CrowdMINT could have a great impac
 
 ## Demo <a name="demo"></a>
 
-Video Walkthrough: [...](...)
+Video Walkthrough: [https://youtu.be/s-3PJrl0gQQ](https://youtu.be/s-3PJrl0gQQ)
 
 Live Demo: [https://www.crowdmint.fi/](https://www.crowdmint.fi/)
 
