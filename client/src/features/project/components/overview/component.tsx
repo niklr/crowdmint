@@ -1,23 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { BigNumber } from 'ethers';
 import { useQuery } from '@apollo/client';
 import { Box, Button, Chip, Grid, LinearProgress, Paper, Skeleton, TextField, Tooltip, Typography } from '@mui/material';
-import { ProjectContributeDialog } from '../contribute-dialog';
-import { ProjectInfo } from '../info';
-import { ProjectInfoTitle } from '../info-title';
-import { Alert } from '../../../common/components/alert';
-import { MomentUtil } from '../../../../util/moment.util';
-import { Editor } from '../../../common/components/editor';
-import { CommonUtil } from '../../../../util/common.util';
-import { ProjectContributionList } from '../contribution-list';
+import React, { useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
 import { GET_PROJECT_QUERY } from '../../../../queries/project';
 import { GetProject, GetProjectVariables } from '../../../../queries/__generated__/GetProject';
-import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
+import { CommonUtil } from '../../../../util/common.util';
 import { getLogger } from '../../../../util/logger';
-import { Project } from '../../../../util/types';
-import { TransformUtil } from '../../../../util/transform.util';
+import { MomentUtil } from '../../../../util/moment.util';
 import { SnackbarUtil } from '../../../../util/snackbar.util';
+import { TransformUtil } from '../../../../util/transform.util';
+import { Project } from '../../../../util/types';
+import { Alert } from '../../../common/components/alert';
+import { Editor } from '../../../common/components/editor';
+import { ProjectContributeDialog } from '../contribute-dialog';
+import { ProjectContributionList } from '../contribution-list';
+import { ProjectInfo } from '../info';
+import { ProjectInfoTitle } from '../info-title';
 
 const logger = getLogger();
 
@@ -158,7 +157,7 @@ export const ProjectOverview = () => {
           </Paper>
         </Grid>
         <Grid item xs={12}>
-          <ProjectContributionList address={project?.address} total={BigNumber.from(project?.totalContributions ?? 0)}></ProjectContributionList>
+          <ProjectContributionList address={project?.address} total={TransformUtil.toBigNumber(project?.totalContributions)}></ProjectContributionList>
         </Grid>
       </Grid>
       <ProjectContributeDialog
