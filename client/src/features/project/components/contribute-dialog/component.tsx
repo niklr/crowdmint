@@ -1,10 +1,10 @@
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, Input, InputAdornment, InputLabel } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, FormControl, InputLabel, Input, InputAdornment } from '@mui/material';
+import { getCommonContext } from '../../../../contexts/common.context';
+import { SnackbarUtil } from '../../../../util/snackbar.util';
+import { TransformUtil } from '../../../../util/transform.util';
 import { Project } from '../../../../util/types';
 import { ClickOnceButton } from '../../../common/components/click-once-button';
-import { SnackbarUtil } from '../../../../util/snackbar.util';
-import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
-import { TransformUtil } from '../../../../util/transform.util';
 
 interface ContributeProject {
   amount: string
@@ -17,7 +17,7 @@ interface Props {
 }
 
 export const ProjectContributeDialog: React.FC<Props> = (props: Props) => {
-  const context = useConnectedWeb3Context();
+  const commonContext = getCommonContext();
 
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState<ContributeProject>({
@@ -47,7 +47,7 @@ export const ProjectContributeDialog: React.FC<Props> = (props: Props) => {
       if (amount.lt(1)) {
         throw new Error("Invalid amount");
       }
-      await context.datasource.contributeAsync(props.project.address, amount);
+      await commonContext.datasource.contributeAsync(props.project.address, amount);
       handleClose(true);
     } catch (error) {
       SnackbarUtil.enqueueError(error);

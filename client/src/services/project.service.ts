@@ -1,9 +1,15 @@
-import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
+import { ApolloClient, FetchPolicy, NormalizedCacheObject } from '@apollo/client';
 import { BigNumber } from 'ethers';
 import { getApolloClient } from '../clients/apollo.client';
 import { getIpfsClient, IpfsClient } from '../clients/ipfs.client';
 import { CommonConstants } from '../common/constants';
 import { ConnectedWeb3Context } from '../contexts/connectedWeb3';
+import { CREATE_PROJECT_MUTATION, EDIT_PROJECT_MUTATION } from '../mutations/project';
+import { CreateProject, CreateProjectVariables } from '../mutations/__generated__/CreateProject';
+import { EditProject, EditProjectVariables } from '../mutations/__generated__/EditProject';
+import { GET_PROJECT_ADDRESS_QUERY } from '../queries/project';
+import { GetProjectAddress, GetProjectAddressVariables } from '../queries/__generated__/GetProjectAddress';
+import { GetProjectIndex, GetProjectIndexVariables } from '../queries/__generated__/GetProjectIndex';
 import { CommonUtil } from '../util/common.util';
 import { Ensure } from '../util/ensure';
 import { getLogger } from '../util/logger';
@@ -37,6 +43,28 @@ class ProjectService {
     }
   }
 
+  async getProjectIndexAsync(_id: string, _fetchPolicy: FetchPolicy = "network-only"): Promise<BigNumber> {
+    const query = await this._apollo.query<GetProjectIndex, GetProjectIndexVariables>({
+      query: GET_PROJECT_ADDRESS_QUERY,
+      variables: {
+        id: _id
+      },
+      fetchPolicy: _fetchPolicy
+    });
+    return BigNumber.from(query.data.projectIndex);
+  }
+
+  async getProjectAddressAsync(_index: string, _fetchPolicy: FetchPolicy = "network-only"): Promise<Maybe<string>> {
+    const query = await this._apollo.query<GetProjectAddress, GetProjectAddressVariables>({
+      query: GET_PROJECT_ADDRESS_QUERY,
+      variables: {
+        index: _index
+      },
+      fetchPolicy: _fetchPolicy
+    });
+    return query.data.projectAddress;
+  }
+
   async createAsync(context: ConnectedWeb3Context, values: SaveProject, markdown: any): Promise<string> {
     this.validate(context, values, markdown);
     Ensure.notNullOrWhiteSpace(values.category, "category", "Please specify a valid project category.");
@@ -57,11 +85,22 @@ class ProjectService {
 
     const id = CommonUtil.uuid();
     logger.info("Project id:", id)();
-    const tx = await context.datasource.createProjectAsync(id, values.category, values.title, values.description, ipfsResult.url, goal, deadline);
-    logger.info(tx)();
-    const projectIndex = await context.datasource.getProjectIndexAsync(id);
-    const projectAddress = await context.datasource.getProjectAddressAsync(projectIndex);
-    if (CommonUtil.isNullOrWhitespace(projectAddress)) {
+    const result = await this._apollo.mutate<CreateProject, CreateProjectVariables>({
+      mutation: CREATE_PROJECT_MUTATION,
+      variables: {
+        id,
+        category: values.category,
+        title: values.title,
+        description: values.description,
+        url: ipfsResult.url,
+        goal: goal.toString(),
+        deadline: deadline.toString()
+      }
+    })
+    logger.info(result.data?.createProject)();
+    const projectIndex = await this.getProjectIndexAsync(id);
+    const projectAddress = await this.getProjectAddressAsync(projectIndex.toString());
+    if (!projectAddress || CommonUtil.isNullOrWhitespace(projectAddress)) {
       throw new Error("Project could not be created.");
     }
     return projectAddress;
@@ -73,9 +112,19 @@ class ProjectService {
 
     const ipfsResult = await this._ipfs.uploadAsync(markdown);
 
-    const tx = await context.datasource.editProjectAsync(
-      address, values.category, values.title, values.description, ipfsResult.url, BigNumber.from(values.goal), BigNumber.from(values.expirationTimestamp));
-    logger.info(tx)();
+    const result = await this._apollo.mutate<EditProject, EditProjectVariables>({
+      mutation: EDIT_PROJECT_MUTATION,
+      variables: {
+        address,
+        category: values.category,
+        title: values.title,
+        description: values.description,
+        url: ipfsResult.url,
+        goal: values.goal,
+        deadline: values.expirationTimestamp
+      }
+    })
+    logger.info(result.data?.editProject)();
   }
 }
 
