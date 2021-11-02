@@ -7,19 +7,28 @@ import { Contribution, Project } from "../util/types";
 export class MockDataSource extends BaseDataSource {
   private readonly _fileUtil: FileUtil;
   private _projects: Project[];
+  private _projectIndexMap: Map<string, number>;
 
   constructor() {
     super();
     this._fileUtil = new BrowserFileUtil();
     this._projects = [];
+    this._projectIndexMap = new Map<string, number>();
+  }
+
+  private clear(): void {
+    this._projects = [];
+    this._projectIndexMap = new Map<string, number>();
   }
 
   protected async initAsyncProtected(): Promise<void> {
     let projects = await this._fileUtil.readFileAsync("./assets/data/mock_projects.json");
     projects = JSON.parse(projects);
-    this._projects = [];
+    this.clear();
     for (let index = 0; index < projects.length; index++) {
       const p = projects[index];
+      const id = this.createId();
+      this._projectIndexMap.set(id, index + 1);
       this._projects.push({
         address: p.address,
         category: p.category,
@@ -33,12 +42,12 @@ export class MockDataSource extends BaseDataSource {
         totalContributors: p.totalContributors,
         totalFunding: p.totalFunding,
         url: p.url
-      })
+      });
     }
   }
 
   protected disposeProtected(): void {
-    this._projects = [];
+    this.clear();
   }
 
   async getBalanceAsync(_address: string): Promise<BigNumber> {
@@ -46,7 +55,11 @@ export class MockDataSource extends BaseDataSource {
   }
 
   async getProjectIndexAsync(_id: string): Promise<BigNumber> {
-    throw new Error("Method not implemented.");
+    const index = this._projectIndexMap.get(_id)
+    if (!index) {
+      return BigNumber.from(0);
+    }
+    return BigNumber.from(index);
   }
 
   async getProjectAddressAsync(_index: BigNumber): Promise<Maybe<string>> {
@@ -71,7 +84,7 @@ export class MockDataSource extends BaseDataSource {
   }
 
   async getTimestampAsync(): Promise<BigNumber> {
-    return BigNumber.from(Math.round(new Date().getTime() / 1000));
+    return BigNumber.from(this._moment.get().unix());
   }
 
   async getTotalProjectsAsync(): Promise<BigNumber> {
@@ -80,7 +93,23 @@ export class MockDataSource extends BaseDataSource {
   }
 
   async createProjectAsync(_id: string, _category: string, _title: string, _description: string, _url: string, _goal: BigNumber, _deadline: BigNumber): Promise<string> {
-    throw new Error("Method not implemented.");
+    const index = this._projects.length + 1;
+    this._projectIndexMap.set(_id, index);
+    this._projects.push({
+      address: this.createId(),
+      category: _category,
+      createdTimestamp: this._moment.get().unix().toString(),
+      expirationTimestamp: _deadline.toString(),
+      creator: this.getAccount(),
+      description: _description,
+      goal: _goal.toString(),
+      title: _title,
+      totalContributions: "0",
+      totalContributors: "0",
+      totalFunding: "0",
+      url: _url
+    });
+    return _id;
   }
 
   async editProjectAsync(_address: string, _category: string, _title: string, _description: string, _url: string, _goal: BigNumber, _deadline: BigNumber): Promise<string> {

@@ -1,8 +1,9 @@
 
 import { BigNumber } from "ethers";
 import { AccountStorage, getAccountStorage } from "../storage";
-import { Ensure } from "../util/ensure";
+import { CommonUtil } from "../util/common.util";
 import { getLogger } from "../util/logger";
+import { MomentUtil } from "../util/moment.util";
 import { Contribution, Project } from "../util/types";
 
 const logger = getLogger();
@@ -39,6 +40,7 @@ export interface IDataSource {
 }
 
 export abstract class BaseDataSource implements IDataSource {
+  protected _moment: MomentUtil = new MomentUtil();
   private readonly _accountStorage: AccountStorage;
 
   constructor() {
@@ -47,6 +49,7 @@ export abstract class BaseDataSource implements IDataSource {
 
   async initAsync(): Promise<void> {
     logger.info("Init BaseDataSource")();
+    this._moment = new MomentUtil();
     await this.initAsyncProtected();
   }
 
@@ -55,9 +58,15 @@ export abstract class BaseDataSource implements IDataSource {
     this.disposeProtected();
   }
 
-  getAccount(): Maybe<string> {
-    Ensure.notNullOrWhiteSpace(this._accountStorage.account, "account", "Please connect your wallet first.");
+  getAccount(): string {
+    if (!this._accountStorage.account || CommonUtil.isNullOrWhitespace(this._accountStorage.account)) {
+      throw new Error("Please connect your wallet first.");
+    }
     return this._accountStorage.account;
+  }
+
+  protected createId(): string {
+    return CommonUtil.uuid();
   }
 
   protected abstract initAsyncProtected(): Promise<void>;

@@ -6,7 +6,7 @@ import { CommonConstants } from '../common/constants';
 import { CREATE_PROJECT_MUTATION, EDIT_PROJECT_MUTATION } from '../mutations/project';
 import { CreateProject, CreateProjectVariables } from '../mutations/__generated__/CreateProject';
 import { EditProject, EditProjectVariables } from '../mutations/__generated__/EditProject';
-import { GET_PROJECT_ADDRESS_QUERY } from '../queries/project';
+import { GET_PROJECT_ADDRESS_QUERY, GET_PROJECT_INDEX_QUERY } from '../queries/project';
 import { GetProjectAddress, GetProjectAddressVariables } from '../queries/__generated__/GetProjectAddress';
 import { GetProjectIndex, GetProjectIndexVariables } from '../queries/__generated__/GetProjectIndex';
 import { CommonUtil } from '../util/common.util';
@@ -42,7 +42,7 @@ class ProjectService {
 
   async getProjectIndexAsync(_id: string, _fetchPolicy: FetchPolicy = "network-only"): Promise<BigNumber> {
     const query = await this._apollo.query<GetProjectIndex, GetProjectIndexVariables>({
-      query: GET_PROJECT_ADDRESS_QUERY,
+      query: GET_PROJECT_INDEX_QUERY,
       variables: {
         id: _id
       },
@@ -96,6 +96,7 @@ class ProjectService {
     })
     logger.info(result.data?.createProject)();
     const projectIndex = await this.getProjectIndexAsync(id);
+    console.log(projectIndex)
     const projectAddress = await this.getProjectAddressAsync(projectIndex.toString());
     if (!projectAddress || CommonUtil.isNullOrWhitespace(projectAddress)) {
       throw new Error("Project could not be created.");
