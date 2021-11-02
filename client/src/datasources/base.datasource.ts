@@ -2,12 +2,17 @@
 import { BigNumber } from "ethers";
 import { AccountStorage, getAccountStorage } from "../storage";
 import { Ensure } from "../util/ensure";
+import { getLogger } from "../util/logger";
 import { Contribution, Project } from "../util/types";
 
+const logger = getLogger();
+
 export interface IDataSource {
+  initAsync(): Promise<void>;
+  dispose(): void;
   getBalanceAsync(_address: string): Promise<BigNumber>;
   getProjectIndexAsync(_id: string): Promise<BigNumber>;
-  getProjectAddressAsync(_index: BigNumber): Promise<string>;
+  getProjectAddressAsync(_index: BigNumber): Promise<Maybe<string>>;
   getProjectAsync(_address: string): Promise<Project>;
   getProjectContributionAsync(_address: string, _index: BigNumber): Promise<Contribution>;
   getTimestampAsync(): Promise<BigNumber>;
@@ -40,14 +45,26 @@ export abstract class BaseDataSource implements IDataSource {
     this._accountStorage = getAccountStorage();
   }
 
+  async initAsync(): Promise<void> {
+    logger.info("Init BaseDataSource")();
+    await this.initAsyncProtected();
+  }
+
+  dispose(): void {
+    logger.info("Disposing BaseDataSource")();
+    this.disposeProtected();
+  }
+
   getAccount(): Maybe<string> {
     Ensure.notNullOrWhiteSpace(this._accountStorage.account, "account", "Please connect your wallet first.");
     return this._accountStorage.account;
   }
 
+  protected abstract initAsyncProtected(): Promise<void>;
+  protected abstract disposeProtected(): void;
   abstract getBalanceAsync(_address: string): Promise<BigNumber>;
   abstract getProjectIndexAsync(_id: string): Promise<BigNumber>;
-  abstract getProjectAddressAsync(_index: BigNumber): Promise<string>;
+  abstract getProjectAddressAsync(_index: BigNumber): Promise<Maybe<string>>;
   abstract getProjectAsync(_address: string): Promise<Project>;
   abstract getProjectContributionAsync(_address: string, _index: BigNumber): Promise<Contribution>;
   abstract getTimestampAsync(): Promise<BigNumber>;

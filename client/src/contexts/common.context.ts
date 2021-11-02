@@ -12,10 +12,12 @@ export class CommonContext {
 
   async initAsync(): Promise<void> {
     this._datasource = getMockDataSource();
+    await this._datasource.initAsync();
   }
 
   dispose(): void {
     logger.info("Disposing CommonContext")();
+    this._datasource.dispose();
   }
 
   get datasource(): IDataSource {

@@ -5,6 +5,7 @@ import { CommonConstants } from '../common/constants';
 import { getAccountStorage } from '../storage';
 import { getLogger } from '../util/logger';
 import { WalletType } from '../util/types';
+import { getCommonContext } from './common.context';
 
 const logger = getLogger();
 
@@ -35,6 +36,7 @@ interface Props {
 export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   const [connection, setConnection] = useState<Maybe<ConnectedWeb3Context>>(null);
   const context = useWeb3React();
+  const commonContext = getCommonContext();
   const accountStorage = getAccountStorage();
 
   const { activate, deactivate, account, chainId } = context;
@@ -80,15 +82,25 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
         });
       }
       accountStorage.account = account;
-      setConnection({
-        account,
-        chainId,
-        login,
-        logout
-      });
+      const initAsync = async () => {
+        logger.info('Init ConnectedWeb3')()
+        try {
+          setConnection(null)
+          await commonContext.initAsync()
+          setConnection({
+            account,
+            chainId,
+            login,
+            logout
+          });
+        } catch (error) {
+          logger.error(error)();
+        }
+      }
+      initAsync();
     }
     connectWalletAsync();
-  }, [activate, deactivate, login, logout, accountStorage, account, chainId]);
+  }, [activate, deactivate, login, logout, commonContext, accountStorage, account, chainId]);
 
   if (!connection) {
     return null;

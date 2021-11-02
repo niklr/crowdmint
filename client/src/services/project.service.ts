@@ -3,7 +3,6 @@ import { BigNumber } from 'ethers';
 import { getApolloClient } from '../clients/apollo.client';
 import { getIpfsClient, IpfsClient } from '../clients/ipfs.client';
 import { CommonConstants } from '../common/constants';
-import { ConnectedWeb3Context } from '../contexts/connectedWeb3';
 import { CREATE_PROJECT_MUTATION, EDIT_PROJECT_MUTATION } from '../mutations/project';
 import { CreateProject, CreateProjectVariables } from '../mutations/__generated__/CreateProject';
 import { EditProject, EditProjectVariables } from '../mutations/__generated__/EditProject';
@@ -28,10 +27,8 @@ class ProjectService {
     this._ipfs = getIpfsClient();
   }
 
-  private validate(context: ConnectedWeb3Context, values: SaveProject, markdown: any): void {
-    Ensure.notNull(context, "context");
+  private validate(values: SaveProject, markdown: any): void {
     Ensure.notNull(values, "values");
-    Ensure.notNullOrWhiteSpace(context.account, "context.account", "Please connect your wallet first.");
     Ensure.notNullOrWhiteSpace(values.title, "title", "Please enter a title.");
     Ensure.notNullOrWhiteSpace(values.description, "description", "Please enter a description.");
     Ensure.notNullOrWhiteSpace(markdown, "markdown", "Please enter content in the markdown editor.");
@@ -65,8 +62,8 @@ class ProjectService {
     return query.data.projectAddress;
   }
 
-  async createAsync(context: ConnectedWeb3Context, values: SaveProject, markdown: any): Promise<string> {
-    this.validate(context, values, markdown);
+  async createAsync(values: SaveProject, markdown: any): Promise<string> {
+    this.validate(values, markdown);
     Ensure.notNullOrWhiteSpace(values.category, "category", "Please specify a valid project category.");
     Ensure.notNullOrWhiteSpace(values.goal, "goal", "Please specify a valid goal.");
     Ensure.notNull(values.expirationTimestamp, "expirationTimestamp", "Please specify a valid expiration date.");
@@ -106,8 +103,8 @@ class ProjectService {
     return projectAddress;
   }
 
-  async editAsync(context: ConnectedWeb3Context, address: string, values: SaveProject, markdown: any): Promise<void> {
-    this.validate(context, values, markdown);
+  async editAsync(address: string, values: SaveProject, markdown: any): Promise<void> {
+    this.validate(values, markdown);
     Ensure.notNullOrWhiteSpace(address, "address", "Project address is empty.");
 
     const ipfsResult = await this._ipfs.uploadAsync(markdown);

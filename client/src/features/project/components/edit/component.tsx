@@ -1,21 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Link as RouterLink, useHistory } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { Box, Button, FormControl, Grid, InputLabel, OutlinedInput, Paper, Skeleton, Stack, Typography } from '@mui/material';
-import { ProjectInfo } from '../info';
-import { ProjectInfoTitle } from '../info-title';
-import { Alert } from '../../../common/components/alert';
-import { Editor } from '../../../common/components/editor';
-import { GetProject, GetProjectVariables } from '../../../../queries/__generated__/GetProject';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link as RouterLink, useHistory, useParams } from 'react-router-dom';
 import { GET_PROJECT_QUERY } from '../../../../queries/project';
-import { SaveProject, Project } from '../../../../util/types';
-import { TransformUtil } from '../../../../util/transform.util';
-import { ClickOnceButton } from '../../../common/components/click-once-button';
+import { GetProject, GetProjectVariables } from '../../../../queries/__generated__/GetProject';
 import { getProjectService } from '../../../../services/project.service';
 import { getLogger } from '../../../../util/logger';
 import { SnackbarUtil } from '../../../../util/snackbar.util';
-import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
+import { TransformUtil } from '../../../../util/transform.util';
+import { Project, SaveProject } from '../../../../util/types';
+import { Alert } from '../../../common/components/alert';
+import { ClickOnceButton } from '../../../common/components/click-once-button';
+import { Editor } from '../../../common/components/editor';
+import { ProjectInfo } from '../info';
+import { ProjectInfoTitle } from '../info-title';
 
 const logger = getLogger();
 
@@ -32,7 +30,6 @@ export const ProjectEdit = () => {
   const history = useHistory();
   const containerRef = useRef(null);
   const editorRef = React.createRef<any>();
-  const context = useConnectedWeb3Context();
   const projectService = getProjectService();
 
   const projectQuery = useQuery<GetProject, GetProjectVariables>(GET_PROJECT_QUERY, {
@@ -65,7 +62,7 @@ export const ProjectEdit = () => {
   const saveAsync = async () => {
     try {
       const markdown = editorRef?.current?.getInstance().getMarkdown();
-      await projectService.editAsync(context, address, values, markdown);
+      await projectService.editAsync(address, values, markdown);
       SnackbarUtil.enqueueMessage("Project updated!");
       history.push(`/projects/${address}`);
     } catch (error) {
