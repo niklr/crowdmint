@@ -64,6 +64,10 @@ export abstract class CommonUtil {
     return 0;
   }
 
+  static calculateMaxRows(total: number, rpp: number, page: number): number {
+    return Math.min(Math.min(total - rpp * page, rpp), total);
+  }
+
   static uuid(): string {
     return uuidv4();
   }

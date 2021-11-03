@@ -84,8 +84,8 @@ export class MockDataSource extends BaseDataSource {
 
   async getProjectContributionAsync(_address: string, _index: BigNumber): Promise<Contribution> {
     return {
-      contributor: '...',
-      createdTimestamp: '...',
+      contributor: _index.toString(),
+      createdTimestamp: BigNumber.from(this._moment.get().unix()).add(_index).toString(),
       amount: '...'
     };
   }

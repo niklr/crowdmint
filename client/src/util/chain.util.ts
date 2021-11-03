@@ -56,7 +56,7 @@ export class MockChainUtil implements IChainUtil {
 
 export class NervosChainUtil implements IChainUtil {
   get decimals(): number {
-    return 18;
+    return 8;
   }
 
   get alternateAddressName(): string {
