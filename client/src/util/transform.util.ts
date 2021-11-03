@@ -1,6 +1,5 @@
 import Big from 'big.js';
 import { BigNumber } from 'ethers';
-import { AddressTranslator } from 'nervos-godwoken-integration';
 import { CommonConstants } from '../common/constants';
 import { GetProject_project } from '../queries/__generated__/GetProject';
 import { CommonUtil } from './common.util';
@@ -25,14 +24,6 @@ export abstract class TransformUtil {
       totalFunding: source?.totalFunding,
       url: source?.url
     }
-  }
-
-  static toGodwokenAddress(address: Maybe<string>): Maybe<string> {
-    if (!address || CommonUtil.isNullOrWhitespace(address)) {
-      return;
-    }
-    // TODO: pass RPC url (Godwoken short address (aka Polyjuice address) depends on deployed scripts addresses, therefore it is different on devnet, testnet and mainnet)
-    return (new AddressTranslator()).ethAddressToGodwokenShortAddress(address);
   }
 
   static toBigNumber(number: Maybe<string>): BigNumber {

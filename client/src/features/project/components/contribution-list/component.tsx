@@ -1,7 +1,10 @@
-import React from 'react';
-import { BigNumber } from 'ethers';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { BigNumber } from 'ethers';
+import React from 'react';
+import { getLogger } from '../../../../util/logger';
 import { ProjectContributionListItem } from '../contribution-list-item';
+
+const logger = getLogger();
 
 interface Props {
   address: Maybe<string>;
@@ -14,7 +17,7 @@ export const ProjectContributionList: React.FC<Props> = (props: Props) => {
   for (let index = total - 1; indexes.length < 5 && indexes.length < total; index--) {
     indexes.push(index);
   }
-  console.log("ProjectContributionList indexes", indexes);
+  logger.info("ProjectContributionList indexes", indexes)();
 
   return (
     <TableContainer component={Paper} sx={{ maxHeight: 440 }}>

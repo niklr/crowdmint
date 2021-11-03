@@ -1,16 +1,19 @@
 import { BigNumber } from "ethers";
 import { BaseDataSource } from ".";
+import { IChainUtil, MockChainUtil } from "../util/chain.util";
 import { CommonUtil } from "../util/common.util";
 import { BrowserFileUtil, FileUtil } from "../util/file.util";
 import { Contribution, Project } from "../util/types";
 
 export class MockDataSource extends BaseDataSource {
+  private readonly _chainUtil: IChainUtil;
   private readonly _fileUtil: FileUtil;
   private _projects: Project[];
   private _projectIndexMap: Map<string, number>;
 
   constructor() {
     super();
+    this._chainUtil = new MockChainUtil();
     this._fileUtil = new BrowserFileUtil();
     this._projects = [];
     this._projectIndexMap = new Map<string, number>();
@@ -48,6 +51,10 @@ export class MockDataSource extends BaseDataSource {
 
   protected disposeProtected(): void {
     this.clear();
+  }
+
+  get util(): IChainUtil {
+    return this._chainUtil;
   }
 
   async getBalanceAsync(_address: string): Promise<BigNumber> {

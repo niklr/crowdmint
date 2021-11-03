@@ -73,7 +73,7 @@ class ProjectService {
     if (now.gte(deadline)) {
       throw new Error("Expiration date is in the past.");
     }
-    const goal = TransformUtil.toCKBit(values.goal);
+    const goal = BigNumber.from(values.goal);
     if (goal.lte(0)) {
       throw new Error("Goal is not valid.");
     }
@@ -90,8 +90,8 @@ class ProjectService {
         title: values.title,
         description: values.description,
         url: ipfsResult.url,
-        goal: goal.toString(),
-        deadline: deadline.toString()
+        goal: values.goal,
+        deadline: values.expirationTimestamp
       }
     })
     logger.info(result.data?.createProject)();

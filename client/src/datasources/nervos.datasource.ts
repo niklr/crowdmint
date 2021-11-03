@@ -2,18 +2,21 @@ import { BigNumber, Overrides } from "ethers";
 import { BaseDataSource } from ".";
 import { getNervosClient, NervosClient } from "../clients/nervos.client";
 import { Project as TypechainProject, ProjectManager as TypechainProjectManager } from "../typechain";
+import { IChainUtil, NervosChainUtil } from "../util/chain.util";
 import { getLogger } from "../util/logger";
 import { Contribution, Project } from "../util/types";
 
 const logger = getLogger();
 
 export class NervosDataSource extends BaseDataSource {
+  private readonly _chainUtil: IChainUtil;
   private readonly _client: NervosClient;
   private readonly _projectContracts: Map<string, TypechainProject>;
   private _projectManagerContract?: TypechainProjectManager;
 
   constructor() {
     super();
+    this._chainUtil = new NervosChainUtil();
     this._client = getNervosClient();
     this._projectContracts = new Map<string, TypechainProject>();
   }
@@ -41,6 +44,10 @@ export class NervosDataSource extends BaseDataSource {
 
   protected disposeProtected(): void {
     this._projectManagerContract = undefined;
+  }
+
+  get util(): IChainUtil {
+    return this._chainUtil;
   }
 
   async getBalanceAsync(_address: string): Promise<BigNumber> {

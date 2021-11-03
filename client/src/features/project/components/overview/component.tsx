@@ -2,6 +2,7 @@ import { useQuery } from '@apollo/client';
 import { Box, Button, Chip, Grid, LinearProgress, Paper, Skeleton, TextField, Tooltip, Typography } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { getCommonContext } from '../../../../contexts/common.context';
 import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
 import { GET_PROJECT_QUERY } from '../../../../queries/project';
 import { GetProject, GetProjectVariables } from '../../../../queries/__generated__/GetProject';
@@ -23,6 +24,7 @@ const logger = getLogger();
 export const ProjectOverview = () => {
   const { address } = useParams<{ address: any }>();
   const context = useConnectedWeb3Context();
+  const commonContext = getCommonContext();
   const [project, setProject] = useState<Maybe<Project>>(undefined);
   const [percentage, setPercentage] = useState<number>(0);
   const [canEdit, setCanEdit] = useState<boolean>(false);
@@ -44,16 +46,16 @@ export const ProjectOverview = () => {
 
   useEffect(() => {
     const p = projectQuery.data?.project;
-    const accountAddress = TransformUtil.toGodwokenAddress(context.account);
+    const accountAddress = commonContext.datasource.util.toAlternateAddress(context.account);
     logger.info("Creator:", p?.creator, "Account:", accountAddress)();
     setProject(TransformUtil.toProject(p));
     setPercentage(CommonUtil.calculatePercentage(p?.totalFunding, p?.goal));
     setCanEdit(p?.creator?.toLowerCase() === accountAddress?.toLowerCase());
     return () => {
       // TODO: destroy contract event listeners
-      console.log("cleaned up");
+      logger.info("ProjectOverview cleaned up")();
     };
-  }, [context.account, projectQuery.data?.project]);
+  }, [context.account, commonContext.datasource.util, projectQuery.data?.project]);
 
   if (error) {
     return (
