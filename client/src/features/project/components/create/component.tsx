@@ -3,6 +3,7 @@ import { Box, FormControl, Grid, InputAdornment, InputLabel, MenuItem, OutlinedI
 import React, { useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { ProjectType, ProjectTypes } from '../../../../common/constants';
+import { getCommonContext } from '../../../../contexts/common.context';
 import { getProjectService } from '../../../../services/project.service';
 import { getLogger } from '../../../../util/logger';
 import { MomentUtil } from '../../../../util/moment.util';
@@ -19,6 +20,8 @@ export const ProjectCreate = () => {
   const containerRef = useRef(null);
   const editorRef = React.createRef<any>();
   const momentUtil = new MomentUtil();
+  const commonContext = getCommonContext();
+  const chainUtil = commonContext.datasource.util;
   const projectService = getProjectService();
   const baseMarkdownUrl = 'https://raw.githubusercontent.com/blake256/templates/main/crowdmint/template.md';
 
@@ -134,7 +137,7 @@ export const ProjectCreate = () => {
                     label="Goal"
                     autoComplete="off"
                     onChange={handleChange('goal')}
-                    startAdornment={<InputAdornment position="start">$CKB</InputAdornment>}
+                    startAdornment={<InputAdornment position="start">${chainUtil.nativeName}</InputAdornment>}
                   />
                 </FormControl>
                 <DateTimePicker

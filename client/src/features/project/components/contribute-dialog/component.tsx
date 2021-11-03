@@ -2,7 +2,6 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import React, { useEffect, useState } from 'react';
 import { getCommonContext } from '../../../../contexts/common.context';
 import { SnackbarUtil } from '../../../../util/snackbar.util';
-import { TransformUtil } from '../../../../util/transform.util';
 import { Project } from '../../../../util/types';
 import { ClickOnceButton } from '../../../common/components/click-once-button';
 
@@ -18,6 +17,7 @@ interface Props {
 
 export const ProjectContributeDialog: React.FC<Props> = (props: Props) => {
   const commonContext = getCommonContext();
+  const chainUtil = commonContext.datasource.util;
 
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState<ContributeProject>({
@@ -42,8 +42,7 @@ export const ProjectContributeDialog: React.FC<Props> = (props: Props) => {
       if (!props.project) {
         throw new Error("Project could not be loaded.");
       }
-      const amount = TransformUtil.toCKBit(values.amount);
-      // console.log(amount.toString(), TransformUtil.toCKByte(amount.toString()).toString())
+      const amount = chainUtil.toNativeFull(values.amount);
       if (amount.lt(1)) {
         throw new Error("Invalid amount");
       }
@@ -69,7 +68,7 @@ export const ProjectContributeDialog: React.FC<Props> = (props: Props) => {
             onChange={handleChange('amount')}
             type="number"
             autoFocus
-            startAdornment={<InputAdornment position="start">$CKB</InputAdornment>}
+            startAdornment={<InputAdornment position="start">${chainUtil.nativeName}</InputAdornment>}
           />
         </FormControl>
       </DialogContent>

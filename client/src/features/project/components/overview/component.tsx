@@ -29,6 +29,7 @@ export const ProjectOverview = () => {
   const [percentage, setPercentage] = useState<number>(0);
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [openContributeDialog, setOpenContributeDialog] = React.useState(false);
+  const chainUtil = commonContext.datasource.util;
   const momentUtil = new MomentUtil();
   const containerRef = useRef(null);
   const editorRef = React.createRef<any>();
@@ -71,14 +72,6 @@ export const ProjectOverview = () => {
     setOpenContributeDialog(false);
   }
 
-  const toCKByte = (amount: Maybe<string>) => {
-    return TransformUtil.toCKByte(amount).toString();
-  }
-
-  const toCKByteString = (amount: Maybe<string>) => {
-    return TransformUtil.toCKByteString(amount);
-  }
-
   return (
     <>
       <Grid sx={{ pt: 4 }} container spacing={2}>
@@ -105,8 +98,10 @@ export const ProjectOverview = () => {
                 alignItems: "center",
                 justifyContent: "space-between"
               }}>
-                <Tooltip title={toCKByteString(project?.totalFunding) + ' / ' + toCKByteString(project?.goal)} placement="bottom" arrow>
-                  <Typography color="GrayText" noWrap>{toCKByte(project?.totalFunding)} / {toCKByte(project?.goal)} CKB</Typography>
+                <Tooltip title={chainUtil.toNativeString(project?.totalFunding) + ' / ' + chainUtil.toNativeString(project?.goal)} placement="bottom" arrow>
+                  <Typography color="GrayText" noWrap>
+                    {chainUtil.toNative(project?.totalFunding).toString()} / {chainUtil.toNative(project?.goal).toString()} {chainUtil.nativeName}
+                  </Typography>
                 </Tooltip>
                 {momentUtil.isExpired(project?.expirationTimestamp) ? (
                   <Chip label="Expired" size="small" />

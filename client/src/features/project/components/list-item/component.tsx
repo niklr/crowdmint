@@ -1,32 +1,24 @@
-import * as React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
-import {
-  Chip,
-  Grid,
-  Tooltip,
-  Skeleton,
-  Card,
-  CardHeader,
-  CardContent,
-  Typography,
-  Avatar,
-  CardActionArea,
-  CardActions
-} from '@mui/material';
-import LinearProgress, { LinearProgressProps } from '@mui/material/LinearProgress';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded';
+import {
+  Avatar, Card, CardActionArea,
+  CardActions, CardContent, CardHeader, Chip,
+  Grid, Skeleton, Tooltip, Typography
+} from '@mui/material';
+import LinearProgress, { LinearProgressProps } from '@mui/material/LinearProgress';
 import { Box } from '@mui/system';
 import { BigNumber } from 'ethers';
-import { MomentUtil } from '../../../../util/moment.util';
-import { CommonUtil } from '../../../../util/common.util';
+import * as React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import { getCommonContext } from '../../../../contexts/common.context';
 import { GET_PROJECT_ADDRESS_QUERY, GET_PROJECT_QUERY } from '../../../../queries/project';
-import { GetProjectAddress, GetProjectAddressVariables } from '../../../../queries/__generated__/GetProjectAddress';
 import { GetProject, GetProjectVariables } from '../../../../queries/__generated__/GetProject';
-import { Alert } from '../../../common/components/alert';
+import { GetProjectAddress, GetProjectAddressVariables } from '../../../../queries/__generated__/GetProjectAddress';
+import { CommonUtil } from '../../../../util/common.util';
 import { FormatUtil } from '../../../../util/format.util';
-import { TransformUtil } from '../../../../util/transform.util';
+import { MomentUtil } from '../../../../util/moment.util';
+import { Alert } from '../../../common/components/alert';
 
 interface Props {
   index: BigNumber;
@@ -48,6 +40,8 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
 }
 
 export const ListItem: React.FC<Props> = (props: Props) => {
+  const commonContext = getCommonContext();
+  const chainUtil = commonContext.datasource.util;
   const momentUtil = new MomentUtil();
 
   const projectAddressQuery = useQuery<GetProjectAddress, GetProjectAddressVariables>(GET_PROJECT_ADDRESS_QUERY, {
@@ -69,14 +63,6 @@ export const ListItem: React.FC<Props> = (props: Props) => {
 
   const formatTimestamp = (timestamp: any) => {
     return momentUtil.getLocalReverseFormatted(momentUtil.getFromUnix(timestamp));
-  }
-
-  const toCKByte = (amount: Maybe<string>) => {
-    return TransformUtil.toCKByte(amount).toString();
-  }
-
-  const toCKByteString = (amount: Maybe<string>) => {
-    return TransformUtil.toCKByteString(amount);
   }
 
   if (error) {
@@ -162,18 +148,15 @@ export const ListItem: React.FC<Props> = (props: Props) => {
             </Box>
           ) : (
             <>
-              {/* <Typography variant="body2" color="text.secondary" component="p">
-              {
-                "Why First Minister of Scotland Nicola Sturgeon thinks GDP is the wrong measure of a country's success:"
-              }
-            </Typography> */}
               <Box>
                 <LinearProgressWithLabel value={CommonUtil.calculatePercentage(project?.totalFunding, project?.goal)} />
               </Box>
               <Box component="div" style={{ width: "100%", whiteSpace: "nowrap" }}>
                 <Box component="div" textOverflow="ellipsis" overflow="hidden">
-                  <Tooltip title={toCKByteString(project?.totalFunding) + ' / ' + toCKByteString(project?.goal)} placement="bottom" arrow>
-                    <Typography variant="body2" align="center">{toCKByte(project?.totalFunding)} / {toCKByte(project?.goal)} CKB</Typography>
+                  <Tooltip title={chainUtil.toNativeString(project?.totalFunding) + ' / ' + chainUtil.toNativeString(project?.goal)} placement="bottom" arrow>
+                    <Typography variant="body2" align="center">
+                      {chainUtil.toNative(project?.totalFunding).toString()} / {chainUtil.toNative(project?.goal).toString()} {chainUtil.nativeName}
+                    </Typography>
                   </Tooltip>
                 </Box>
               </Box>

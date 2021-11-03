@@ -1,11 +1,13 @@
 import Big from 'big.js';
 import { BigNumber } from 'ethers';
 import { AddressTranslator } from 'nervos-godwoken-integration';
-import { CommonConstants } from '../common/constants';
 import { CommonUtil } from './common.util';
 
 export interface IChainUtil {
+  get decimals(): number;
   get alternateAddressName(): string
+  get nativeFullName(): string
+  get nativeName(): string
   toAlternateAddress(address: Maybe<string>): Maybe<string>
   toNativeFull(amount: Maybe<string>): BigNumber
   toNative(amount: Maybe<string>): BigNumber
@@ -19,8 +21,20 @@ export class MockChainUtil implements IChainUtil {
     this._util = new NervosChainUtil();
   }
 
+  get decimals(): number {
+    return this._util.decimals;
+  }
+
   get alternateAddressName(): string {
-    return "Alternate"
+    return "Alternate";
+  }
+
+  get nativeFullName(): string {
+    return this._util.nativeFullName;
+  }
+
+  get nativeName(): string {
+    return this._util.nativeName;
   }
 
   toAlternateAddress(address: Maybe<string>): Maybe<string> {
@@ -41,8 +55,20 @@ export class MockChainUtil implements IChainUtil {
 }
 
 export class NervosChainUtil implements IChainUtil {
+  get decimals(): number {
+    return 18;
+  }
+
   get alternateAddressName(): string {
-    return "Polyjuice"
+    return "Polyjuice";
+  }
+
+  get nativeFullName(): string {
+    return "CKBit";
+  }
+
+  get nativeName(): string {
+    return "CKB";
   }
 
   toAlternateAddress(address: Maybe<string>): Maybe<string> {
@@ -57,14 +83,14 @@ export class NervosChainUtil implements IChainUtil {
     if (!amount || CommonUtil.isNullOrWhitespace(amount)) {
       return BigNumber.from(0);
     }
-    return BigNumber.from(Big(amount).mul(Big(10).pow(CommonConstants.CKB_DECIMALS)).toString());
+    return BigNumber.from(Big(amount).mul(Big(10).pow(this.decimals)).toString());
   }
 
   toNative(amount: Maybe<string>): BigNumber {
     if (!amount || CommonUtil.isNullOrWhitespace(amount)) {
       return BigNumber.from(0);
     }
-    return BigNumber.from(Big(amount).div(Big(10).pow(CommonConstants.CKB_DECIMALS)).toFixed(0, 0));
+    return BigNumber.from(Big(amount).div(Big(10).pow(this.decimals)).toFixed(0, 0));
   }
 
   toNativeString(amount: Maybe<string>): string {
@@ -72,7 +98,7 @@ export class NervosChainUtil implements IChainUtil {
       return "0";
     }
     try {
-      return Big(amount).div(Big(10).pow(CommonConstants.CKB_DECIMALS)).toFixed();
+      return Big(amount).div(Big(10).pow(this.decimals)).toFixed();
     } catch (error) {
       return "0";
     }
