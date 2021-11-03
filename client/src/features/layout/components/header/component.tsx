@@ -1,12 +1,12 @@
+import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
+import { AppBar, Button, Chip, Link, styled, Toolbar, Tooltip, Typography } from '@mui/material';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { AppBar, Button, Chip, Link, styled, Toolbar, Tooltip, Typography } from '@mui/material';
-import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
 import { CommonConstants } from '../../../../common/constants';
-import { LoginDialog } from '../../../main/components/login';
+import { getCommonContext } from '../../../../contexts/common.context';
 import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
 import { CommonUtil } from '../../../../util/common.util';
-import { TransformUtil } from '../../../../util/transform.util';
+import { LoginDialog } from '../../../main/components/login';
 
 const Root = styled('div')(
   ({ theme }) => `
@@ -21,6 +21,7 @@ const TitleTypography = styled(Typography)(
 
 export const Header: React.FC = (props: any) => {
   const context = useConnectedWeb3Context();
+  const commonContext = getCommonContext();
   const [loginOpen, setLoginOpen] = React.useState(false);
 
   const handleClickLogin = () => {
@@ -39,6 +40,10 @@ export const Header: React.FC = (props: any) => {
     return CommonUtil.truncateStringInTheMiddle(address, 10, 5)
   }
 
+  const showAlternateAddress = () => {
+    return commonContext.datasource.util.toAlternateAddress(context.account)?.toLowerCase() !== context.account?.toLowerCase();
+  }
+
   return (
     <Root>
       <AppBar position="static" color="secondary">
@@ -53,8 +58,10 @@ export const Header: React.FC = (props: any) => {
             <>
               <Tooltip title={
                 <React.Fragment>
-                  <p>Ethereum address: {context.account}</p>
-                  <p>Polyjuice address: {TransformUtil.toGodwokenAddress(context.account)}</p>
+                  <p>Account address: {context.account}</p>
+                  {showAlternateAddress() && (
+                    <p>{commonContext.datasource.util.alternateAddressName} address: {commonContext.datasource.util.toAlternateAddress(context.account)}</p>
+                  )}
                 </React.Fragment>
               } placement="bottom" arrow>
                 <Chip icon={<AccountCircleTwoToneIcon />} label={truncateAddress(context.account)} variant="outlined" />

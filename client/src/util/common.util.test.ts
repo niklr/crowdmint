@@ -19,3 +19,13 @@ describe('calculatePercentage', () => {
     expect(CommonUtil.calculatePercentage("751", "1000")).toBe(75)
   })
 })
+
+describe('calculateMaxRows', () => {
+  it('should calculate max rows', () => {
+    expect(CommonUtil.calculateMaxRows(0, 5, 0)).toBe(0)
+    expect(CommonUtil.calculateMaxRows(3, 5, 0)).toBe(3)
+    expect(CommonUtil.calculateMaxRows(10, 5, 0)).toBe(5)
+    expect(CommonUtil.calculateMaxRows(10, 5, 1)).toBe(5)
+    expect(CommonUtil.calculateMaxRows(11, 5, 2)).toBe(1)
+  })
+})

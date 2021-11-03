@@ -3,7 +3,7 @@
   "license": "MIT",
   "author": "niklr",
   "homepage": "https://github.com/niklr",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "scripts": {
     "install-contracts": "yarn install --cwd contracts",
     "install-client": "yarn install --cwd client",

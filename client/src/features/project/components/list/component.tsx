@@ -1,7 +1,10 @@
 import { Grid } from '@mui/material';
 import { BigNumber } from 'ethers';
+import { getLogger } from '../../../../util/logger';
 import { Alert } from '../../../common/components/alert';
 import { ListItem } from '../list-item';
+
+const logger = getLogger();
 
 interface Props {
   total: BigNumber;
@@ -13,7 +16,7 @@ export const ProjectList: React.FC<Props> = (props: Props) => {
   for (let index = total; indexes.length < 5 && indexes.length < total; index--) {
     indexes.push(index);
   }
-  console.log("ProjectList indexes", indexes);
+  logger.info("ProjectList indexes", indexes)();
 
   if (indexes.length <= 0) {
     return (

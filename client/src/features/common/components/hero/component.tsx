@@ -1,8 +1,13 @@
+import { Box, Button, Container, Link, Stack, styled, Typography } from '@mui/material';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { Box, Button, Container, Link, Stack, styled, Typography } from '@mui/material';
+import { getCommonContext } from '../../../../contexts/common.context';
 import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
+import { getLogger } from '../../../../util/logger';
 import { SnackbarUtil } from '../../../../util/snackbar.util';
+import { TransformUtil } from '../../../../util/transform.util';
+
+const logger = getLogger();
 
 const HeroContent = styled('div')(
   ({ theme }) => `
@@ -13,15 +18,16 @@ const HeroContent = styled('div')(
 
 export const Hero = () => {
   const context = useConnectedWeb3Context();
+  const commonContext = getCommonContext();
   const testAsync = async () => {
     if (context.account) {
       try {
-        const balance = await context.datasource.getBalanceAsync(context.account);
-        console.log(context.account, 'Balance:', balance.toString());
+        const balance = await commonContext.datasource.getBalanceAsync(context.account);
+        logger.info(context.account, 'Balance:', balance.toString())();
 
-        const timestamp = await context.datasource.getTimestampAsync();
-        const totalProjects = await context.datasource.getTotalProjectsAsync();
-        console.log('ProjectManager timestamp:', timestamp.toString(), 'local timestamp:', Math.floor(Date.now() / 1000), 'totalProjects:', totalProjects.toString());
+        const timestamp = await commonContext.datasource.getTimestampAsync();
+        const totalProjects = await commonContext.datasource.getTotalProjectsAsync();
+        logger.info('ProjectManager timestamp:', timestamp.toString(), 'local timestamp:', TransformUtil.toTimestamp(new Date()), 'totalProjects:', totalProjects.toString())();
       } catch (error) {
         SnackbarUtil.enqueueError(error);
       }

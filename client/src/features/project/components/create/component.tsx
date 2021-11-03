@@ -1,17 +1,17 @@
-import React, { useRef, useState } from 'react';
-import { useHistory } from 'react-router';
 import { DateTimePicker } from '@mui/lab';
 import { Box, FormControl, Grid, InputAdornment, InputLabel, MenuItem, OutlinedInput, Paper, Select, SelectChangeEvent, Slider, Stack, TextField, Typography } from '@mui/material';
-import { Editor } from '../../../common/components/editor';
-import { MomentUtil } from '../../../../util/moment.util';
+import React, { useRef, useState } from 'react';
+import { useHistory } from 'react-router';
 import { ProjectType, ProjectTypes } from '../../../../common/constants';
-import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
-import { SnackbarUtil } from '../../../../util/snackbar.util';
-import { getLogger } from '../../../../util/logger';
-import { ClickOnceButton } from '../../../common/components/click-once-button';
+import { getCommonContext } from '../../../../contexts/common.context';
 import { getProjectService } from '../../../../services/project.service';
-import { SaveProject } from '../../../../util/types';
+import { getLogger } from '../../../../util/logger';
+import { MomentUtil } from '../../../../util/moment.util';
+import { SnackbarUtil } from '../../../../util/snackbar.util';
 import { TransformUtil } from '../../../../util/transform.util';
+import { SaveProject } from '../../../../util/types';
+import { ClickOnceButton } from '../../../common/components/click-once-button';
+import { Editor } from '../../../common/components/editor';
 
 const logger = getLogger();
 
@@ -20,7 +20,8 @@ export const ProjectCreate = () => {
   const containerRef = useRef(null);
   const editorRef = React.createRef<any>();
   const momentUtil = new MomentUtil();
-  const context = useConnectedWeb3Context();
+  const commonContext = getCommonContext();
+  const chainUtil = commonContext.datasource.util;
   const projectService = getProjectService();
   const baseMarkdownUrl = 'https://raw.githubusercontent.com/blake256/templates/main/crowdmint/template.md';
 
@@ -51,7 +52,7 @@ export const ProjectCreate = () => {
   const createProjectAsync = async () => {
     try {
       const markdown = editorRef?.current?.getInstance().getMarkdown();
-      const projectAddress = await projectService.createAsync(context, values, markdown);
+      const projectAddress = await projectService.createAsync(values, markdown);
       SnackbarUtil.enqueueMessage("Project created!");
       history.push(`/projects/${projectAddress}`);
     } catch (error) {
@@ -136,7 +137,7 @@ export const ProjectCreate = () => {
                     label="Goal"
                     autoComplete="off"
                     onChange={handleChange('goal')}
-                    startAdornment={<InputAdornment position="start">$CKB</InputAdornment>}
+                    startAdornment={<InputAdornment position="start">${chainUtil.nativeName}</InputAdornment>}
                   />
                 </FormControl>
                 <DateTimePicker

@@ -2,18 +2,21 @@ import { BigNumber, Overrides } from "ethers";
 import { BaseDataSource } from ".";
 import { getNervosClient, NervosClient } from "../clients/nervos.client";
 import { Project as TypechainProject, ProjectManager as TypechainProjectManager } from "../typechain";
+import { IChainUtil, NervosChainUtil } from "../util/chain.util";
 import { getLogger } from "../util/logger";
 import { Contribution, Project } from "../util/types";
 
 const logger = getLogger();
 
 export class NervosDataSource extends BaseDataSource {
+  private readonly _chainUtil: IChainUtil;
   private readonly _client: NervosClient;
   private readonly _projectContracts: Map<string, TypechainProject>;
   private _projectManagerContract?: TypechainProjectManager;
 
   constructor() {
     super();
+    this._chainUtil = new NervosChainUtil();
     this._client = getNervosClient();
     this._projectContracts = new Map<string, TypechainProject>();
   }
@@ -35,12 +38,16 @@ export class NervosDataSource extends BaseDataSource {
     return project;
   }
 
-  private async getTypechainProjectManagerAsync(): Promise<TypechainProjectManager> {
-    if (this._projectManagerContract) {
-      return this._projectManagerContract;
-    }
+  protected async initAsyncProtected(): Promise<void> {
     this._projectManagerContract = await this._client.getProjectManagerAsync(undefined);
-    return this._projectManagerContract;
+  }
+
+  protected disposeProtected(): void {
+    this._projectManagerContract = undefined;
+  }
+
+  get util(): IChainUtil {
+    return this._chainUtil;
   }
 
   async getBalanceAsync(_address: string): Promise<BigNumber> {
@@ -48,13 +55,11 @@ export class NervosDataSource extends BaseDataSource {
   }
 
   async getProjectIndexAsync(_id: string): Promise<BigNumber> {
-    const manager = await this.getTypechainProjectManagerAsync();
-    return manager.indexes(_id);
+    return this._projectManagerContract?.indexes(_id) ?? BigNumber.from(0);
   }
 
-  async getProjectAddressAsync(_index: BigNumber): Promise<string> {
-    const manager = await this.getTypechainProjectManagerAsync();
-    return manager.projects(_index);
+  async getProjectAddressAsync(_index: BigNumber): Promise<Maybe<string>> {
+    return this._projectManagerContract?.projects(_index);
   }
 
   async getProjectAsync(_address: string): Promise<Project> {
@@ -87,13 +92,11 @@ export class NervosDataSource extends BaseDataSource {
   }
 
   async getTimestampAsync(): Promise<BigNumber> {
-    const manager = await this.getTypechainProjectManagerAsync();
-    return manager.getTimestamp();
+    return this._projectManagerContract?.getTimestamp() ?? BigNumber.from(0);
   }
 
   async getTotalProjectsAsync(): Promise<BigNumber> {
-    const manager = await this.getTypechainProjectManagerAsync();
-    return manager.totalProjects();
+    return this._projectManagerContract?.totalProjects() ?? BigNumber.from(0);
   }
 
   async createProjectAsync(

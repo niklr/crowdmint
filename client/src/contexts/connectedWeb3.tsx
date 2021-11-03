@@ -1,19 +1,17 @@
-import React, { useCallback, useEffect, useState } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { InjectedConnector } from '@web3-react/injected-connector';
-import { CommonContext } from './common.context';
+import React, { useCallback, useEffect, useState } from 'react';
 import { CommonConstants } from '../common/constants';
+import { getAccountStorage } from '../storage';
 import { getLogger } from '../util/logger';
 import { WalletType } from '../util/types';
-import { getAccountStorage } from '../storage';
-import { IDataSource } from '../datasources';
+import { getCommonContext } from './common.context';
 
 const logger = getLogger();
 
 export interface ConnectedWeb3Context {
   account: Maybe<string>,
   chainId: Maybe<number>,
-  datasource: IDataSource;
   login: (type: WalletType) => Promise<void>,
   logout: () => void
 }
@@ -38,6 +36,7 @@ interface Props {
 export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   const [connection, setConnection] = useState<Maybe<ConnectedWeb3Context>>(null);
   const context = useWeb3React();
+  const commonContext = getCommonContext();
   const accountStorage = getAccountStorage();
 
   const { activate, deactivate, account, chainId } = context;
@@ -83,17 +82,25 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
         });
       }
       accountStorage.account = account;
-      const datasource = CommonContext.getDataSource();
-      setConnection({
-        account,
-        chainId,
-        datasource,
-        login,
-        logout
-      });
+      const initAsync = async () => {
+        logger.info('Init ConnectedWeb3')()
+        try {
+          setConnection(null)
+          await commonContext.initAsync()
+          setConnection({
+            account,
+            chainId,
+            login,
+            logout
+          });
+        } catch (error) {
+          logger.error(error)();
+        }
+      }
+      initAsync();
     }
     connectWalletAsync();
-  }, [activate, deactivate, login, logout, accountStorage, account, chainId]);
+  }, [activate, deactivate, login, logout, commonContext, accountStorage, account, chainId]);
 
   if (!connection) {
     return null;

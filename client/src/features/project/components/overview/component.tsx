@@ -1,33 +1,35 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { BigNumber } from 'ethers';
 import { useQuery } from '@apollo/client';
 import { Box, Button, Chip, Grid, LinearProgress, Paper, Skeleton, TextField, Tooltip, Typography } from '@mui/material';
-import { ProjectContributeDialog } from '../contribute-dialog';
-import { ProjectInfo } from '../info';
-import { ProjectInfoTitle } from '../info-title';
-import { Alert } from '../../../common/components/alert';
-import { MomentUtil } from '../../../../util/moment.util';
-import { Editor } from '../../../common/components/editor';
-import { CommonUtil } from '../../../../util/common.util';
-import { ProjectContributionList } from '../contribution-list';
+import React, { useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { getCommonContext } from '../../../../contexts/common.context';
+import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
 import { GET_PROJECT_QUERY } from '../../../../queries/project';
 import { GetProject, GetProjectVariables } from '../../../../queries/__generated__/GetProject';
-import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
+import { CommonUtil } from '../../../../util/common.util';
 import { getLogger } from '../../../../util/logger';
-import { Project } from '../../../../util/types';
-import { TransformUtil } from '../../../../util/transform.util';
+import { MomentUtil } from '../../../../util/moment.util';
 import { SnackbarUtil } from '../../../../util/snackbar.util';
+import { TransformUtil } from '../../../../util/transform.util';
+import { Project } from '../../../../util/types';
+import { Alert } from '../../../common/components/alert';
+import { Editor } from '../../../common/components/editor';
+import { ProjectContributeDialog } from '../contribute-dialog';
+import { ProjectContributionList } from '../contribution-list';
+import { ProjectInfo } from '../info';
+import { ProjectInfoTitle } from '../info-title';
 
 const logger = getLogger();
 
 export const ProjectOverview = () => {
   const { address } = useParams<{ address: any }>();
   const context = useConnectedWeb3Context();
+  const commonContext = getCommonContext();
   const [project, setProject] = useState<Maybe<Project>>(undefined);
   const [percentage, setPercentage] = useState<number>(0);
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [openContributeDialog, setOpenContributeDialog] = React.useState(false);
+  const chainUtil = commonContext.datasource.util;
   const momentUtil = new MomentUtil();
   const containerRef = useRef(null);
   const editorRef = React.createRef<any>();
@@ -45,16 +47,16 @@ export const ProjectOverview = () => {
 
   useEffect(() => {
     const p = projectQuery.data?.project;
-    const accountAddress = TransformUtil.toGodwokenAddress(context.account);
+    const accountAddress = commonContext.datasource.util.toAlternateAddress(context.account);
     logger.info("Creator:", p?.creator, "Account:", accountAddress)();
     setProject(TransformUtil.toProject(p));
     setPercentage(CommonUtil.calculatePercentage(p?.totalFunding, p?.goal));
     setCanEdit(p?.creator?.toLowerCase() === accountAddress?.toLowerCase());
     return () => {
       // TODO: destroy contract event listeners
-      console.log("cleaned up");
+      logger.info("ProjectOverview cleaned up")();
     };
-  }, [context.account, projectQuery.data?.project]);
+  }, [context.account, commonContext.datasource.util, projectQuery.data?.project]);
 
   if (error) {
     return (
@@ -68,14 +70,6 @@ export const ProjectOverview = () => {
       await projectQuery.refetch();
     }
     setOpenContributeDialog(false);
-  }
-
-  const toCKByte = (amount: Maybe<string>) => {
-    return TransformUtil.toCKByte(amount).toString();
-  }
-
-  const toCKByteString = (amount: Maybe<string>) => {
-    return TransformUtil.toCKByteString(amount);
   }
 
   return (
@@ -104,8 +98,10 @@ export const ProjectOverview = () => {
                 alignItems: "center",
                 justifyContent: "space-between"
               }}>
-                <Tooltip title={toCKByteString(project?.totalFunding) + ' / ' + toCKByteString(project?.goal)} placement="bottom" arrow>
-                  <Typography color="GrayText" noWrap>{toCKByte(project?.totalFunding)} / {toCKByte(project?.goal)} CKB</Typography>
+                <Tooltip title={chainUtil.toNativeString(project?.totalFunding) + ' / ' + chainUtil.toNativeString(project?.goal)} placement="bottom" arrow>
+                  <Typography color="GrayText" noWrap>
+                    {chainUtil.toNative(project?.totalFunding).toString()} / {chainUtil.toNative(project?.goal).toString()} {chainUtil.nativeName}
+                  </Typography>
                 </Tooltip>
                 {momentUtil.isExpired(project?.expirationTimestamp) ? (
                   <Chip label="Expired" size="small" />
@@ -158,7 +154,7 @@ export const ProjectOverview = () => {
           </Paper>
         </Grid>
         <Grid item xs={12}>
-          <ProjectContributionList address={project?.address} total={BigNumber.from(project?.totalContributions ?? 0)}></ProjectContributionList>
+          <ProjectContributionList address={project?.address} total={TransformUtil.toBigNumber(project?.totalContributions)}></ProjectContributionList>
         </Grid>
       </Grid>
       <ProjectContributeDialog

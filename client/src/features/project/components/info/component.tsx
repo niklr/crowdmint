@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
 import { Box, Skeleton, Tooltip, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { ProjectTypes } from '../../../../common/constants';
+import { getCommonContext } from '../../../../contexts/common.context';
+import { CommonUtil } from '../../../../util/common.util';
 import { MomentUtil } from '../../../../util/moment.util';
 import { GenericType, Project } from '../../../../util/types';
-import { CommonUtil } from '../../../../util/common.util';
-import { ProjectTypes } from '../../../../common/constants';
-import { TransformUtil } from '../../../../util/transform.util';
 
 interface Props {
   isEdit?: boolean;
@@ -15,6 +15,8 @@ interface Props {
 export const ProjectInfo = (props: Props) => {
   const [percentage, setPercentage] = useState<number>(0);
   const [category, setCategory] = useState<Maybe<GenericType>>(undefined);
+  const commonContext = getCommonContext();
+  const chainUtil = commonContext.datasource.util;
   const momentUtil = new MomentUtil();
 
   useEffect(() => {
@@ -24,14 +26,6 @@ export const ProjectInfo = (props: Props) => {
 
   const formatTimestamp = (timestamp: any) => {
     return momentUtil.getLocalReverseFormatted(momentUtil.getFromUnix(timestamp));
-  }
-
-  const toCKByte = (amount: Maybe<string>) => {
-    return TransformUtil.toCKByte(amount).toString();
-  }
-
-  const toCKByteString = (amount: Maybe<string>) => {
-    return TransformUtil.toCKByteString(amount);
   }
 
   return (
@@ -61,8 +55,10 @@ export const ProjectInfo = (props: Props) => {
         {props.loading ? (
           <Skeleton animation="wave" height={15} width="40%" />
         ) : (
-          <Tooltip title={toCKByteString(props.project?.totalFunding) + ' / ' + toCKByteString(props.project?.goal)} placement="left" arrow>
-            <Typography fontSize={13} noWrap>{toCKByte(props.project?.totalFunding)} / {toCKByte(props.project?.goal)} CKB ({percentage}%)</Typography>
+          <Tooltip title={chainUtil.toNativeString(props.project?.totalFunding) + ' / ' + chainUtil.toNativeString(props.project?.goal)} placement="left" arrow>
+            <Typography fontSize={13} noWrap>
+              {chainUtil.toNative(props.project?.totalFunding).toString()} / {chainUtil.toNative(props.project?.goal).toString()} {chainUtil.nativeName} ({percentage}%)
+            </Typography>
           </Tooltip>
         )}
       </Box>

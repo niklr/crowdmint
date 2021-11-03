@@ -1,11 +1,11 @@
-import React from 'react';
-import { BigNumber } from 'ethers';
-import { Skeleton, TableCell } from '@mui/material';
 import { useQuery } from '@apollo/client';
-import { GetProjectContribution, GetProjectContributionVariables } from '../../../../queries/__generated__/GetProjectContribution';
+import { Skeleton, TableCell } from '@mui/material';
+import { BigNumber } from 'ethers';
+import React from 'react';
+import { getCommonContext } from '../../../../contexts/common.context';
 import { GET_PROJECT_CONTRIBUTION_QUERY } from '../../../../queries/project';
+import { GetProjectContribution, GetProjectContributionVariables } from '../../../../queries/__generated__/GetProjectContribution';
 import { MomentUtil } from '../../../../util/moment.util';
-import { TransformUtil } from '../../../../util/transform.util';
 
 interface Props {
   address: Maybe<string>;
@@ -13,6 +13,8 @@ interface Props {
 }
 
 export const ProjectContributionListItem: React.FC<Props> = (props: Props) => {
+  const commonContext = getCommonContext();
+  const chainUtil = commonContext.datasource.util;
   const momentUtil = new MomentUtil();
 
   const contributionQuery = useQuery<GetProjectContribution, GetProjectContributionVariables>(GET_PROJECT_CONTRIBUTION_QUERY, {
@@ -27,10 +29,6 @@ export const ProjectContributionListItem: React.FC<Props> = (props: Props) => {
 
   const formatTimestamp = (timestamp: any) => {
     return momentUtil.getLocalReverseFormatted(momentUtil.getFromUnix(timestamp));
-  }
-
-  const toCKByteString = (amount: Maybe<string>) => {
-    return TransformUtil.toCKByteString(amount);
   }
 
   return (
@@ -53,7 +51,7 @@ export const ProjectContributionListItem: React.FC<Props> = (props: Props) => {
         {loading ? (
           <Skeleton animation="wave" height={30} width="100%" />
         ) : (
-          <>{contribution?.amount ? toCKByteString(contribution?.amount) : "..."} CKB</>
+          <>{contribution?.amount ? chainUtil.toNativeString(contribution?.amount) : "..."} {chainUtil.nativeName}</>
         )}
       </TableCell>
     </>

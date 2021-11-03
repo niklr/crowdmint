@@ -1,6 +1,7 @@
 import { ApolloClient, InMemoryCache, NormalizedCacheObject } from '@apollo/client';
-import { CommonContext } from '../contexts/common.context';
+import { getCommonContext } from '../contexts/common.context';
 import { IDataSource } from '../datasources';
+import { ProjectMutations } from '../mutations/project';
 import { ItemQueries } from '../queries';
 import { ProjectQueries } from '../queries/project';
 
@@ -12,15 +13,8 @@ export type ApolloContext = {
 }
 
 export class ApolloClientWrapper extends ApolloClient<NormalizedCacheObject> {
-  private readonly _datasource: IDataSource;
-
-  constructor(options: any) {
-    super(options);
-    this._datasource = CommonContext.getDataSource();
-  }
-
   get datasource(): IDataSource {
-    return this._datasource;
+    return getCommonContext().datasource;
   }
 }
 
@@ -37,6 +31,9 @@ const resolvers = {
   Query: {
     ...ItemQueries,
     ...ProjectQueries
+  },
+  Mutation: {
+    ...ProjectMutations
   }
 };
 
