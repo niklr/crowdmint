@@ -22,7 +22,7 @@ import { ProjectInfoTitle } from '../info-title';
 const logger = getLogger();
 
 export const ProjectOverview = () => {
-  const { address } = useParams<{ address: any }>();
+  const { address } = useParams();
   const context = useConnectedWeb3Context();
   const commonContext = getCommonContext();
   const [project, setProject] = useState<Maybe<Project>>(undefined);

@@ -1,10 +1,11 @@
 import { useQuery } from '@apollo/client';
 import { Box, Button, FormControl, Grid, InputLabel, OutlinedInput, Paper, Skeleton, Stack, Typography } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
-import { Link as RouterLink, useHistory, useParams } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 import { GET_PROJECT_QUERY } from '../../../../queries/project';
 import { GetProject, GetProjectVariables } from '../../../../queries/__generated__/GetProject';
 import { getProjectService } from '../../../../services/project.service';
+import { CommonUtil } from '../../../../util/common.util';
 import { getLogger } from '../../../../util/logger';
 import { SnackbarUtil } from '../../../../util/snackbar.util';
 import { TransformUtil } from '../../../../util/transform.util';
@@ -18,7 +19,7 @@ import { ProjectInfoTitle } from '../info-title';
 const logger = getLogger();
 
 export const ProjectEdit = () => {
-  const { address } = useParams<{ address: any }>();
+  const { address } = useParams();
   const [project, setProject] = useState<Maybe<Project>>(undefined);
   const [values, setValues] = useState<SaveProject>({
     category: "",
@@ -27,7 +28,7 @@ export const ProjectEdit = () => {
     goal: "",
     expirationTimestamp: ""
   });
-  const history = useHistory();
+  const navigate = useNavigate();
   const containerRef = useRef(null);
   const editorRef = React.createRef<any>();
   const projectService = getProjectService();
@@ -61,10 +62,13 @@ export const ProjectEdit = () => {
 
   const saveAsync = async () => {
     try {
+      if (!address || CommonUtil.isNullOrWhitespace(address)) {
+        throw new Error("Invalid address");
+      }
       const markdown = editorRef?.current?.getInstance().getMarkdown();
       await projectService.editAsync(address, values, markdown);
       SnackbarUtil.enqueueMessage("Project updated!");
-      history.push(`/projects/${address}`);
+      navigate(`/projects/${address}`);
     } catch (error) {
       logger.error(error)();
       SnackbarUtil.enqueueError(error);
