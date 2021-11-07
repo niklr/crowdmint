@@ -1,6 +1,6 @@
 import { useSnackbar } from 'notistack';
 import React, { useEffect } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import { Networks } from '../../../../common/constants';
 import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
 import { SnackbarUtil } from '../../../../util/snackbar.util';
@@ -33,7 +33,7 @@ export const Main: React.FC = (props: any) => {
 
   return (
     <MainWrapper>
-      <BrowserRouter basename={basename}>
+      <HashRouter basename={basename}>
         <Header />
         <MainScroll>
           {!isNetworkSupported ? (
@@ -49,7 +49,7 @@ export const Main: React.FC = (props: any) => {
           )}
         </MainScroll>
         <Footer />
-      </BrowserRouter>
+      </HashRouter>
     </MainWrapper>
   )
 }

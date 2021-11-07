@@ -1,4 +1,4 @@
-import { getMockDataSource, IDataSource } from "../datasources";
+import { getMockDataSource, getNervosDataSource, IDataSource } from "../datasources";
 import { getLogger } from "../util/logger";
 
 const logger = getLogger();
@@ -11,7 +11,7 @@ export class CommonContext {
   }
 
   async initAsync(): Promise<void> {
-    this._datasource = getMockDataSource();
+    this._datasource = getNervosDataSource();
     await this._datasource.initAsync();
   }
 
