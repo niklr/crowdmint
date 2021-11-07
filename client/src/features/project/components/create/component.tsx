@@ -1,7 +1,7 @@
 import { DateTimePicker } from '@mui/lab';
 import { Box, FormControl, Grid, InputAdornment, InputLabel, MenuItem, OutlinedInput, Paper, Select, SelectChangeEvent, Slider, Stack, TextField, Typography } from '@mui/material';
 import React, { useRef, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { ProjectType, ProjectTypes } from '../../../../common/constants';
 import { getCommonContext } from '../../../../contexts/common.context';
 import { getProjectService } from '../../../../services/project.service';
@@ -16,7 +16,7 @@ import { Editor } from '../../../common/components/editor';
 const logger = getLogger();
 
 export const ProjectCreate = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const containerRef = useRef(null);
   const editorRef = React.createRef<any>();
   const momentUtil = new MomentUtil();
@@ -54,7 +54,7 @@ export const ProjectCreate = () => {
       const markdown = editorRef?.current?.getInstance().getMarkdown();
       const projectAddress = await projectService.createAsync(values, markdown);
       SnackbarUtil.enqueueMessage("Project created!");
-      history.push(`/projects/${projectAddress}`);
+      navigate(`/projects/${projectAddress}`);
     } catch (error) {
       logger.error(error)();
       SnackbarUtil.enqueueError(error);

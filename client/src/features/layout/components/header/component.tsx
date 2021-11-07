@@ -1,7 +1,6 @@
 import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
-import { AppBar, Button, Chip, Link, styled, Toolbar, Tooltip, Typography } from '@mui/material';
+import { AppBar, Button, Chip, styled, Toolbar, Tooltip, Typography } from '@mui/material';
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { CommonConstants } from '../../../../common/constants';
 import { getCommonContext } from '../../../../contexts/common.context';
 import { useConnectedWeb3Context } from '../../../../contexts/connectedWeb3';
@@ -50,9 +49,9 @@ export const Header: React.FC = (props: any) => {
         <Toolbar>
           <img src={"./assets/images/logo_64x64.png"} alt="logo" width="30" />
           <TitleTypography variant="h6">
-            <Link color="inherit" component={RouterLink} to="/" underline="none">
+            <a href="/" style={{ color: "inherit", textDecoration: "inherit" }}>
               {CommonConstants.APP_NAME}
-            </Link>
+            </a>
           </TitleTypography>
           {context.account ? (
             <>
