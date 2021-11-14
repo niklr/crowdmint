@@ -15,4 +15,8 @@ export abstract class CommonUtil {
   static timeout(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
+
+  static toJsonString(data: any): string {
+    return JSON.stringify(data, null, 2);
+  }
 }
