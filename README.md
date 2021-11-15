@@ -41,7 +41,7 @@ A decentralized crowdfunding solution such as CrowdMINT could have a great impac
 
 Video Walkthrough: [https://youtu.be/s-3PJrl0gQQ](https://youtu.be/s-3PJrl0gQQ)
 
-Live Demo: [https://www.crowdmint.fi/](https://www.crowdmint.fi/)
+Live Demo: [https://niklr.github.io/crowdmint/](https://niklr.github.io/crowdmint/)
 
 Before accessing the live demo, please make sure to complete the following steps:
 - [Setup Godwoken Network in MetaMask](#metamask)
